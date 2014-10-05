@@ -1,5 +1,5 @@
 {
-	name: '配置页面',
+	name: '脚本配置页面',
 	host: ['localhost', 'jixunmoe.github.io'],
 	path: ['/conf/', '/config/'],
 

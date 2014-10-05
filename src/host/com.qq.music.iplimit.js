@@ -1,6 +1,6 @@
 {
 	name: 'QQ 音乐、电台海外访问限制解除',
-	host: ['qq.com'],
+	host: ['y.qq.com', 'fm.qq.com'],
 	onBody: function () {
 		H.info ('等候海外访问限制模组加载…');
 		H.waitUntil ('MUSIC.widget.main.IP_limit.isLimit', function () {

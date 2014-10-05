@@ -33,3 +33,4 @@ var parseScript = function (s) {
 };
 
 fs.writeFile (outDir + 'CUWCL4C.user.js', parseScript (fs.readFileSync(srcDir + 'main.js')));
+fs.writeFile (__dirname + '/README.md',   parseScript (fs.readFileSync(__dirname + '/README.template')));

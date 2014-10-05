@@ -28,7 +28,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.232
+// @version        3.0.239
 
 //// 网盘域名匹配
 ///  国内一些「网赚」网盘，体验很差 orz
@@ -558,7 +558,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 
 
 	var sites = [ {
-	name: '配置页面',
+	name: '脚本配置页面',
 	host: ['localhost', 'jixunmoe.github.io'],
 	path: ['/conf/', '/config/'],
 
@@ -1281,7 +1281,7 @@ H.extract(function () { /*
 },
 {
 	name: 'QQ 音乐、电台海外访问限制解除',
-	host: ['qq.com'],
+	host: ['y.qq.com', 'fm.qq.com'],
 	onBody: function () {
 		H.info ('等候海外访问限制模组加载…');
 		H.waitUntil ('MUSIC.widget.main.IP_limit.isLimit', function () {
@@ -1879,7 +1879,7 @@ div#jx_douban_dl_wrap {
 	}
 },
 {
-	name: '人人电台',
+	name: '萌电台 [moe.fm]',
 	host: 'moe.fm',
 	noSubHost: true,
 	hide: ['#promotion_ls'],
@@ -1916,7 +1916,7 @@ div#jx_douban_dl_wrap {
 
 	if (H.config.bUseCustomRules) {
 		try {
-			sites.concat (eval (H.sprintf('[%s]', H.config.sCustomRule)));
+			sites.concat (eval (H.sprintf('[%s\n]', H.config.sCustomRule)));
 		} catch (e) {
 			H.info ('解析自定义规则时发生错误: %s', e.message);
 		}

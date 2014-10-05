@@ -1,5 +1,5 @@
 {
-	name: '人人电台',
+	name: '萌电台 [moe.fm]',
 	host: 'moe.fm',
 	noSubHost: true,
 	hide: ['#promotion_ls'],
