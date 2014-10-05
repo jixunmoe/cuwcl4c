@@ -1,0 +1,142 @@
+* {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+
+	outline: 0;
+}
+
+.hide {
+	display: none;
+}
+
+.red {
+	color: red;
+}
+
+body, button, input {
+	font-family: 'Ubuntu Light', 'Microsoft JhengHei UI Light', 'Microsoft YaHei UI', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: lighter;
+}
+
+.main {
+	position: absolute;
+	left: calc(50% - 23em);
+	width: 46em;
+	min-height: 5em;
+	margin: 0;
+	margin-top: 1.5em;
+	margin-bottom: 3em;
+	padding: 2em;
+	border: 1px solid rgba(0,0,0,.3);
+	background: #fcfcfc;
+	box-shadow: 0 20px 50px rgba(0,0,0,.7);
+	border-radius: 4px;
+	z-index: 9;
+}
+
+.mono, code {
+	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+	font-size: 85%;
+}
+
+code {
+	padding: 0;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	margin: 0;
+	background-color: rgba(0,0,0,0.04);
+	border-radius: 3px;
+	color: #444;
+}
+
+code:before, code:after {
+	letter-spacing: -0.2em;
+	content: "\00a0";
+}
+
+.option p {
+	margin: 0;
+	padding-bottom: .3em;
+	color: #666;
+}
+
+a {
+	color: #333;
+	text-decoration: none;
+}
+
+a::before,
+a::after {
+	content: '[ ';
+	color: #aaa;
+}
+
+a::after {
+	content: ' ]'
+}
+
+button {
+	border: 1px solid #aaa;
+
+	display: inline-block;
+	color: #777;
+	min-width: 5em;
+	text-align: center;
+	padding: 1em 2em;
+	background: #eee;
+	border-radius: 5px;
+	cursor: pointer;
+	margin: 0 .5em;
+
+	transition: 0.5s;
+	transition-property: color, background, border-color;
+}
+
+button:active {
+	position: relative;
+	top: 1px;
+	font-weight: bold;
+}
+
+button:hover {
+	background: #aaa;
+	color: #eee;
+	border-color: #777;
+}
+
+.center {
+	text-align: center;
+}
+
+.right {
+	text-align: right;
+}
+
+.full-width {
+	width: 100%;
+}
+
+pre, textarea {
+	tab-size: 4;
+}
+
+/* Copied from Github */
+pre {
+	padding: 2em;
+	overflow: auto;
+	background-color: #f7f7f7;
+	border-radius: 3px;
+}
+
+pre:empty {
+	display: none;
+}
+
+.no-sel {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>跳过网站等待、验证码及登录 - 配置</title>
+	<link rel="stylesheet" href="./res/main.css">
+	<link rel="stylesheet" href="//yandex.st/highlightjs/8.2/styles/github.min.css">
+
+	<script async defer src="https://greasyfork.org/scripts/5266/code/js-beautify.js"></script>
+	<script async defer src="//yandex.st/highlightjs/8.2/highlight.min.js"
+		onload="hljs.configure({languages:['javascript'],tabReplace:'\t'})"></script>
+	<script src="./res/main.js"></script>
+</head>
+<body>
+	<form class="main" name="config">
+		<p>
+			您安装的脚本版本: <span id="scriptVer"></span>
+			<span class="hide red" id="noteNoScript">
+				如果您禁用了脚本，请先启用脚本然后<a href="javascript:location.reload();">点此刷新</a>。
+			</span>
+		</p>
+		<h2>脚本配置</h2>
+		<div class="option">
+			<label><input type="checkbox" name="bUseUri" /> 使用 <code>cuwcl4c://</code> 协议的下载地址</label>
+			<p>
+				如 <a href="cuwcl4c://|1|http://m5.file.xiami.com/366/7366/1006528995/1773433400_15673127_l.mp3?auth_key=2b7ffe712267f6ae69e7105df68012d4-1412550647-0-null|弹指一挥间 - 许嵩.mp3|http://www.example.com/">弹指一挥间 - 许嵩.mp3</a>，可自定义下载文件名。
+			</p>
+		</div>
+		<h2>自定义规则</h2>
+		<div class="option">
+			<label><input type="checkbox" name="bUseCustomRules" /> 启用自定义规则</label>
+			<p>
+				您可以在此填入您自己的规则。<br />
+				<span class="red">请注意</span>：规则会被脚本<code>eval</code>执行，如果有任何错误将导致所有自定义规则失效。
+			</p>
+
+			<p class="no-sel mono"><span class="hljs-keyword">var</span> customRules = [</p>
+			<textarea name="sCustomRule" class="full-width" cols="80" rows="7"></textarea>
+			<p class="no-sel mono right">];</p>
+			<pre id="rulePreview" class="full-width"></pre>
+		</div>
+
+		<div class="center">
+			<button id="btnSaveConfig" >储存设定</button>
+			<button id="btnResetConfig">恢复默认</button>
+			<button id="btnPreviewCode">预览自定义规则</button>
+		</div>
+
+		<div id="opLog"></div>
+	</form>
+</body>
+</html>
