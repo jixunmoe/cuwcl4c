@@ -1,0 +1,21 @@
+body {
+	color: skyblue;
+	background: black;
+	text-align: center;
+}
+
+
+a, a:visited, a:active {
+	color: skyblue;
+	text-decoration: none;
+	border-bottom: dotted 1px;
+}
+
+sup > a {
+	border-bottom-width: 0;
+}
+
+a:hover {
+	font-weight: bold;
+	border-bottom-style: dashed;
+}

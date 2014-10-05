@@ -131,6 +131,8 @@ document.addEventListener ('DOMContentLoaded', (function ( $, click ) {
 				}
 			}
 		}
+	} else {
+		$('noteNoScript').classList.remove('hide');
 	}
 
 }).bind (window, function ( $ ) {
