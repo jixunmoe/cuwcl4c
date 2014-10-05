@@ -1,5 +1,5 @@
 {
-	name: '飞速网 [Rayfile.com]',
+	name: '飞速网',
 	host: 'rayfile.com',
 	hide: ['div.left'],
 

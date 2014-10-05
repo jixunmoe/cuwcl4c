@@ -1,5 +1,5 @@
 {
-	name: 'DJ 嗨嗨 [djkk.com]',
+	name: 'DJ 嗨嗨',
 	host: 'www.djkk.com',
 	noSubHost: true,
 	css: <% ~com.djkk.dl.css %>,

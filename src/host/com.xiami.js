@@ -1,5 +1,5 @@
 {
-	name: '虾米音乐下载解析 [xiami.com]',
+	name: '虾米音乐',
 	host: 'www.xiami.com',
 	noSubHost: true,
 

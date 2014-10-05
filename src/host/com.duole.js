@@ -1,5 +1,5 @@
 {
-	name: '多乐音乐 [duole.com]',
+	name: '多乐音乐',
 	host: 'www.duole.com',
 	noSubHost: true,
 

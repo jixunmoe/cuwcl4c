@@ -1,5 +1,5 @@
 {
-	name: '速度盘 [sudupan.com]',
+	name: '速度盘',
 	host: ['sudupan.com'],
 	show: ['#sdpxzlj', '#sdpxzlj > td'],
 	onStart: function () {

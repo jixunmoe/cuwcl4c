@@ -1,8 +1,6 @@
 // 初始化
 var createElement = document.createElement.bind (document);
 
-var useCustomUri = false;
-
 var H = {
 	scriptName: 'CUWCL4C',
 	scriptHome: 'https://greasyfork.org/zh-CN/scripts/2600',
@@ -63,7 +61,7 @@ var H = {
 	},
 
 	uri: function (url, filename, ref) {
-		if (!useCustomUri)
+		if (!H.config.bUseUri)
 			return url;
 
 		return 'cuwcl4c://|1|' +

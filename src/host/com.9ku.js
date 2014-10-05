@@ -1,5 +1,5 @@
 {
-	name: '9酷音乐 [9ku.com]',
+	name: '9酷音乐',
 	host: 'www.9ku.com',
 	noSubHost: true,
 	hide: ['#LR2', '#LR3', '#seegc', '.dongDown'],

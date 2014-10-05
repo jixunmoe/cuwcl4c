@@ -8,32 +8,32 @@
 ## 自带规则
 - 脚本配置页面 - `[localhost, jixunmoe.github.io]`
 - 通用 phpDisk 网盘规则 - `[azpan.com, gxdisk.com, 2kuai.com, 1wp.me]`
-- 乐盘 [lepan.cc, sx566.com] - `[lepan.cc, sx566.com]`
-- 威盘 [vdisk.cn] - `[vdisk.cn]`
+- 乐盘 - `[lepan.cc, sx566.com]`
+- 威盘 - `[vdisk.cn]`
 - 119g 网盘 - `[d.119g.com]`
-- 一听音乐 [www.1ting.com] - `[www.1ting.com]`
-- 56 音乐 [565656.com] - `[www.565656.com]`
+- 一听音乐 - `[www.1ting.com]`
+- 565656 音乐 - `[www.565656.com]`
 - 5sing 下载解析 - `[5sing.com, 5sing.kugou.com]`
 - 千军万马网盘系列 - `[7958.com, qjwm.com]`
-- 齐聚网盘 [79pan.com] - `[79pan.com]`
-- 9酷音乐 [9ku.com] - `[www.9ku.com]`
+- 79 盘 - `[79pan.com]`
+- 9酷音乐 - `[www.9ku.com]`
 - 百度盘免下载管家 - `[yun.baidu.com, pan.baidu.com]`
-- 可乐盘 [colafile.com] - `[colafile.com]`
+- 可乐盘 - `[colafile.com]`
 - 城通网盘系列 - `[400gb.com, ctdisk.com, pipipan.com, bego.cc]`
 - DJCC 舞曲 - `[www.djcc.com]`
-- DJ 嗨嗨 [djkk.com] - `[www.djkk.com]`
+- DJ 嗨嗨 - `[www.djkk.com]`
 - DJ 爷爷网 - `[www.djye.com]`
-- 多乐音乐 [duole.com] - `[www.duole.com]`
+- 多乐音乐 - `[www.duole.com]`
 - 邻居的耳朵 - `[ear.duomi.com]`
 - 好盘 - `[howfile.com]`
 - 噢音乐下载解析 - `[oyinyue.com]`
 - QQ 电台下载解析 - `[fm.qq.com]`
 - QQ 音乐、电台海外访问限制解除 - `[y.qq.com, fm.qq.com]`
 - QQ 音乐下载解析 - `[y.qq.com]`
-- 飞速网 [Rayfile.com] - `[rayfile.com]`
+- 飞速网 - `[rayfile.com]`
 - SongTaste 下载解析 - `[songtaste.com]`
-- 速度盘 [sudupan.com] - `[sudupan.com]`
-- 虾米音乐下载解析 [xiami.com] - `[www.xiami.com]`
+- 速度盘 - `[sudupan.com]`
+- 虾米音乐 - `[www.xiami.com]`
 - 一木禾网盘 - `[yimuhe.com]`
 - 音悦台下载解析 - `[yinyuetai.com]`
 - 豆瓣电台 - `[douban.fm]`

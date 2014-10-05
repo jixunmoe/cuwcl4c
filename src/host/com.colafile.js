@@ -1,5 +1,5 @@
 {
-	name: '可乐盘 [colafile.com]',
+	name: '可乐盘',
 	host: 'colafile.com',
 	hide: [
 		'.table_right', '#down_link3', '.tui', '.ad1 > .ad1 > *:not(.downbox)',

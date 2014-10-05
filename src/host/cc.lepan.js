@@ -1,5 +1,5 @@
 {
-	name: '乐盘 [lepan.cc, sx566.com]',
+	name: '乐盘',
 	host: ['lepan.cc', 'sx566.com'],
 	hide: [
 		'.ad', '[class^="banner"]', '#dl_tips',

@@ -1,5 +1,5 @@
 {
-	name: '一听音乐 [www.1ting.com]',
+	name: '一听音乐',
 	host: ['www.1ting.com'],
 	noSubHost: true,
 	path: ['/player/', '/album_'],

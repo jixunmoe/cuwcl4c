@@ -1,5 +1,5 @@
 {
-	name: '齐聚网盘 [79pan.com]',
+	name: '79 盘',
 	host: '79pan.com',
 	onStart: function () {
 		unsafeOverwriteFunctionSafeProxy ({

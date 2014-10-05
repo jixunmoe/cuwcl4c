@@ -1,5 +1,5 @@
 {
-	name: '56 音乐 [565656.com]',
+	name: '565656 音乐',
 	host: 'www.565656.com',
 	noSubHost: true,
 	path: ['/plus/player.ashx', '/ting/'],

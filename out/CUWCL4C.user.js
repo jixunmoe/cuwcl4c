@@ -28,7 +28,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.239
+// @version        3.0.241
 
 //// 网盘域名匹配
 ///  国内一些「网赚」网盘，体验很差 orz
@@ -41,8 +41,6 @@
 (function () {
 	// 初始化
 var createElement = document.createElement.bind (document);
-
-var useCustomUri = false;
 
 var H = {
 	scriptName: 'CUWCL4C',
@@ -104,7 +102,7 @@ var H = {
 	},
 
 	uri: function (url, filename, ref) {
-		if (!useCustomUri)
+		if (!H.config.bUseUri)
 			return url;
 
 		return 'cuwcl4c://|1|' +
@@ -599,7 +597,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 },
 {
-	name: '乐盘 [lepan.cc, sx566.com]',
+	name: '乐盘',
 	host: ['lepan.cc', 'sx566.com'],
 	hide: [
 		'.ad', '[class^="banner"]', '#dl_tips',
@@ -613,7 +611,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 },
 {
-	name: '威盘 [vdisk.cn]',
+	name: '威盘',
 	host: ['vdisk.cn'],
 	hide: ['#loadingbox', '#yanzhengbox', '#yzmbox', '#getbox > .btn:first-child'],
 	show: ['#btnbox']
@@ -630,7 +628,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 },
 {
-	name: '一听音乐 [www.1ting.com]',
+	name: '一听音乐',
 	host: ['www.1ting.com'],
 	noSubHost: true,
 	path: ['/player/', '/album_'],
@@ -665,7 +663,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 },
 {
-	name: '56 音乐 [565656.com]',
+	name: '565656 音乐',
 	host: 'www.565656.com',
 	noSubHost: true,
 	path: ['/plus/player.ashx', '/ting/'],
@@ -811,7 +809,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 },
 {
-	name: '齐聚网盘 [79pan.com]',
+	name: '79 盘',
 	host: '79pan.com',
 	onStart: function () {
 		unsafeOverwriteFunctionSafeProxy ({
@@ -830,7 +828,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 },
 {
-	name: '9酷音乐 [9ku.com]',
+	name: '9酷音乐',
 	host: 'www.9ku.com',
 	noSubHost: true,
 	hide: ['#LR2', '#LR3', '#seegc', '.dongDown'],
@@ -876,7 +874,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 },
 {
-	name: '可乐盘 [colafile.com]',
+	name: '可乐盘',
 	host: 'colafile.com',
 	hide: [
 		'.table_right', '#down_link3', '.tui', '.ad1 > .ad1 > *:not(.downbox)',
@@ -1017,7 +1015,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 },
 {
-	name: 'DJ 嗨嗨 [djkk.com]',
+	name: 'DJ 嗨嗨',
 	host: 'www.djkk.com',
 	noSubHost: true,
 	css: /* Resource: com.djkk.dl.css */
@@ -1105,7 +1103,7 @@ H.extract(function () { /*
 	}
 },
 {
-	name: '多乐音乐 [duole.com]',
+	name: '多乐音乐',
 	host: 'www.duole.com',
 	noSubHost: true,
 
@@ -1355,7 +1353,7 @@ H.extract(function () { /*
 	}
 },
 {
-	name: '飞速网 [Rayfile.com]',
+	name: '飞速网',
 	host: 'rayfile.com',
 	hide: ['div.left'],
 
@@ -1550,7 +1548,7 @@ H.extract(function () { /*
 	}
 },
 {
-	name: '速度盘 [sudupan.com]',
+	name: '速度盘',
 	host: ['sudupan.com'],
 	show: ['#sdpxzlj', '#sdpxzlj > td'],
 	onStart: function () {
@@ -1560,7 +1558,7 @@ H.extract(function () { /*
 	}
 },
 {
-	name: '虾米音乐下载解析 [xiami.com]',
+	name: '虾米音乐',
 	host: 'www.xiami.com',
 	noSubHost: true,
 
