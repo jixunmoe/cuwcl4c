@@ -1,7 +1,7 @@
 {
 	name: '脚本配置页面',
 	host: ['localhost', 'jixunmoe.github.io'],
-	path: ['/conf/', '/config/'],
+	path: ['/conf/', '/cuwcl4c/config/'],
 
 	onStart: function () {
 		unsafeWindow.rScriptVersion = H.version;

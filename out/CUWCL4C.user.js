@@ -28,7 +28,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.241
+// @version        3.0.242
 
 //// 网盘域名匹配
 ///  国内一些「网赚」网盘，体验很差 orz
@@ -558,7 +558,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	var sites = [ {
 	name: '脚本配置页面',
 	host: ['localhost', 'jixunmoe.github.io'],
-	path: ['/conf/', '/config/'],
+	path: ['/conf/', '/cuwcl4c/config/'],
 
 	onStart: function () {
 		unsafeWindow.rScriptVersion = H.version;
@@ -576,7 +576,8 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 			}
 		});
 	}
-},
+}
+,
 {
 	name: '通用 phpDisk 网盘规则',
 	host: ['azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me'],
