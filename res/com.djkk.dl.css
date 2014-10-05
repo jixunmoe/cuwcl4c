@@ -1,0 +1,14 @@
+#jx_dl_wrapper {
+    float: right;
+    margin-right: 1.5em;
+}
+
+#jx_dl_wrapper > a {
+	transition: color .4s;
+	color: #aaa;
+}
+
+#jx_dl_wrapper > a:hover {
+	color: #fff;
+	text-decoration: none;
+}

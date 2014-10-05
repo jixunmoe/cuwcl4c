@@ -1,0 +1,15 @@
+.m_player .bar_op {
+	left:  230px;
+	width: 310px;
+}
+
+.next_bt.jx_dl_bt {
+	transform: rotate (90deg);
+}
+
+#jx_ddl {
+	width:   100%;
+	height:  100%;
+	display: block;
+	outline: 0 !important;
+}
