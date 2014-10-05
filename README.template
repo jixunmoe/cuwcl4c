@@ -2,7 +2,7 @@
 
 基于 `简单成就下载 by Yulei`，在此表示感谢。
 
-脚本配置界面：[Github.io](http://jixunmoe.github.io/config/)
+脚本配置界面：[Github.io](http://jixunmoe.github.io/cuwcl4c/config/)
 
 
 ## 自带规则
