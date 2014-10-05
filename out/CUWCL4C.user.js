@@ -2,6 +2,8 @@
 // @grant          unsafeWindow
 // @grant          GM_xmlhttpRequest
 // @grant          GM_openInTab
+// @grant          GM_getValue
+// @grant          GM_setValue
 
 // @run-at         document-start
 // @name:en        Bypass Wait, Code & Login on Websites
@@ -26,7 +28,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.218
+// @version        3.0.232
 
 //// 网盘域名匹配
 ///  国内一些「网赚」网盘，体验很差 orz
@@ -49,14 +51,14 @@ var H = {
 	version:    GM_info.script.version,
 	currentUrl: location.href.split ('#')[0],
 	lowerHost:  location.hostname.toLowerCase(),
-	directHost: location.hostname.match(/\w+\.\w+$/)[0].toLowerCase(),
+	directHost: location.hostname.match(/\w+\.?\w+?$/)[0].toLowerCase(),
 
 	merge: function (parent) {
 		if (arguments.length < 2)
 			return parent || {};
 
 		var args = arguments;
-		for (var i = arguments.length; --i; ) {
+		for (var i = 1; i < arguments.length; i++) {
 			Object.keys (arguments[i]).forEach (function (key) {
 				parent[key] = args[i][key];
 			});
@@ -145,8 +147,39 @@ H.merge (H, {
 		} else {
 			H._err.apply (0, [].concat.apply([_prefix], args));
 		}
-	}.bind (H, H.sprintf ('[%s][错误] ', H.scriptName)),
+	}.bind (H, H.sprintf ('[%s][错误] ', H.scriptName))
+});
 
+H.config = H.merge ({
+	bUseUri: false,
+	bUseCustomRules: false,
+	sCustomRule: ''
+}, (function (conf) {
+	if (!conf) return {};
+
+	try {
+		var _conf = JSON.parse (conf);
+
+		for (var name in _conf) {
+			if (_conf.hasOwnProperty (name)) {
+				switch (name[0]) {
+					case 'b':
+						_conf[name] = _conf[name] == 'on';
+						break;
+
+					// s and default are not parsed.
+				}
+			}
+		}
+
+		return _conf;
+	} catch (e) {
+		H.info ('配置文件 [%s] 无效, 现在使用空白配置.', conf);
+		return {};
+	}
+})(GM_getValue (H.scriptName)));
+
+H.merge (H, {
 	hookRequire: function (namespace, foo, callback) {
 		var hookReq = createElement ('script');
 		hookReq.textContent = ';(' + function (namespace, foo, custom) {
@@ -525,6 +558,28 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 
 
 	var sites = [ {
+	name: '配置页面',
+	host: ['localhost', 'jixunmoe.github.io'],
+	path: ['/conf/', '/config/'],
+
+	onStart: function () {
+		unsafeWindow.rScriptVersion = H.version;
+		unsafeWindow.rScriptConfig  = JSON.stringify (H.config);
+		H.info (H.config);
+
+		var _c = confirm;
+		document.addEventListener ('SaveConfig', function (e) {
+			try {
+				var config = JSON.stringify (JSON.parse (e.detail));
+				if (_c (H.sprintf ('确定储存设定至 %s?', H.scriptName)))
+					GM_setValue (H.scriptName, config);
+			} catch (e) {
+				alert ('解析设定值出错!');
+			}
+		});
+	}
+},
+{
 	name: '通用 phpDisk 网盘规则',
 	host: ['azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me'],
 	hide: [
@@ -1858,6 +1913,15 @@ div#jx_douban_dl_wrap {
 		}
 	}
 } ];
+
+	if (H.config.bUseCustomRules) {
+		try {
+			sites.concat (eval (H.sprintf('[%s]', H.config.sCustomRule)));
+		} catch (e) {
+			H.info ('解析自定义规则时发生错误: %s', e.message);
+		}
+	}
+
 	var handleSite = function (event) {
 		// function (event)
 var site, eve, host, hostMatch;

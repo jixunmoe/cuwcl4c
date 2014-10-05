@@ -4,6 +4,15 @@
 	<% @helper.js %>
 
 	var sites = [ <% #sites.js %> ];
+
+	if (H.config.bUseCustomRules) {
+		try {
+			sites.concat (eval (H.sprintf('[%s]', H.config.sCustomRule)));
+		} catch (e) {
+			H.info ('解析自定义规则时发生错误: %s', e.message);
+		}
+	}
+
 	var handleSite = function (event) {
 		<% @handleSite.js %>
 	};

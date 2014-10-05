@@ -10,14 +10,14 @@ var H = {
 	version:    GM_info.script.version,
 	currentUrl: location.href.split ('#')[0],
 	lowerHost:  location.hostname.toLowerCase(),
-	directHost: location.hostname.match(/\w+\.\w+$/)[0].toLowerCase(),
+	directHost: location.hostname.match(/\w+\.?\w+?$/)[0].toLowerCase(),
 
 	merge: function (parent) {
 		if (arguments.length < 2)
 			return parent || {};
 
 		var args = arguments;
-		for (var i = arguments.length; --i; ) {
+		for (var i = 1; i < arguments.length; i++) {
 			Object.keys (arguments[i]).forEach (function (key) {
 				parent[key] = args[i][key];
 			});
@@ -106,8 +106,39 @@ H.merge (H, {
 		} else {
 			H._err.apply (0, [].concat.apply([_prefix], args));
 		}
-	}.bind (H, H.sprintf ('[%s][错误] ', H.scriptName)),
+	}.bind (H, H.sprintf ('[%s][错误] ', H.scriptName))
+});
 
+H.config = H.merge ({
+	bUseUri: false,
+	bUseCustomRules: false,
+	sCustomRule: ''
+}, (function (conf) {
+	if (!conf) return {};
+
+	try {
+		var _conf = JSON.parse (conf);
+
+		for (var name in _conf) {
+			if (_conf.hasOwnProperty (name)) {
+				switch (name[0]) {
+					case 'b':
+						_conf[name] = _conf[name] == 'on';
+						break;
+
+					// s and default are not parsed.
+				}
+			}
+		}
+
+		return _conf;
+	} catch (e) {
+		H.info ('配置文件 [%s] 无效, 现在使用空白配置.', conf);
+		return {};
+	}
+})(GM_getValue (H.scriptName)));
+
+H.merge (H, {
 	hookRequire: function (namespace, foo, callback) {
 		var hookReq = createElement ('script');
 		hookReq.textContent = ';(' + function (namespace, foo, custom) {

@@ -2,6 +2,8 @@
 // @grant          unsafeWindow
 // @grant          GM_xmlhttpRequest
 // @grant          GM_openInTab
+// @grant          GM_getValue
+// @grant          GM_setValue
 
 // @run-at         document-start
 // @name:en        Bypass Wait, Code & Login on Websites
