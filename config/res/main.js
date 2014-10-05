@@ -104,20 +104,33 @@ document.addEventListener ('DOMContentLoaded', (function ( $, click ) {
 				_conf[el.name] = el.value;
 		});
 
-		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: _conf }) );
+		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: JSON.stringify(_conf) }) );
 		postMessage ('设定储存完毕!');
 	});
 
 	click ($('btnResetConfig'), function () {
-		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: {} }) );
+		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: '{}' }) );
 		postMessage ('正在重设设定…');
 		setTimeout (postMessage, 400, '设定重设完毕, 刷新页面 ..');
 		setTimeout (location.reload.bind(location), 700);
 	});
-	if (!this.rScriptConfig) {
-		$('noteNoScript').classList.remove ('hide');
-	} else {
-		var conf = JSON.parse (this.rScriptConfig);
+
+	if (this.rScriptConfig) {
+		var _conf = JSON.parse (this.rScriptConfig);
+		
+		for (var name in _conf) {
+			if (_conf.hasOwnProperty (name)) {
+				switch (name[0]) {
+					case 'b':
+						configForm[name].checked = _conf[name];
+						break;
+
+					default:
+						configForm[name].value   = _conf[name];
+						break;
+				}
+			}
+		}
 	}
 
 }).bind (window, function ( $ ) {
