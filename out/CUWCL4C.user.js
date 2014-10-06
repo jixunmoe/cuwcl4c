@@ -28,7 +28,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.243
+// @version        3.0.244
 
 //// 网盘域名匹配
 ///  国内一些「网赚」网盘，体验很差 orz
@@ -1305,7 +1305,7 @@ H.extract(function () { /*
 }
 
 .jx_dl_bt {
-	transform: rotate (90deg);
+	transform: rotate(90deg);
 }
 
 .jx_dl_bt > a {
