@@ -62,18 +62,9 @@ code:before, code:after {
 	transition: opacity .5s;
 }
 
-canvas {
-	overflow: hidden;
-}
-
-.breakdown > .raw  {
-	font-size: 0;
-}
-
-.breakdown > .raw  > span {
-	font-size: 1rem;
-}
-
+/* Remove spaces */
+.breakdown > .raw  { font-size: 0; }
+.breakdown > .raw  > span { font-size: small; }
 .breakdown > .raw  > span:not(:last-child) {
 	padding-right: 1em;
 }

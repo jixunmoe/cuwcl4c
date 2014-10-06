@@ -24,7 +24,7 @@ document.addEventListener ('DOMContentLoaded', function () {
 
 
 				var xSource = source.offsetLeft + xSrcOffset + source.offsetWidth / 2;
-				var yMiddle = 130 - i * 20;
+				var yMiddle = 130 - i * 17;
 
 				that.paint.lineWidth = 2;
 				that.paint.beginPath();
@@ -37,7 +37,7 @@ document.addEventListener ('DOMContentLoaded', function () {
 					that.paint.moveTo (xSource, yMiddle);
 					var xTarget = to.offsetLeft + xTarOffset + to.offsetWidth / 2 - parseInt(this.getComputedStyle(to).paddingRight, 10) / 2;
 					that.paint.lineTo (xTarget, yMiddle);
-					that.paint.lineTo (xTarget, 20);
+					that.paint.lineTo (xTarget, 0);
 				});
 
 				that.paint.stroke();
