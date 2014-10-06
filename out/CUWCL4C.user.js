@@ -2,6 +2,7 @@
 // @grant          unsafeWindow
 // @grant          GM_xmlhttpRequest
 // @grant          GM_openInTab
+// @grant          GM_registerMenuCommand
 // @grant          GM_getValue
 // @grant          GM_setValue
 
@@ -30,7 +31,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.251
+// @version        3.0.252
 
 // 全局匹配
 // @include *
@@ -2027,6 +2028,9 @@ for (var i = sites.length; i--; ) {
 	};
 
 	try {
+		GM_registerMenuCommand (H.sprintf('配置 %s[%s]', H.scriptName, H.version), function () {
+			GM_openInTab('http://jixunmoe.github.io/cuwcl4c/config/', false);
+		});
 
 		H.log ('onStart 准备阶段 :: 开始');
 		handleSite ('onStart');

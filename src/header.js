@@ -2,6 +2,7 @@
 // @grant          unsafeWindow
 // @grant          GM_xmlhttpRequest
 // @grant          GM_openInTab
+// @grant          GM_registerMenuCommand
 // @grant          GM_getValue
 // @grant          GM_setValue
 
