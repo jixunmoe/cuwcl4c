@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>cuwcl4c:// 专用下载器</title>
+	<link rel="stylesheet" href="./res/main.css">
+	<script src="./res/main.js"></script>
+</head>
+<body>
+	<h1>关于这个协议</h1>
+	<p><code>cuwcl4c://</code> 是一个用于方便<del>盗链</del>下载网络上的文件到指定文件而创建的协议。</p>
+	<p>该协议完全开放，任何人都可以提交改进方案。</p>
+
+	<!-- Inspired by adblocker doc -->
+	<div class="explain">
+		<div class="raw mono">
+			<span class="header">cuwcl4c://</span>
+			<span class="split">|</span>
+			<span class="ver">1</span>
+			<span class="split">|</span>
+			<span class="url">http://example.com/dl.php?file.zip</span>
+			<span class="split">|</span>
+			<span class="ref">http://dl.example.com/</span>
+		</div>
+		<canvas class="drawing"></canvas>
+		<div class="info">
+			<span class="header">协议名称</span>
+			<span class="split">分隔符</span>
+			<span class="ver">协议版本</span>
+			<span class="url">下载地址</span>
+			<span class="ref">引用来源</span>
+		</div>
+	</div>
+</body>
+</html>

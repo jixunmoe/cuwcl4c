@@ -1,0 +1,106 @@
+* {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+
+	outline: 0;
+}
+
+.hide {
+	display: none;
+}
+
+.red {
+	color: red;
+}
+
+body {
+	background: #eff;
+	padding: 1em 2em;
+}
+
+body, button, input {
+	font-family: 'Ubuntu Light', 'Microsoft JhengHei UI Light', 'Microsoft JhengHei', 'Microsoft YaHei UI', sans-serif;
+}
+
+
+.mono, code {
+	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+	font-size: 85%;
+}
+
+code {
+	padding: 0;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	margin: 0;
+	background-color: rgba(0,0,0,0.04);
+	border-radius: 3px;
+	color: #444;
+}
+
+code:before, code:after {
+	letter-spacing: -0.2em;
+	content: "\00a0";
+}
+
+
+.explain > .info > span {
+	padding: 0.2em 1.5em;
+	border-bottom: 2px solid;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+}
+.explain > .info > span:not(:last-child) {
+	margin-right: 1em;
+}
+.explain > .info > span:not(.active),
+.explain > .raw  > span:not(.active) {
+	opacity: 0.5;
+}
+.explain > .info > span,
+.explain > .raw  > span {
+	transition: opacity .5s;
+}
+
+canvas {
+	overflow: hidden;
+}
+
+.explain > .raw  {
+	font-size: 0;
+}
+
+.explain > .raw  > span {
+	font-size: 1rem;
+}
+
+.explain > .raw  > span:not(:last-child) {
+	padding-right: 1em;
+}
+
+
+.explain .header {
+	color: red;
+	border-bottom-color: red;
+}
+
+.explain .split {
+	color: blue;
+	border-bottom-color: blue;
+}
+
+.explain .ver {
+	color: green;
+	border-bottom-color: green;
+}
+
+.explain .url {
+	color: purple;
+	border-bottom-color: purple;
+}
+
+.explain .ref {
+	color: orange;
+	border-bottom-color: orange;
+}
+
