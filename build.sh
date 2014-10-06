@@ -11,5 +11,4 @@ else
 	fi
 fi
 
-$n build.js;
-git commit -a;
+$n build.js && git commit -a;

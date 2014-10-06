@@ -30,7 +30,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.248
+// @version        3.0.249
 
 // 全局匹配
 // @include *
@@ -204,7 +204,8 @@ H.merge (H, {
 					});
 				}
 			});
-		} + ')("' + namespace + '", "' + foo + '", ' + callback + ');';
+		} + ')("' + namespace + '", "' + foo + '", Function.bind.apply ('
+			+ callback + ', ' + JSON.stringify ([].slice.call (arguments, 3)) + ');';
 		document.head.appendChild (hookReq);
 		return hookReq;
 	},
@@ -225,7 +226,8 @@ H.merge (H, {
 					$define = n;
 				}
 			});
-		} + ')("' + fooName + '", ' + callback + ');';
+		} + ')("' + namespace + '", "' + foo + '", Function.bind.apply ('
+			+ callback + ', ' + JSON.stringify ([].slice.call (arguments, 2)) + ');';
 		document.head.appendChild (hookDef);
 		return hookDef;
 	},
@@ -757,7 +759,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 		if (this.fmHooked) return ;
 		this.fmHooked = true;
 
-		H.hookDefine ('define', function (_define, moduleName, requires, fCallback) {
+		H.hookDefine ('define', function (scriptName, _define, moduleName, requires, fCallback) {
 			if ('player/single' === moduleName) {
 				return _define (moduleName, requires, function (require, exports, module) {
 					var ret = fCallback.call (null, require, exports, module);
@@ -769,7 +771,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 						var mPlayer = new MediaElement (playerBoxId, options);
 						var _play = mPlayer.play;
 						mPlayer.play = function (songObj) {
-							document.dispatchEvent ( new CustomEvent (H.scriptName, {detail: songObj}) );
+							document.dispatchEvent ( new CustomEvent (scriptName, {detail: songObj}) );
 							return _play.call (mPlayer, songObj);
 						};
 						return mPlayer;
@@ -777,7 +779,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 					return ret;
 				});
 			}
-		});
+		}, H.scriptName);
 
 		document.addEventListener (H.scriptName, function (e) {
 			var songObj = e.detail;
@@ -1564,11 +1566,11 @@ H.extract(function () { /*
 
 	onStart: function () {
 		var that = this;
-		H.hookRequire ('SEIYA', 'download', function (_SEIYA, _download, songId) {
-			document.dispatchEvent (new CustomEvent (H.scriptName + '-dlById', { detail: songId }));
+		H.hookRequire ('SEIYA', 'download', function (scriptName, _SEIYA, _download, songId) {
+			document.dispatchEvent (new CustomEvent (scriptName + '-dlById', { detail: songId }));
 
 			return true;
-		});
+		}, H.scriptName);
 
 		H.waitUntil ('KISSY.use', function () {
 			unsafeExec (function (scriptName) {

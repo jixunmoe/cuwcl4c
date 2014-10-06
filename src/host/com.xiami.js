@@ -5,11 +5,11 @@
 
 	onStart: function () {
 		var that = this;
-		H.hookRequire ('SEIYA', 'download', function (_SEIYA, _download, songId) {
-			document.dispatchEvent (new CustomEvent (H.scriptName + '-dlById', { detail: songId }));
+		H.hookRequire ('SEIYA', 'download', function (scriptName, _SEIYA, _download, songId) {
+			document.dispatchEvent (new CustomEvent (scriptName + '-dlById', { detail: songId }));
 
 			return true;
-		});
+		}, H.scriptName);
 
 		H.waitUntil ('KISSY.use', function () {
 			unsafeExec (function (scriptName) {

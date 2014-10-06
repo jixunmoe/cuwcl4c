@@ -77,7 +77,7 @@
 		if (this.fmHooked) return ;
 		this.fmHooked = true;
 
-		H.hookDefine ('define', function (_define, moduleName, requires, fCallback) {
+		H.hookDefine ('define', function (scriptName, _define, moduleName, requires, fCallback) {
 			if ('player/single' === moduleName) {
 				return _define (moduleName, requires, function (require, exports, module) {
 					var ret = fCallback.call (null, require, exports, module);
@@ -89,7 +89,7 @@
 						var mPlayer = new MediaElement (playerBoxId, options);
 						var _play = mPlayer.play;
 						mPlayer.play = function (songObj) {
-							document.dispatchEvent ( new CustomEvent (H.scriptName, {detail: songObj}) );
+							document.dispatchEvent ( new CustomEvent (scriptName, {detail: songObj}) );
 							return _play.call (mPlayer, songObj);
 						};
 						return mPlayer;
@@ -97,7 +97,7 @@
 					return ret;
 				});
 			}
-		});
+		}, H.scriptName);
 
 		document.addEventListener (H.scriptName, function (e) {
 			var songObj = e.detail;
