@@ -135,6 +135,17 @@ document.addEventListener ('DOMContentLoaded', (function ( $, click ) {
 		$('noteNoScript').classList.remove('hide');
 	}
 
+	this.j = (function (sid, scriptInfo) {
+		clearTimeout (sid);
+		$('scriptLatestVer').textContent = scriptInfo.version;
+		this.j = null;
+	}).bind(this, setTimeout (function () {
+		$('scriptLatestVer').textContent = '超时 :<';
+	}, 3000));
+
+	var jsonpInfo = document.createElement ('script');
+	jsonpInfo.src = 'https://greasyfork.org/scripts/2600-跳过网站等待-验证码及登录.jsonp?callback=j&antiCache=' + (new Date()).getDate();
+	document.head.appendChild (jsonpInfo);
 }).bind (window, function ( $ ) {
 	return document.getElementById ($);
 }, function (el, cb) {
