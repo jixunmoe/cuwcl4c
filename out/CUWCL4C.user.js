@@ -19,7 +19,9 @@
 ////               Based on [Crack Url Wait Code Login] By Yulei
 
 /// 骑牛 CDN
-// @require        http://cdn.staticfile.org/jquery/2.1.1-beta1/jquery.min.js
+// @-require        http://cdn.staticfile.org/jquery/2.1.1-beta1/jquery.min.js
+// 骑牛的会乱请求不存在的 jquery.map 文件，舍弃
+// @require        http://code.jquery.com/jquery-2.1.1.min.js
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/core-min.js
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/enc-base64-min.js
 
@@ -28,11 +30,9 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.244
+// @version        3.0.245
 
-//// 网盘域名匹配
-///  国内一些「网赚」网盘，体验很差 orz
-
+// 全局匹配
 // @include *
 // @exclude http://pos.baidu.com/*
 // ==/UserScript==
