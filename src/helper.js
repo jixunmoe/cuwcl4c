@@ -164,7 +164,7 @@ H.merge (H, {
 				}
 			});
 		} + ')("' + namespace + '", "' + foo + '", Function.bind.apply ('
-			+ callback + ', ' + JSON.stringify ([].slice.call (arguments, 3)) + ');';
+			+ callback + ', ' + JSON.stringify ([].slice.call (arguments, 3)) + '));';
 		document.head.appendChild (hookReq);
 		return hookReq;
 	},
@@ -186,7 +186,7 @@ H.merge (H, {
 				}
 			});
 		} + ')("' + namespace + '", "' + foo + '", Function.bind.apply ('
-			+ callback + ', ' + JSON.stringify ([].slice.call (arguments, 2)) + ');';
+			+ callback + ', ' + JSON.stringify ([].slice.call (arguments, 2)) + '));';
 		document.head.appendChild (hookDef);
 		return hookDef;
 	},
