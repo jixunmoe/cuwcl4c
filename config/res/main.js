@@ -136,9 +136,11 @@ document.addEventListener ('DOMContentLoaded', (function ( $, click ) {
 	}
 
 	this.j = (function (sid, scriptInfo) {
+		this.j = null;
 		clearTimeout (sid);
 		$('scriptLatestVer').textContent = scriptInfo.version;
-		this.j = null;
+		if (this.rScriptVersion && this.rScriptVersion !== scriptInfo.version)
+			$('updateLink').classList.remove ('hide');
 	}).bind(this, setTimeout (function () {
 		$('scriptLatestVer').textContent = '超时 :<';
 	}, 3000));
