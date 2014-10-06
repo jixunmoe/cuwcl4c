@@ -12,16 +12,16 @@
 		});
 
 		H.waitUntil ('KISSY.use', function () {
-			unsafeExec (function () {
+			unsafeExec (function (scriptName) {
 				window.KISSY.use ('page/mods/player', function (_KISSY, mPlayer) {
 					var _setMusicInfo = mPlayer.prototype.setMusicInfo;
 					mPlayer.prototype.setMusicInfo = function (songObj) {
 						this.isVIP = true;
-						document.dispatchEvent (new CustomEvent (H.scriptName + '-dlByObj', { detail: JSON.parse (songObj) }));
+						document.dispatchEvent (new CustomEvent (scriptName + '-dlByObj', { detail: JSON.parse (songObj) }));
 						return _setMusicInfo.apply (this, arguments);
 					};
 				});
-			});
+			}, H.scriptName);
 		});
 
 		document.addEventListener (H.scriptName + '-dlById', function (e) {
