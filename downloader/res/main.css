@@ -108,3 +108,8 @@ code:before, code:after {
 .p-no-gap > p {
 	margin: .5em 0 0;
 }
+
+img {
+	padding: 2px;
+	background: #ddd;
+}
