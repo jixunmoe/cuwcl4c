@@ -1,4 +1,6 @@
 document.addEventListener ('DOMContentLoaded', (function ( $, click ) {
+setTimeout (function () {
+
 	this.configPageLoaded = true;
 
 	var msgBox = $('opLog');
@@ -148,6 +150,8 @@ document.addEventListener ('DOMContentLoaded', (function ( $, click ) {
 	var jsonpInfo = document.createElement ('script');
 	jsonpInfo.src = 'https://greasyfork.org/scripts/2600-跳过网站等待-验证码及登录.jsonp?callback=j&antiCache=' + (new Date()).getDate();
 	document.head.appendChild (jsonpInfo);
+
+}.bind(this), 50);
 }).bind (window, function ( $ ) {
 	return document.getElementById ($);
 }, function (el, cb) {
