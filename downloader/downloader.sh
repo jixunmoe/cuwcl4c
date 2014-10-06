@@ -3,7 +3,9 @@
 # CUWCL4C URI downloader
 cd $dlDir
 
-IFS='|' read -a args <<< "$1"
+# URLDecode: http://stackoverflow.com/a/6251482
+rawUrl=$(echo -e "$(echo "$1" | sed 'y/+/ /; s/%/\\x/g')")
+IFS='|' read -a args <<< "$rawUrl"
 
 uriVer="${args[1]}"
 if [ '1' != "$uriVer" ]; then {

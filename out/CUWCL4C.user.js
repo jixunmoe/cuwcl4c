@@ -28,7 +28,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.242
+// @version        3.0.243
 
 //// 网盘域名匹配
 ///  国内一些「网赚」网盘，体验很差 orz
@@ -1297,40 +1297,39 @@ H.extract(function () { /*
 	host: 'y.qq.com',
 	noSubHost: true,
 
-	onStart: function () {
-		H.injectStyle ( /* Resource: com.qq.y.dl.css */
+	css: /* Resource: com.qq.y.dl.css */
 H.extract(function () { /*
 .m_player .bar_op {
 	left:  230px;
 	width: 310px;
 }
 
-.next_bt.jx_dl_bt {
+.jx_dl_bt {
 	transform: rotate (90deg);
 }
 
-#jx_ddl {
+.jx_dl_bt > a {
 	width:   100%;
 	height:  100%;
 	display: block;
 	outline: 0 !important;
 }
-*/}) );
-	},
-
+*/}),
 	onBody: function () {
 		H.waitUntil ('MUSIC.module.webPlayer.interFace.getSongUrl', function () {
-			$('<strong>')
-				.addClass ('next_bt jx_dl_bt')
-				.insertAfter ('.next_bt');
+			var dlBtn = $('<a>')
+				.attr('title', '播放音乐, 即刻下载')
+				.appendTo (
+					$('<strong>')
+						.addClass ('next_bt jx_dl_bt')
+						.insertAfter ('.next_bt')
+				);
 
-			var dlBtn = $('<a>').attr('title', '播放音乐, 即刻下载');
-
-			unsafeExec (function () {
+			unsafeExec (function (scriptName) {
 				var oldGetSong = window.MUSIC.module.webPlayer.interFace.getSongUrl;
 
 				window.MUSIC.module.webPlayer.interFace.getSongUrl = function (songObj, cb) {
-					document.dispatchEvent ( new CustomEvent (H.scriptName, {detail: {
+					document.dispatchEvent ( new CustomEvent (scriptName, {detail: {
 						mp3: 'http://stream%(stream).qqmusic.qq.com/%(sid).mp3'.jstpl_format({
 							stream: parseInt(songObj.mstream, 10) + 10,
 							sid: parseInt(songObj.mid, 10) + 30000000
@@ -1340,7 +1339,7 @@ H.extract(function () { /*
 
 					return oldGetSong.apply (this, arguments);
 				};
-			});
+			}, H.scriptName);
 
 			document.addEventListener (H.scriptName, function (e) {
 				var songObj = e.detail;
