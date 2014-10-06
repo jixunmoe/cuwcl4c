@@ -18,10 +18,10 @@
 // @copyright      2014+, Yulei, Mod by Jixun.
 ////               Based on [Crack Url Wait Code Login] By Yulei
 
-/// 骑牛 CDN
-// @-require        http://cdn.staticfile.org/jquery/2.1.1-beta1/jquery.min.js
-// 骑牛的会乱请求不存在的 jquery.map 文件，舍弃
+// 骑牛的会乱请求不存在的 jquery.map 文件，改用官网的
 // @require        http://code.jquery.com/jquery-2.1.1.min.js
+
+/// 骑牛 CDN
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/core-min.js
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/enc-base64-min.js
 

@@ -18,10 +18,10 @@
 // @copyright      2014+, Yulei, Mod by Jixun.
 ////               Based on [Crack Url Wait Code Login] By Yulei
 
-/// 骑牛 CDN
-// @-require        http://cdn.staticfile.org/jquery/2.1.1-beta1/jquery.min.js
-// 骑牛的会乱请求不存在的 jquery.map 文件，舍弃
+// 骑牛的会乱请求不存在的 jquery.map 文件，改用官网的
 // @require        http://code.jquery.com/jquery-2.1.1.min.js
+
+/// 骑牛 CDN
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/core-min.js
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/enc-base64-min.js
 
@@ -30,7 +30,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.245
+// @version        3.0.246
 
 // 全局匹配
 // @include *
@@ -862,15 +862,11 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 {
 	name: '百度盘免下载管家',
 	host: ['yun.baidu.com', 'pan.baidu.com'],
-	path: function () {
-		return !H.beginWith (location.pathname, '/disk/home');
-	},
-	onStart: function () {
-		Object.defineProperties (unsafeWindow.navigator, {
-			platform: {
-				value: 'Jixun v1.0; Powered by UserScript',
-				writable: false
-			}
+
+	onBody: function () {
+		var service = require ('common:widget/commonService/commonService.js');
+		service.getWidgets ('common:widget/downloadManager/service/downloadCommonUtil.js', function (util) {
+			util.isPlatformWindows = function () { return false; };
 		});
 	}
 },
