@@ -30,7 +30,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.250
+// @version        3.0.251
 
 // 全局匹配
 // @include *
@@ -179,6 +179,10 @@ H.config = H.merge ({
 
 H.merge (H, {
 	hookRequire: function (namespace, foo, callback) {
+		// The first one is `this`, so not going to be used.
+		var args = [].slice.call (arguments, 2);
+		args[0] = null;
+
 		var hookReq = createElement ('script');
 		hookReq.textContent = ';(' + function (namespace, foo, custom) {
 			var $ns, $foo;
@@ -205,12 +209,16 @@ H.merge (H, {
 				}
 			});
 		} + ')("' + namespace + '", "' + foo + '", Function.bind.apply ('
-			+ callback + ', ' + JSON.stringify ([].slice.call (arguments, 3)) + '));';
+			+ callback + ', ' + JSON.stringify (args) + '));';
 		document.head.appendChild (hookReq);
 		return hookReq;
 	},
 
 	hookDefine: function (fooName, callback) {
+		// The first one is `this`, so not going to be used.
+		var args = [].slice.call (arguments, 1);
+		args[0] = null;
+
 		var hookDef = createElement ('script');
 		hookDef.textContent = ';(' + function (fooName, custom) {
 			var $define;
@@ -227,7 +235,7 @@ H.merge (H, {
 				}
 			});
 		} + ')("' + namespace + '", "' + foo + '", Function.bind.apply ('
-			+ callback + ', ' + JSON.stringify ([].slice.call (arguments, 2)) + '));';
+			+ callback + ', ' + JSON.stringify (args) + '));';
 		document.head.appendChild (hookDef);
 		return hookDef;
 	},
