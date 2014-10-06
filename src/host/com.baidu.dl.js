@@ -3,9 +3,13 @@
 	host: ['yun.baidu.com', 'pan.baidu.com'],
 
 	onBody: function () {
-		var service = require ('common:widget/commonService/commonService.js');
-		service.getWidgets ('common:widget/downloadManager/service/downloadCommonUtil.js', function (util) {
-			util.isPlatformWindows = function () { return false; };
+		H.waitUntil ('require', function () {
+			unsafeExec (function () {
+				var service = require ('common:widget/commonService/commonService.js');
+				service.getWidgets ('common:widget/downloadManager/service/downloadCommonUtil.js', function (util) {
+					util.isPlatformWindows = function () { return false; };
+				});
+			});
 		});
 	}
 }

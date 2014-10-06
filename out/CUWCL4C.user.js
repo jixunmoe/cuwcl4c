@@ -30,7 +30,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.246
+// @version        3.0.247
 
 // 全局匹配
 // @include *
@@ -864,9 +864,13 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	host: ['yun.baidu.com', 'pan.baidu.com'],
 
 	onBody: function () {
-		var service = require ('common:widget/commonService/commonService.js');
-		service.getWidgets ('common:widget/downloadManager/service/downloadCommonUtil.js', function (util) {
-			util.isPlatformWindows = function () { return false; };
+		H.waitUntil ('require', function () {
+			unsafeExec (function () {
+				var service = require ('common:widget/commonService/commonService.js');
+				service.getWidgets ('common:widget/downloadManager/service/downloadCommonUtil.js', function (util) {
+					util.isPlatformWindows = function () { return false; };
+				});
+			});
 		});
 	}
 },
