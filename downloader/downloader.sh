@@ -62,4 +62,4 @@ echo;
 
 curl "$dlAddress" -H 'accept-encoding: gzip,deflate' -H 'accept-language: en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4' -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/37.0.2062.120 Chrome/37.0.2062.120 Safari/537.36' -H 'accept: */*' -H 'cache-control: max-age=0' -H "referer: $reference" --compressed "$outCommand" $continueFlag
 
-notify-send "Downloaderixun" "Finished downloading $fileName" -t 5000 -u low
+notify-send "Downloader" "Finished downloading $fileName" -t 5000 -u low
