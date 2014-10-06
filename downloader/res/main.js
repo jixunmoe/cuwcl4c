@@ -3,14 +3,14 @@ HTMLElement.prototype.findAll = HTMLElement.prototype.querySelectorAll;
 
 document.addEventListener ('DOMContentLoaded', function () {
 	var lenStep = 20;
-	[].forEach.call (document.getElementsByClassName('explain'), function (explain) {
+	[].forEach.call (document.getElementsByClassName('breakdown'), function (breakdown) {
 		var that = {};
-		that.canvas = explain.find ('.drawing');
-		that.info   = explain.find ('.info');
-		that.raw    = explain.find ('.raw');
+		that.canvas = breakdown.find ('.drawing');
+		that.info   = breakdown.find ('.info');
+		that.raw    = breakdown.find ('.raw');
 
 		that.paint  = that.canvas.getContext('2d');
-		that.canvas.width = explain.offsetWidth;
+		that.canvas.width = breakdown.offsetWidth;
 		that.canvas.height = 150;
 
 		var xSrcOffset = -that.info.offsetLeft;
@@ -52,7 +52,6 @@ document.addEventListener ('DOMContentLoaded', function () {
 				} else {
 					c.classList.remove ('active');
 				}
-				
 			});
 
 		};
@@ -73,6 +72,9 @@ document.addEventListener ('DOMContentLoaded', function () {
 		that.raw .addEventListener ('mouseout', handleMouseOut);
 		that.info.addEventListener ('mouseout', handleMouseOut);
 
-
+		[].map.call (document.body.findAll ('pre.render'), function (pre) {
+			pre.textContent = pre.textContent.trim ();
+			hljs.highlightBlock (pre);
+		});
 	}.bind (window));
 }, false);

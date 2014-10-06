@@ -44,21 +44,21 @@ code:before, code:after {
 }
 
 
-.explain > .info > span {
+.breakdown > .info > span {
 	padding: 0.2em 1.5em;
 	border-bottom: 2px solid;
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
 }
-.explain > .info > span:not(:last-child) {
+.breakdown > .info > span:not(:last-child) {
 	margin-right: 1em;
 }
-.explain > .info > span:not(.active),
-.explain > .raw  > span:not(.active) {
+.breakdown > .info > span:not(.active),
+.breakdown > .raw  > span:not(.active) {
 	opacity: 0.5;
 }
-.explain > .info > span,
-.explain > .raw  > span {
+.breakdown > .info > span,
+.breakdown > .raw  > span {
 	transition: opacity .5s;
 }
 
@@ -66,41 +66,54 @@ canvas {
 	overflow: hidden;
 }
 
-.explain > .raw  {
+.breakdown > .raw  {
 	font-size: 0;
 }
 
-.explain > .raw  > span {
+.breakdown > .raw  > span {
 	font-size: 1rem;
 }
 
-.explain > .raw  > span:not(:last-child) {
+.breakdown > .raw  > span:not(:last-child) {
 	padding-right: 1em;
 }
 
 
-.explain .header {
+.breakdown .header {
 	color: red;
 	border-bottom-color: red;
 }
 
-.explain .split {
+.breakdown .split {
 	color: blue;
 	border-bottom-color: blue;
 }
 
-.explain .ver {
+.breakdown .ver {
 	color: green;
 	border-bottom-color: green;
 }
 
-.explain .url {
+.breakdown .url {
 	color: purple;
 	border-bottom-color: purple;
 }
 
-.explain .ref {
+.breakdown .ref {
 	color: orange;
 	border-bottom-color: orange;
 }
 
+
+
+.blackout:not(:hover) {
+	color: black;
+	background-color: black;
+	transition: color .3s, background-color .5s;
+}
+
+
+
+.p-no-gap > p {
+	margin: .5em 0 0;
+}

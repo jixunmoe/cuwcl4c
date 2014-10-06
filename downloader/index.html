@@ -4,32 +4,63 @@
 	<meta charset="UTF-8">
 	<title>cuwcl4c:// 专用下载器</title>
 	<link rel="stylesheet" href="./res/main.css">
+	<link rel="stylesheet" href="//yandex.st/highlightjs/8.2/styles/xcode.min.css">
+	<script src="//yandex.st/highlightjs/8.2/highlight.min.js"></script>
 	<script src="./res/main.js"></script>
 </head>
-<body>
+<body><main>
 	<h1>关于这个协议</h1>
-	<p><code>cuwcl4c://</code> 是一个用于方便<del>盗链</del>下载网络上的文件到指定文件而创建的协议。</p>
-	<p>该协议完全开放，任何人都可以提交改进方案。</p>
+	<section class="p-no-gap">
+		<p><code>cuwcl4c://</code> 是一个用于方便<span class="blackout">盗链</span>下载网络上的文件到指定文件而创建的协议。</p>
+		<p>该协议完全开放，任何人都可以提交改进方案。</p>
 
-	<!-- Inspired by adblocker doc -->
-	<div class="explain">
-		<div class="raw mono">
-			<span class="header">cuwcl4c://</span>
-			<span class="split">|</span>
-			<span class="ver">1</span>
-			<span class="split">|</span>
-			<span class="url">http://example.com/dl.php?file.zip</span>
-			<span class="split">|</span>
-			<span class="ref">http://dl.example.com/</span>
+		<!-- Inspired by adblocker doc -->
+		<div class="breakdown">
+			<div class="raw mono">
+				<span class="header">cuwcl4c://</span>
+				<span class="split">|</span>
+				<span class="ver">1</span>
+				<span class="split">|</span>
+				<span class="url">http://example.com/dl.php?file.zip</span>
+				<span class="split">|</span>
+				<span class="ref">http://dl.example.com/</span>
+			</div>
+			<canvas class="drawing"></canvas>
+			<div class="info">
+				<span class="header">协议名称</span>
+				<span class="split">分隔符</span>
+				<span class="ver">协议版本</span>
+				<span class="url">下载地址</span>
+				<span class="ref">引用来源</span>
+			</div>
 		</div>
-		<canvas class="drawing"></canvas>
-		<div class="info">
-			<span class="header">协议名称</span>
-			<span class="split">分隔符</span>
-			<span class="ver">协议版本</span>
-			<span class="url">下载地址</span>
-			<span class="ref">引用来源</span>
-		</div>
-	</div>
-</body>
+
+		<p>其中，协议版本将内嵌至用户脚本及下载器。</p>
+
+	</section>
+
+
+	<h1>下载器</h1>
+	<section class="p-no-gap">
+		<p>目前官方只有使用<code>bash</code>脚本写的一个简单的下载器，并安装至<code>/opt/cuwcl4c</code>目录下。</p>
+		<p>依赖项分别为 <code>bash</code>、<code>curl</code>。其他的 Shell 可能能用，但是我没测试 :3</p>
+		<p>我的测试环境为 <code>Linux Mint 17</code>，<code>Ubuntu</code> 用户用起来应该没问题。</p>
+	</section>
+
+	<h2>安装</h2>
+	<section class="p-no-gap">
+		<p>在控制台执行下述脚本即可:</p>
+		<pre class="render">
+tmpDir=/tmp/cuw-setup
+mkdir -p "$tmpDir" && cd "$_";
+curl -O https://raw.githubusercontent.com/JixunMoe/cuwcl4c/master/downloader/installScript.sh \
+-O https://raw.githubusercontent.com/JixunMoe/cuwcl4c/master/downloader/downloader.sh
+chmod +x downloader.sh installScript.sh
+sudo ./installScript.sh
+cd ~/ && rm -r "$tmpDir"
+		</pre>
+		<p>安装过程中会询问您的 <code>root</code> 管理员密码 (改成 <code>sudo</code> 会好些?)</p>
+	</section>
+
+</main></body>
 </html>
