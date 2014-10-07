@@ -3,6 +3,7 @@
 	host: 'www.xiami.com',
 	noSubHost: true,
 	dl_icon: true,
+	css: <% ~com.xiami.fm.css %>,
 
 	onStart: function () {
 		var that = this;
@@ -31,15 +32,9 @@
 			});
 		}, false);
 
-		that.dlBtn = $('<a>').css ({
-			position: 'absolute',
-			right: 99,
-			width: 18,
-			height: 18,
-			color: '#ddd',
-			fontSize: 18
-		}).addClass (H.defaultDlIcon)
-		.attr('title', '等待获取音乐信息…');
+		that.dlBtn = $('<a>')
+			.addClass (H.defaultDlIcon)
+			.attr('title', '等待获取音乐信息…');
 
 		document.addEventListener (H.scriptName + '-dlByObj', function (e) {
 			var songObj = e.detail;

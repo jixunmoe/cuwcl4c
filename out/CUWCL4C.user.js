@@ -31,7 +31,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.259
+// @version        3.0.260
 
 // 全局匹配
 // @include *
@@ -1592,6 +1592,24 @@ H.extract(function () { /*
 	host: 'www.xiami.com',
 	noSubHost: true,
 	dl_icon: true,
+	css: /* Resource: com.xiami.fm.css */
+H.extract(function () { /*
+-- xiami FM player css
+
+.jx_dl {
+	position: 'absolute';
+	color: '#ddd';
+	right: 99px;
+	width: 18px;
+	height: 18px;
+	font-size: 18px;
+	transition: color .3s;
+}
+
+.jx_dl:hover {
+	color: #aaa;
+}
+*/}),
 
 	onStart: function () {
 		var that = this;
@@ -1620,15 +1638,9 @@ H.extract(function () { /*
 			});
 		}, false);
 
-		that.dlBtn = $('<a>').css ({
-			position: 'absolute',
-			right: 99,
-			width: 18,
-			height: 18,
-			color: '#ddd',
-			fontSize: 18
-		}).addClass (H.defaultDlIcon)
-		.attr('title', '等待获取音乐信息…');
+		that.dlBtn = $('<a>')
+			.addClass (H.defaultDlIcon)
+			.attr('title', '等待获取音乐信息…');
 
 		document.addEventListener (H.scriptName + '-dlByObj', function (e) {
 			var songObj = e.detail;
