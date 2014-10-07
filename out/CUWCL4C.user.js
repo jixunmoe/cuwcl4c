@@ -31,7 +31,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.260
+// @version        3.0.261
 
 // 全局匹配
 // @include *
@@ -1597,8 +1597,8 @@ H.extract(function () { /*
 -- xiami FM player css
 
 .jx_dl {
-	position: 'absolute';
-	color: '#ddd';
+	position: absolute;
+	color: #ddd;
 	right: 99px;
 	width: 18px;
 	height: 18px;
