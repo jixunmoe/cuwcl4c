@@ -2,6 +2,7 @@
 	name: '虾米音乐',
 	host: 'www.xiami.com',
 	noSubHost: true,
+	dl_icon: true,
 
 	onStart: function () {
 		var that = this;
@@ -35,7 +36,7 @@
 			right: 99,
 			width: 18,
 			height: 18
-		}).addClass ('icon-download')
+		}).addClass (H.defaultDlIcon)
 		.attr('title', '等待获取音乐信息…');
 
 		document.addEventListener (H.scriptName + '-dlByObj', function (e) {

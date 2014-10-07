@@ -5,10 +5,13 @@ var H = {
 	scriptName: 'CUWCL4C',
 	scriptHome: 'https://greasyfork.org/zh-CN/scripts/2600',
 	reportUrl:  'https://greasyfork.org/forum/post/discussion?Discussion/ScriptID=2600',
+
 	version:    GM_info.script.version,
 	currentUrl: location.href.split ('#')[0],
 	lowerHost:  location.hostname.toLowerCase(),
 	directHost: location.hostname.match(/\w+\.?\w+?$/)[0].toLowerCase(),
+
+	defaultDlIcon: 'jx_dl',
 
 	merge: function (parent) {
 		if (arguments.length < 2)

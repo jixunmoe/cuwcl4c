@@ -31,7 +31,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.253
+// @version        3.0.255
 
 // 全局匹配
 // @include *
@@ -47,10 +47,13 @@ var H = {
 	scriptName: 'CUWCL4C',
 	scriptHome: 'https://greasyfork.org/zh-CN/scripts/2600',
 	reportUrl:  'https://greasyfork.org/forum/post/discussion?Discussion/ScriptID=2600',
+
 	version:    GM_info.script.version,
 	currentUrl: location.href.split ('#')[0],
 	lowerHost:  location.hostname.toLowerCase(),
 	directHost: location.hostname.match(/\w+\.?\w+?$/)[0].toLowerCase(),
+
+	defaultDlIcon: 'jx_dl',
 
 	merge: function (parent) {
 		if (arguments.length < 2)
@@ -1588,6 +1591,7 @@ H.extract(function () { /*
 	name: '虾米音乐',
 	host: 'www.xiami.com',
 	noSubHost: true,
+	dl_icon: true,
 
 	onStart: function () {
 		var that = this;
@@ -1621,7 +1625,7 @@ H.extract(function () { /*
 			right: 99,
 			width: 18,
 			height: 18
-		}).addClass ('icon-download')
+		}).addClass (H.defaultDlIcon)
 		.attr('title', '等待获取音乐信息…');
 
 		document.addEventListener (H.scriptName + '-dlByObj', function (e) {
@@ -1987,8 +1991,7 @@ for (var i = sites.length; i--; ) {
 		}
 
 		// No matching host name
-		if (!hostMatch)
-			continue;
+		if (!hostMatch) continue;
 	}
 
 	// Check against pathname detect
@@ -2028,6 +2031,28 @@ for (var i = sites.length; i--; ) {
 			H.injectStyle.call  (styleBlock, site.css);
 		else if (site.css && site.css.length)
 			H.injectStyle.apply (styleBlock, site.css);
+
+		// 下载按钮
+		if (site.dl_icon) {
+			if (typeof site.dl_icon != 'string')
+				site.dl_icon = H.defaultDlIcon;
+
+			H.injectStyle.apply (styleBlock, H.sprintf(/* Resource: AA.dl_btn.css */
+H.extract(function () { /*
+@font-face {
+	font-family: ccc;
+	src: url('http://jixunmoe.github.io/cuwcl4c/res/dl_icon.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.%s::before {
+	font-family: ccc;
+	content: "A";
+	padding-right: .5em;
+}
+*/}), site.dl_icon));
+		}
 
 		site.styleBlock = styleBlock;
 	}

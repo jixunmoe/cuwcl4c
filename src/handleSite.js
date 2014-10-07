@@ -81,9 +81,9 @@ for (var i = sites.length; i--; ) {
 		// 下载按钮
 		if (site.dl_icon) {
 			if (typeof site.dl_icon != 'string')
-				site.dl_icon = 'jx_dl';
+				site.dl_icon = H.defaultDlIcon;
 
-			H.injectStyle.apply (styleBlock, H.sprintf(<% ~AA.dl_btn.css %>, site.dl_icon));
+			H.injectStyle.call (styleBlock, H.sprintf(<% ~AA.dl_btn.css %>, site.dl_icon));
 		}
 
 		site.styleBlock = styleBlock;
