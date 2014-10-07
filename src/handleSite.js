@@ -37,8 +37,7 @@ for (var i = sites.length; i--; ) {
 		}
 
 		// No matching host name
-		if (!hostMatch)
-			continue;
+		if (!hostMatch) continue;
 	}
 
 	// Check against pathname detect
@@ -78,6 +77,14 @@ for (var i = sites.length; i--; ) {
 			H.injectStyle.call  (styleBlock, site.css);
 		else if (site.css && site.css.length)
 			H.injectStyle.apply (styleBlock, site.css);
+
+		// 下载按钮
+		if (site.dl_icon) {
+			if (typeof site.dl_icon != 'string')
+				site.dl_icon = 'jx_dl';
+
+			H.injectStyle.apply (styleBlock, H.sprintf(<% ~AA.dl_btn.css %>, site.dl_icon));
+		}
 
 		site.styleBlock = styleBlock;
 	}

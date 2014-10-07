@@ -1,0 +1,12 @@
+@font-face {
+	font-family: ccc;
+	src: url('http://jixunmoe.github.io/cuwcl4c/res/dl_icon.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.%s::before {
+	font-family: ccc;
+	content: "A";
+	padding-right: .5em;
+}
