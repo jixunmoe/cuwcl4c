@@ -35,7 +35,9 @@
 			position: 'absolute',
 			right: 99,
 			width: 18,
-			height: 18
+			height: 18,
+			color: '#ddd',
+			fontSize: 18
 		}).addClass (H.defaultDlIcon)
 		.attr('title', '等待获取音乐信息…');
 

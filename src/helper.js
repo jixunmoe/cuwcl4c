@@ -28,7 +28,7 @@ var H = {
 	},
 
 	extract: function (foo) {
-		return foo.toString().match(/\/\*([\s\S]+)\*\//)[1];
+		return foo.toString().match(/\/\*([\s\S]+)\*\//)[1].replace(/\s*--.+/g, '');
 	},
 
 	sFormat: function (sourceStr) {

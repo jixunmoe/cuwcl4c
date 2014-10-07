@@ -31,7 +31,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.255
+// @version        3.0.259
 
 // 全局匹配
 // @include *
@@ -70,7 +70,7 @@ var H = {
 	},
 
 	extract: function (foo) {
-		return foo.toString().match(/\/\*([\s\S]+)\*\//)[1];
+		return foo.toString().match(/\/\*([\s\S]+)\*\//)[1].replace(/\s*--.+/g, '');
 	},
 
 	sFormat: function (sourceStr) {
@@ -1624,7 +1624,9 @@ H.extract(function () { /*
 			position: 'absolute',
 			right: 99,
 			width: 18,
-			height: 18
+			height: 18,
+			color: '#ddd',
+			fontSize: 18
 		}).addClass (H.defaultDlIcon)
 		.attr('title', '等待获取音乐信息…');
 
@@ -2037,11 +2039,12 @@ for (var i = sites.length; i--; ) {
 			if (typeof site.dl_icon != 'string')
 				site.dl_icon = H.defaultDlIcon;
 
-			H.injectStyle.apply (styleBlock, H.sprintf(/* Resource: AA.dl_btn.css */
+			H.injectStyle.call (styleBlock, H.sprintf(/* Resource: AA.dl_btn.css */
 H.extract(function () { /*
 @font-face {
 	font-family: ccc;
-	src: url('http://jixunmoe.github.io/cuwcl4c/res/dl_icon.svg') format('svg');
+	-- Use 'build.font.sh' to build base64 string
+	src: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxmb250IGhvcml6LWFkdi14PSIxNTM2Ij48Zm9udC1mYWNlIHVuaXRzLXBlci1lbT0iMTc5MiIgYXNjZW50PSIxNTM2IiBkZXNjZW50PSItMjU2Ii8+PG1pc3NpbmctZ2x5cGggaG9yaXotYWR2LXg9IjQ0OCIvPjxnbHlwaCB1bmljb2RlPSJBIiBob3Jpei1hZHYteD0iMTY2NCIgZD0iTTEyODAgMTkycTAgMjYgLTE5IDQ1dC00NSAxOXQtNDUgLTE5dC0xOSAtNDV0MTkgLTQ1dDQ1IC0xOXQ0NSAxOXQxOSA0NXpNMTUzNiAxOTJxMCAyNiAtMTkgNDV0LTQ1IDE5dC00NSAtMTl0LTE5IC00NXQxOSAtNDV0NDUgLTE5dDQ1IDE5dDE5IDQ1ek0xNjY0IDQxNnYtMzIwcTAgLTQwIC0yOCAtNjh0LTY4IC0yOGgtMTQ3MnEtNDAgMCAtNjggMjh0LTI4IDY4djMyMHEwIDQwIDI4IDY4dDY4IDI4aDQ2NWwxMzUgLTEzNiBxNTggLTU2IDEzNiAtNTZ0MTM2IDU2bDEzNiAxMzZoNDY0cTQwIDAgNjggLTI4dDI4IC02OHpNMTMzOSA5ODVxMTcgLTQxIC0xNCAtNzBsLTQ0OCAtNDQ4cS0xOCAtMTkgLTQ1IC0xOXQtNDUgMTlsLTQ0OCA0NDhxLTMxIDI5IC0xNCA3MHExNyAzOSA1OSAzOWgyNTZ2NDQ4cTAgMjYgMTkgNDV0NDUgMTloMjU2cTI2IDAgNDUgLTE5dDE5IC00NXYtNDQ4aDI1NnE0MiAwIDU5IC0zOXoiLz48L2ZvbnQ+PC9kZWZzPjwvc3ZnPg==) format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
