@@ -31,7 +31,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.252
+// @version        3.0.253
 
 // 全局匹配
 // @include *
@@ -823,6 +823,8 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 {
 	name: '79 盘',
 	host: '79pan.com',
+
+	fullHost: 'www.79pan.com',
 	onStart: function () {
 		unsafeOverwriteFunctionSafeProxy ({
 			open: tFunc
@@ -832,11 +834,17 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 		H.forceShow.call(H.forceHide ('#code_box', '#down_box2'), '#down_box');
 
 		H.log ('修正网站获取下载地址');
-		if (!/^www\./.test(location.hostname))
-			location.hostname = H.directHost;
+		if (this.fullHost != location.hostname)
+			location.hostname = this.fullHost;
 	},
 	onBody: function () {
-		H.phpDiskAutoRedir();
+		H.waitUntil ('down_file_link', function () {
+			// 强制显示地址
+			unsafeWindow.down_file_link ();
+
+			// 然后跳过去
+			location.href = $('.down_btn').attr('href');
+		});
 	}
 },
 {
@@ -1569,6 +1577,14 @@ H.extract(function () { /*
 	}
 },
 {
+	name: 'VV 网盘',
+	host: 'vvpan.com',
+	hide: ['#code_box', '.talk_show', '.banner_2', '.w_305', '.ad'],
+	onStart: function () {
+		H.phpDiskAutoRedir ();
+	}
+},
+{
 	name: '虾米音乐',
 	host: 'www.xiami.com',
 	noSubHost: true,
@@ -1925,7 +1941,7 @@ div#jx_douban_dl_wrap {
 
 	if (H.config.bUseCustomRules) {
 		try {
-			sites.concat (eval (H.sprintf('[%s\n]', H.config.sCustomRule)));
+			[].splice.apply (sites, [0, 0].concat(eval (H.sprintf('[%s\n]', H.config.sCustomRule))));
 		} catch (e) {
 			H.info ('解析自定义规则时发生错误: %s', e.message);
 		}

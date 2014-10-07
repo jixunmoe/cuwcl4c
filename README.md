@@ -35,6 +35,7 @@
 - 飞速网 - `[rayfile.com]`
 - SongTaste 下载解析 - `[songtaste.com]`
 - 速度盘 - `[sudupan.com]`
+- VV 网盘 - `[vvpan.com]`
 - 虾米音乐 - `[www.xiami.com]`
 - 一木禾网盘 - `[yimuhe.com]`
 - 音悦台下载解析 - `[yinyuetai.com]`

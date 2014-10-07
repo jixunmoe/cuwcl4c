@@ -7,7 +7,7 @@
 
 	if (H.config.bUseCustomRules) {
 		try {
-			sites.concat (eval (H.sprintf('[%s\n]', H.config.sCustomRule)));
+			[].splice.apply (sites, [0, 0].concat(eval (H.sprintf('[%s\n]', H.config.sCustomRule))));
 		} catch (e) {
 			H.info ('解析自定义规则时发生错误: %s', e.message);
 		}
