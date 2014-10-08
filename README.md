@@ -13,6 +13,7 @@
 - 乐盘 - `[lepan.cc, sx566.com]`
 - 威盘 - `[vdisk.cn]`
 - 119g 网盘 - `[d.119g.com]`
+- 网易音乐下载解析 - `[music.163.com]`
 - 一听音乐 - `[www.1ting.com]`
 - 565656 音乐 - `[www.565656.com]`
 - 5sing 下载解析 - `[5sing.com, 5sing.kugou.com]`

@@ -33,7 +33,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.267
+// @version        3.0.269
 
 // 全局匹配
 // @include *

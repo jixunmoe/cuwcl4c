@@ -3,7 +3,7 @@ var fs = require ('fs');
 
 var ret = [];
 fs.readdirSync (modDir).forEach (function (m) {
-	if (m.slice(-3) === '.js') {
+	if (m.slice(-3) === '.js' || m.slice(-7) === '.coffee') {
 		var file = fs.readFileSync (modDir + m).toString ();
 		var name = file.match (/name\s*:\s*'([^']+)/);
 		name = name ? name[1] : m.slice(-3);
