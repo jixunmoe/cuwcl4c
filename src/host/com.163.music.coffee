@@ -13,7 +13,7 @@ onBody: ->
 		.addClass(H.defaultDlIcon)
 		.appendTo($ '.m-playbar .oper')
 
-	H.waitUntil 'nm.m.f.xr.prototype.Al', ->
+	H.waitUntil('nm.m.f.xr.prototype.Al', (->
 		unsafeExec (scriptName) ->
 			_bakPlayerAl = nm.m.f.xr::Al
 			nm.m.f.xr::Al = (songObj) ->
@@ -40,5 +40,6 @@ onBody: ->
 			return
 		).bind(this))
 		return
+	).bind(this))
 	return
 

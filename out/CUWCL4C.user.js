@@ -33,7 +33,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.269
+// @version        3.0.270
 
 // 全局匹配
 // @include *
@@ -683,7 +683,7 @@ H.extract(function () { /*
 */}),
   onBody: function() {
     this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper'));
-    H.waitUntil('nm.m.f.xr.prototype.Al', function() {
+    H.waitUntil('nm.m.f.xr.prototype.Al', (function() {
       unsafeExec(function(scriptName) {
         var _bakPlayerAl;
         _bakPlayerAl = nm.m.f.xr.prototype.Al;
@@ -710,7 +710,7 @@ H.extract(function () { /*
           attr: '下载: ' + songObj.name
         });
       }).bind(this));
-    });
+    }).bind(this));
   }
 }),
 {
