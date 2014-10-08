@@ -33,7 +33,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.271
+// @version        3.0.272
 
 // 全局匹配
 // @include *
@@ -709,7 +709,7 @@ H.extract(function () { /*
         songObj = e.detail;
         this.linkDownload.attr({
           href: H.uri(songObj.url, H.sprintf('%s [%s].mp3', songObj.name, songObj.artist)),
-          attr: '下载: ' + songObj.name
+          title: '下载: ' + songObj.name
         });
       }).bind(this));
     }).bind(this));

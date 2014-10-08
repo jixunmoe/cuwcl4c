@@ -38,7 +38,7 @@ onBody: ->
 			@linkDownload
 				.attr
 					href: H.uri(songObj.url, H.sprintf('%s [%s].mp3', songObj.name, songObj.artist))
-					attr: '下载: ' + songObj.name
+					title: '下载: ' + songObj.name
 			return
 		).bind(this))
 		return
