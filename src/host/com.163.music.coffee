@@ -12,6 +12,8 @@ onBody: ->
 	@linkDownload = $('<a>')
 		.addClass(H.defaultDlIcon)
 		.appendTo($ '.m-playbar .oper')
+		.attr
+			title: '播放音乐, 即刻解析'
 
 	H.waitUntil('nm.m.f.xr.prototype.Al', (->
 		unsafeExec (scriptName) ->

@@ -33,7 +33,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.270
+// @version        3.0.271
 
 // 全局匹配
 // @include *
@@ -682,7 +682,9 @@ H.extract(function () { /*
 }
 */}),
   onBody: function() {
-    this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper'));
+    this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper')).attr({
+      title: '播放音乐, 即刻解析'
+    });
     H.waitUntil('nm.m.f.xr.prototype.Al', (function() {
       unsafeExec(function(scriptName) {
         var _bakPlayerAl;
