@@ -9,9 +9,11 @@
 // @run-at         document-start
 // @name:en        Bypass Wait, Code & Login on Websites
 // @name           跳过网站等待、验证码及登录
+// @name:zh-CN     跳过网站等待、验证码及登录
 // @name:zh-TW     繞過站點等待、識別碼及登錄
 
 // @description       移除各类网站验证码、登录、倒计时及更多!
+// @description:zh-CN 移除各类网站验证码、登录、倒计时及更多!
 // @description:zh-TW 移除各類站點識別碼、登錄、倒計時及更多!
 // @description:en    Remove verify code, login requirement, counting down... and more!
 
@@ -31,7 +33,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.261
+// @version        3.0.267
 
 // 全局匹配
 // @include *
@@ -642,6 +644,75 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 		}
 	}
 },
+({
+
+  /*
+  	网易音乐下载解析 By Jixun
+  	尝试使用 Coffee Script 写
+   */
+  name: '网易音乐下载解析',
+  host: 'music.163.com',
+  noSubHost: true,
+  dl_icon: true,
+  css: /* Resource: com.163.music.dl.css */
+H.extract(function () { /*
+.m-pbar, .m-pbar .barbg {
+	width: 425px;
+}
+
+.m-playbar .play {
+	width: 520px;
+}
+
+.m-playbar .oper {
+	width: 110px;
+}
+
+.jx_dl {
+	text-indent: 0;
+	font-size: 1.5em;
+	margin: 13px 2px 0 0;
+	float: left;
+	color: #ccc;
+	text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em #aaa;
+}
+
+.jx_dl:hover {
+	color: white;
+}
+*/}),
+  onBody: function() {
+    this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper'));
+    H.waitUntil('nm.m.f.xr.prototype.Al', function() {
+      unsafeExec(function(scriptName) {
+        var _bakPlayerAl;
+        _bakPlayerAl = nm.m.f.xr.prototype.Al;
+        nm.m.f.xr.prototype.Al = function(songObj) {
+          var eveSongObj;
+          eveSongObj = {
+            artist: songObj.artists.map(function(artist) {
+              return artist.name;
+            }).join('、'),
+            name: songObj.name,
+            url: songObj.mp3Url
+          };
+          document.dispatchEvent(new CustomEvent(scriptName, {
+            detail: eveSongObj
+          }));
+          _bakPlayerAl.apply(this, arguments);
+        };
+      }, H.scriptName);
+      document.addEventListener(H.scriptName, (function(e) {
+        var songObj;
+        songObj = e.detail;
+        this.linkDownload.attr({
+          href: H.uri(songObj.url, H.sprintf('%s [%s].mp3', songObj.name, songObj.artist)),
+          attr: '下载: ' + songObj.name
+        });
+      }).bind(this));
+    });
+  }
+}),
 {
 	name: '一听音乐',
 	host: ['www.1ting.com'],

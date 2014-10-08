@@ -9,9 +9,11 @@
 // @run-at         document-start
 // @name:en        Bypass Wait, Code & Login on Websites
 // @name           跳过网站等待、验证码及登录
+// @name:zh-CN     跳过网站等待、验证码及登录
 // @name:zh-TW     繞過站點等待、識別碼及登錄
 
 // @description       移除各类网站验证码、登录、倒计时及更多!
+// @description:zh-CN 移除各类网站验证码、登录、倒计时及更多!
 // @description:zh-TW 移除各類站點識別碼、登錄、倒計時及更多!
 // @description:en    Remove verify code, login requirement, counting down... and more!
 
