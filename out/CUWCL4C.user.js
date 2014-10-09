@@ -33,7 +33,7 @@
 
 // @author         jixun66
 // @namespace      http://jixun.org/
-// @version        3.0.272
+// @version        3.0.277
 
 // 全局匹配
 // @include *
@@ -684,12 +684,14 @@ H.extract(function () { /*
   onBody: function() {
     this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper')).attr({
       title: '播放音乐, 即刻解析'
+    }).click(function(e) {
+      e.stopPropagation();
     });
     H.waitUntil('nm.m.f.xr.prototype.Al', (function() {
       unsafeExec(function(scriptName) {
         var _bakPlayerAl;
         _bakPlayerAl = nm.m.f.xr.prototype.Al;
-        nm.m.f.xr.prototype.Al = function(songObj) {
+        return nm.m.f.xr.prototype.Al = function(songObj) {
           var eveSongObj;
           eveSongObj = {
             artist: songObj.artists.map(function(artist) {

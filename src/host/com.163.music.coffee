@@ -8,12 +8,16 @@ host: 'music.163.com',
 noSubHost: true,
 dl_icon: true,
 css: `<% ~com.163.music.dl.css %>`,
+
 onBody: ->
 	@linkDownload = $('<a>')
 		.addClass(H.defaultDlIcon)
 		.appendTo($ '.m-playbar .oper')
 		.attr
 			title: '播放音乐, 即刻解析'
+		.click (e)->
+			e.stopPropagation()
+			return
 
 	H.waitUntil('nm.m.f.xr.prototype.Al', (->
 		unsafeExec (scriptName) ->
@@ -28,7 +32,6 @@ onBody: ->
 
 				_bakPlayerAl.apply this, arguments
 				return
-			return
 		, H.scriptName
 
 		# 接收文件数据
