@@ -19,7 +19,7 @@
 
 	try {
 		GM_registerMenuCommand (H.sprintf('配置 %s[%s]', H.scriptName, H.version), function () {
-			GM_openInTab('http://jixunmoe.github.io/cuwcl4c/config/', false);
+			GM_openInTab('https://jixunmoe.github.io/cuwcl4c/config/', false);
 		});
 
 		H.log ('onStart 准备阶段 :: 开始');

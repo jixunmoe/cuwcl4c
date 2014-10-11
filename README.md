@@ -2,9 +2,11 @@
 
 基于 `简单成就下载 by Yulei`，在此表示感谢。
 
-脚本配置界面：[Github.io](http://jixunmoe.github.io/cuwcl4c/config/)
+脚本配置界面：[Github.io](https://jixunmoe.github.io/cuwcl4c/config/)
 
 脚本安装地址：[GreasyFork (主站)](https://greasyfork.org/zh-CN/scripts/2600)、[GitHub](https://github.com/JixunMoe/cuwcl4c/raw/master/out/CUWCL4C.user.js)
+
+相关源码托管至：[GitHub](https://github.com/JixunMoe/cuwcl4c)
 
 
 ## 自带规则
