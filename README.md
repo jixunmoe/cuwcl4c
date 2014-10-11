@@ -8,6 +8,7 @@
 
 相关源码托管至：[GitHub](https://github.com/JixunMoe/cuwcl4c)
 
+订阅 ABP 规则屏蔽广告: [Simple List](https://jixunmoe.github.io/SimpleList/)
 
 ## 自带规则
 - 脚本配置页面 - `[localhost, jixunmoe.github.io]`
