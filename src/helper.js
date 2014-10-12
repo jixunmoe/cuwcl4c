@@ -64,11 +64,49 @@ var H = {
 	},
 
 	uri: function (url, filename, ref) {
-		if (!H.config.bUseUri)
-			return url;
+		switch (H.config.dUriType) {
+			case 1:
+				return 'cuwcl4c://|1|' + [
+					url,
+					filename.toString().replace(/['"\/\\:|]/g, '_'),
+					(ref || location.href).toString().replace(/#.*/, '')
+				].join('|');
 
-		return 'cuwcl4c://|1|' +
-			[url, filename.toString().replace(/['"\/\\:|]/g, '_'), (ref || location.href).toString().replace(/#.*/, '')].join('|');
+			case 2:
+				return 'aria2://|' + [
+					url,
+					filename.toString().replace(/['"\/\\:|]/g, '_'),
+					(ref || location.href).toString().replace(/#.*/, '')
+				].join('|');
+
+			default:
+				return url;
+		}
+	},
+
+	captureAria: function (el) {
+		var aria2 = new Aria2({
+			auth: {
+				type: H.config.dAria_auth,
+				user: H.config.sAria_user,
+				pass: H.config.sAria_pass
+			},
+			host: H.config.sAria_host,
+			port: H.config.dAria_port
+		});
+		$(el || document.body).click(function (e) {
+			var linkEl = e.target;
+
+			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
+				e.stopPropagation ();
+				var link = linkEl.href.split('|');
+				aria2.addUri ([link[1]], {
+					out: link[2],
+					referer: link[3],
+					dir: H.config.sAria_dir
+				})
+			}
+		});
 	}
 };
 
@@ -111,7 +149,15 @@ H.merge (H, {
 });
 
 H.config = H.merge ({
-	bUseUri: false,
+	dUriType: 0,
+	dAria_auth: 0,
+
+	sAria_user: '',
+	sAria_pass: '',
+	sAria_host: null,
+	dAria_port: 0,
+	sAria_dir: 'D:\\Download\\',
+
 	bUseCustomRules: false,
 	sCustomRule: ''
 }, (function (conf) {
@@ -125,6 +171,10 @@ H.config = H.merge ({
 				switch (name[0]) {
 					case 'b':
 						_conf[name] = _conf[name] == 'on';
+						break;
+
+					case 'd':
+						_conf[name] = parseInt(_conf[name], 10);
 						break;
 
 					// s and default are not parsed.
