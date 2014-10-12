@@ -113,7 +113,8 @@ var H = {
 				aria2.addUri ([link[1]], {
 					out: decodeURIComponent(link[2]),
 					referer: link[3],
-					dir: H.config.sAria_dir
+					dir: H.config.sAria_dir,
+					'user-agent': navigator.userAgent
 				})
 			}
 		});
