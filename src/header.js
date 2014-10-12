@@ -21,7 +21,7 @@
 // @copyright      2014+, Yulei, Mod by Jixun.
 ////               Based on [Crack Url Wait Code Login] By Yulei
 
-// 骑牛的会乱请求不存在的 jquery.map 文件，改用官网的
+// 骑牛的会请求不存在的 jquery.map 文件，改用官网的
 // @require        http://code.jquery.com/jquery-2.1.1.min.js
 
 /// 骑牛 CDN
@@ -29,9 +29,12 @@
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/enc-base64-min.js
 
 /// 兼容 GM 1.x, 2.x
-// @require        https://greasyfork.org/scripts/2599/code/gm2_port_v104.js
+// @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
 
-// @author         jixun66
+/// Aria2 RPC
+// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC.js
+
+// @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
 // @version        3.0.<% #build.js %>
 

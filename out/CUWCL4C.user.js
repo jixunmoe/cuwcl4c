@@ -21,7 +21,7 @@
 // @copyright      2014+, Yulei, Mod by Jixun.
 ////               Based on [Crack Url Wait Code Login] By Yulei
 
-// 骑牛的会乱请求不存在的 jquery.map 文件，改用官网的
+// 骑牛的会请求不存在的 jquery.map 文件，改用官网的
 // @require        http://code.jquery.com/jquery-2.1.1.min.js
 
 /// 骑牛 CDN
@@ -29,11 +29,14 @@
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/enc-base64-min.js
 
 /// 兼容 GM 1.x, 2.x
-// @require        https://greasyfork.org/scripts/2599/code/gm2_port_v104.js
+// @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
 
-// @author         jixun66
+/// Aria2 RPC
+// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC.js
+
+// @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.283
+// @version        3.0.287
 
 // 全局匹配
 // @include *
@@ -117,6 +120,11 @@ var H = {
 				].join('|');
 
 			case 2:
+				// 如果脚本没有手动绑定 Aria 连接
+				// 此处进行全局连接接管
+				if (!H.hasAriaCapture)
+					H.captureAria ();
+
 				return 'aria2://|' + [
 					url,
 					filename.toString().replace(/['"\/\\:|]/g, '_'),
@@ -129,6 +137,11 @@ var H = {
 	},
 
 	captureAria: function (el) {
+		if (H.config.dUriType !== 2)
+			return ;
+
+		H.hasAriaCapture = true;
+
 		var aria2 = new Aria2({
 			auth: {
 				type: H.config.dAria_auth,
@@ -138,14 +151,14 @@ var H = {
 			host: H.config.sAria_host,
 			port: H.config.dAria_port
 		});
-		$(el || document.body).click(function (e) {
+		$(el || document).click(function (e) {
 			var linkEl = e.target;
 
 			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
 				e.stopPropagation ();
 				var link = linkEl.href.split('|');
 				aria2.addUri ([link[1]], {
-					out: link[2],
+					out: decodeURIComponent(link[2]),
 					referer: link[3],
 					dir: H.config.sAria_dir
 				})
@@ -641,6 +654,9 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 				alert ('解析设定值出错!');
 			}
 		});
+	},
+	onBody: function () {
+        H.captureAria(document.body);
 	}
 }
 ,
@@ -737,6 +753,7 @@ H.extract(function () { /*
     }).click(function(e) {
       e.stopPropagation();
     });
+    H.captureAria(this.linkDownload);
     H.waitUntil('nm.m.f.xr.prototype.Al', (function() {
       unsafeExec(function(scriptName) {
         var _bakPlayerAl;

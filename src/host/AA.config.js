@@ -18,5 +18,8 @@
 				alert ('解析设定值出错!');
 			}
 		});
+	},
+	onBody: function () {
+        H.captureAria(document.body);
 	}
 }

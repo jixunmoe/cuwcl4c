@@ -19,6 +19,8 @@ onBody: ->
 			e.stopPropagation()
 			return
 
+	H.captureAria @linkDownload
+
 	H.waitUntil('nm.m.f.xr.prototype.Al', (->
 		unsafeExec (scriptName) ->
 			_bakPlayerAl = nm.m.f.xr::Al

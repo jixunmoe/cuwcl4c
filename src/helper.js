@@ -73,6 +73,11 @@ var H = {
 				].join('|');
 
 			case 2:
+				// 如果脚本没有手动绑定 Aria 连接
+				// 此处进行全局连接接管
+				if (!H.hasAriaCapture)
+					H.captureAria ();
+
 				return 'aria2://|' + [
 					url,
 					filename.toString().replace(/['"\/\\:|]/g, '_'),
@@ -85,6 +90,11 @@ var H = {
 	},
 
 	captureAria: function (el) {
+		if (H.config.dUriType !== 2)
+			return ;
+
+		H.hasAriaCapture = true;
+
 		var aria2 = new Aria2({
 			auth: {
 				type: H.config.dAria_auth,
@@ -94,14 +104,14 @@ var H = {
 			host: H.config.sAria_host,
 			port: H.config.dAria_port
 		});
-		$(el || document.body).click(function (e) {
+		$(el || document).click(function (e) {
 			var linkEl = e.target;
 
 			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
 				e.stopPropagation ();
 				var link = linkEl.href.split('|');
 				aria2.addUri ([link[1]], {
-					out: link[2],
+					out: decodeURIComponent(link[2]),
 					referer: link[3],
 					dir: H.config.sAria_dir
 				})
