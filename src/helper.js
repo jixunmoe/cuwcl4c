@@ -13,6 +13,8 @@ var H = {
 
 	defaultDlIcon: 'jx_dl',
 
+	nop: function () {},
+
 	merge: function (parent) {
 		if (arguments.length < 2)
 			return parent || {};

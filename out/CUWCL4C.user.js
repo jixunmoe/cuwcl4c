@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.290
+// @version        3.0.291
 
 // 全局匹配
 // @include *
@@ -59,6 +59,8 @@ var H = {
 	directHost: location.hostname.match(/\w+\.?\w+?$/)[0].toLowerCase(),
 
 	defaultDlIcon: 'jx_dl',
+
+	nop: function () {},
 
 	merge: function (parent) {
 		if (arguments.length < 2)
