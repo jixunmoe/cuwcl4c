@@ -47,7 +47,6 @@ setTimeout (function () {
 
 		if (ev.keyCode == 13) {
 			var newLine = b.substring (b.lastIndexOf ('\n') + 1, s).match (/^\s*/)[0];
-			console.log ('[%s][%s][%s]', b, newLine, a);
 			pRuleEditor.value = b + '\n' + newLine + a;
 			pRuleEditor.selectionEnd = pRuleEditor.selectionStart = b.length + newLine.length + 1;
 			ev.preventDefault ();
@@ -143,7 +142,6 @@ setTimeout (function () {
 
 	var aria2Config = $('aria2-config');
 	$('main-config').addEventListener ('change', function (e) {
-		console.info ('main-config');
 		toggleShow (aria2Config, configForm.dUriType.value == '2');
 	}, false);
 
