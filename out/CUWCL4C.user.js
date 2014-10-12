@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.294
+// @version        3.0.295
 
 // 全局匹配
 // @include *
@@ -579,9 +579,7 @@ H.merge (H, {
 	phpDiskAutoRedir: function (fCallback){
 		if (!fCallback) {
 			fCallback = document.body ? H.reDirWithRef : function (p) {
-				H.waitUntil('document.body', function () {
-					H.reDirWithRef(p);
-				});
+				H.waitUntil('document.body', H.reDirWithRef.bind(null, p));
 			};
 		}
 

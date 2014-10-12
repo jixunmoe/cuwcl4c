@@ -532,9 +532,7 @@ H.merge (H, {
 	phpDiskAutoRedir: function (fCallback){
 		if (!fCallback) {
 			fCallback = document.body ? H.reDirWithRef : function (p) {
-				H.waitUntil('document.body', function () {
-					H.reDirWithRef(p);
-				});
+				H.waitUntil('document.body', H.reDirWithRef.bind(null, p));
 			};
 		}
 
