@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.293
+// @version        3.0.294
 
 // 全局匹配
 // @include *
@@ -580,7 +580,7 @@ H.merge (H, {
 		if (!fCallback) {
 			fCallback = document.body ? H.reDirWithRef : function (p) {
 				H.waitUntil('document.body', function () {
-					location.pathname = p;
+					H.reDirWithRef(p);
 				});
 			};
 		}

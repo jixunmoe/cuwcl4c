@@ -533,7 +533,7 @@ H.merge (H, {
 		if (!fCallback) {
 			fCallback = document.body ? H.reDirWithRef : function (p) {
 				H.waitUntil('document.body', function () {
-					location.pathname = p;
+					H.reDirWithRef(p);
 				});
 			};
 		}
