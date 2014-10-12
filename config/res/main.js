@@ -96,18 +96,6 @@ setTimeout (function () {
 		}
 	});
 
-	//// Config SAVE and LOAD
-	click ($('btnSaveConfig'), function () {
-		var _conf = {};
-		[].forEach.call (configForm.elements, function (el) {
-			if (el.hasAttribute ('name'))
-				_conf[el.name] = el.value;
-		});
-
-		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: JSON.stringify(_conf) }) );
-		postMessage (this.rScriptVersion ? '设定储存完毕!' : '请先启用脚本!');
-	}.bind(this));
-
 	click ($('btnResetConfig'), function () {
 		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: '{}' }) );
 		postMessage ('正在重设设定…');
@@ -156,6 +144,18 @@ setTimeout (function () {
 		aria2Config.classList[showAria2 ? 'remove' : 'add'] ('hide');
 	}, false);
 
+
+	//// Config SAVE and LOAD
+	click ($('btnSaveConfig'), function () {
+		var _conf = {};
+		[].forEach.call (configForm.elements, function (el) {
+			if (el.hasAttribute ('name') && !_conf.hasOwnProperty(el.name))
+				_conf[el.name] = configForm[el.name].value;
+		});
+
+		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: JSON.stringify(_conf) }) );
+		postMessage (this.rScriptVersion ? '设定储存完毕!' : '请先启用脚本!');
+	}.bind(this));
 
 	if (this.rScriptConfig) {
 		var _conf = JSON.parse (this.rScriptConfig);
