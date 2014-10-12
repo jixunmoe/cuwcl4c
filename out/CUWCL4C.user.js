@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.292
+// @version        3.0.293
 
 // 全局匹配
 // @include *
@@ -577,8 +577,13 @@ H.merge (H, {
 
 	// 网盘地址自动导向 [基于 phpDisk 的网盘]
 	phpDiskAutoRedir: function (fCallback){
-		if (!fCallback)
-			fCallback = document.body ? H.reDirWithRef : function (p) { location.pathname = p };
+		if (!fCallback) {
+			fCallback = document.body ? H.reDirWithRef : function (p) {
+				H.waitUntil('document.body', function () {
+					location.pathname = p;
+				});
+			};
+		}
 
 		var rCheckPath = /\/(file)?(file|view)([\/.\-_].*)/;
 		// Because location.xx = xx does not pass the refer, so we're going to make a dummy form.
