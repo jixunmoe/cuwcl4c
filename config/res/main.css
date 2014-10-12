@@ -55,8 +55,13 @@ h3, h4, h5, h6 {
 }
 
 .mono, code {
+	word-break: break-all;
 	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 	font-size: 85%;
+}
+
+.small {
+	font-size: small;
 }
 
 code {

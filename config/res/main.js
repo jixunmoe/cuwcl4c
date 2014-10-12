@@ -1,4 +1,4 @@
-document.addEventListener ('DOMContentLoaded', (function ( $, click ) {
+document.addEventListener ('DOMContentLoaded', (function ( $, $$, click, toggleShow ) {
 setTimeout (function () {
 	this.configPageLoaded = true;
 
@@ -113,35 +113,38 @@ setTimeout (function () {
 		$('scriptLatestVer').textContent = '超时 :<';
 	}, 3000));
 
-	var toggleEl  = [$('aria2-auth'), $('main-config')];
 	var authUser  = $('blockAuthUser'),
 		authPass  = configForm.elements.sAria_pass,
 		authBlock = $('blockAuthInfo');
-	toggleEl[0].addEventListener ('change', function (e) {
-		var hideUser = false, hidePass = false, passPlaceHolder = '密码';
+	$('aria2-auth').addEventListener ('change', function (e) {
+		var showUser = false, showPass = false, passPlaceHolder = '密码';
 		switch (parseInt(configForm.dAria_auth.value, 10)) {
 			case 0:
-				hideUser = hidePass = true;
 				break;
 
 			case 1:
+				showUser = showPass = true;
 				break;
 
 			case 2:
-				hideUser = true;
+				showPass = true;
 				passPlaceHolder = 'Secret';
 				break;
 		}
 
-		authUser.classList[hideUser ? 'add' : 'remove'] ('hide');
-		authBlock.classList[hideUser && hidePass ? 'add' : 'remove'] ('hide');
+		toggleShow (authUser,  showUser);
+		toggleShow (authBlock, showUser || showPass);
 		authPass.placeholder = passPlaceHolder;
+
+		[].forEach.call($$('[aria-auth]'), function (el) {
+			toggleShow (el, el.getAttribute('aria-auth') == configForm.dAria_auth.value);
+		});
 	});
 
 	var aria2Config = $('aria2-config');
-	toggleEl[1].addEventListener ('change', function (e) {
-		var showAria2 = configForm.dUriType.value == '2';
-		aria2Config.classList[showAria2 ? 'remove' : 'add'] ('hide');
+	$('main-config').addEventListener ('change', function (e) {
+		console.info ('main-config');
+		toggleShow (aria2Config, configForm.dUriType.value == '2');
 	}, false);
 
 
@@ -177,9 +180,21 @@ setTimeout (function () {
 		$('noteNoScript').classList.remove('hide');
 	}
 
-	toggleEl.forEach (function (e) {
-		e.dispatchEvent (new CustomEvent ('change'));
+	var evChange = new CustomEvent ('change');
+	$('main-config').dispatchEvent (evChange);
+	$('aria2-auth') .dispatchEvent (evChange);
+
+	var updCtrl = function (ctrlEdit) {
+		[].map.call ($$('[shown-value="' + ctrlEdit.name + '"]'), function (el) {
+			el.textContent = ctrlEdit.value;
+		});
+	};
+	document.body.addEventListener('keyup', function (e) {
+		if (e.target.name)
+			updCtrl (e.target);
 	});
+
+	[].map.call(configForm.querySelectorAll ('input'), updCtrl);
 
 	var jsonpInfo = document.createElement ('script');
 	jsonpInfo.src = 'https://greasyfork.org/scripts/2600-跳过网站等待-验证码及登录.jsonp?callback=j&antiCache=' + (new Date()).getDate();
@@ -187,6 +202,10 @@ setTimeout (function () {
 }.bind(this), 50);
 }).bind (window, function ( $ ) {
 	return document.getElementById ($);
-}, function (el, cb) {
+}, document.querySelectorAll.bind(document)
+, function (el, cb) {
 	return el.addEventListener ('click', cb, false);
+}, function (el, forceShown) {
+	var needShown = arguments.length > 1 ? forceShown : el.classList.contains ('hide');
+	el.classList[needShown ? 'remove' : 'add'] ('hide');
 }), false);

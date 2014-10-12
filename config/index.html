@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<!-- Highlight.JS -->
+	<link rel="stylesheet" href="ext/github.css">
+	<script async defer src="ext/highlight.js"
+		onload="hljs.configure({languages:['javascript'],tabReplace:'\t'})"></script>
+
 	<meta charset="UTF-8">
 	<title>跳过网站等待、验证码及登录 - 配置</title>
-	<link rel="stylesheet" href="./res/main.css">
-	<link rel="stylesheet" href="http://cdn.staticfile.org/highlight.js/8.2/styles/github.min.css">
+	<link rel="stylesheet" href="res/main.css">
 
-	<script async defer src="https://greasyfork.org/scripts/5266/code/js-beautify.js"></script>
-	<script async defer src="http://cdn.staticfile.org/highlight.js/8.2/highlight.min.js"
-		onload="hljs.configure({languages:['javascript'],tabReplace:'\t'})"></script>
-	<script src="./res/main.js"></script>
+	<script async defer src="//greasyfork.org/scripts/5266/code/js-beautify.js"></script>
+	<script src="res/main.js"></script>
 </head>
 <body>
 	<form class="main" name="config">
@@ -43,7 +45,7 @@
 		</div>
 
 		<section id="aria2-config" class="hide">
-			<h3>Aria2 配置</h3>
+			<h3>Aria2 配置 (<a href="http://aria2.sourceforge.net/" target="_blank">下载</a>)</h3>
 			<div class="option">
 				<h4>验证方式</h4>
 				<section id="aria2-auth">
@@ -69,6 +71,13 @@
 				</p>
 				<p>
 					下载目录: <input type="text" name="sAria_dir">
+				</p>
+
+				<h4>启动 Aria2 后台</h4>
+				<p class="mono small">aria2c --enable-rpc --rpc-listen-all=true --rpc-allow-origin-all
+					<span aria-auth="1">"--rpc-user=<span shown-value="sAria_user"></span>"
+					"--rpc-passwd=<span shown-value="sAria_pass"></span>"</span>
+					<span aria-auth="2">"--rpc-secret=<span shown-value="sAria_pass"></span>"</span>
 				</p>
 			</div>
 
