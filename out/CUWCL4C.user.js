@@ -32,11 +32,11 @@
 // @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
 
 /// Aria2 RPC
-// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC.js
+// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build4.js
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.287
+// @version        3.0.288
 
 // 全局匹配
 // @include *
@@ -160,7 +160,8 @@ var H = {
 				aria2.addUri ([link[1]], {
 					out: decodeURIComponent(link[2]),
 					referer: link[3],
-					dir: H.config.sAria_dir
+					dir: H.config.sAria_dir,
+					'user-agent': navigator.userAgent
 				})
 			}
 		});
