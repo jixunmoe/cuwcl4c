@@ -32,11 +32,11 @@
 // @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
 
 /// Aria2 RPC
-// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build4.js
+// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build5.js
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.291
+// @version        3.0.292
 
 // 全局匹配
 // @include *
@@ -153,6 +153,7 @@ var H = {
 			host: H.config.sAria_host,
 			port: H.config.dAria_port
 		});
+		
 		$(el || document).click(function (e) {
 			var linkEl = e.target;
 

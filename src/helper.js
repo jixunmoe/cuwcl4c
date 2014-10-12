@@ -106,6 +106,7 @@ var H = {
 			host: H.config.sAria_host,
 			port: H.config.dAria_port
 		});
+		
 		$(el || document).click(function (e) {
 			var linkEl = e.target;
 
