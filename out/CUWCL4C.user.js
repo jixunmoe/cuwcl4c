@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.288
+// @version        3.0.289
 
 // 全局匹配
 // @include *
@@ -162,7 +162,16 @@ var H = {
 					referer: link[3],
 					dir: H.config.sAria_dir,
 					'user-agent': navigator.userAgent
-				})
+				}, H.nop, function (r) {
+					var sErrorMsg;
+					if (r.error) {
+						sErrorMsg = H.sprintf ('提交任务发生错误, 错误代码 %s: %s', r.error.code, r.error.message);
+					} else {
+						sErrorMsg = '与 Aria2 后台通信失败, 服务未开启?'
+					}
+
+					alert (H.sprintf('[%s] %s', H.sc, sErrorMsg));
+				});
 			}
 		});
 	}
