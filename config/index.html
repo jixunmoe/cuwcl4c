@@ -4,10 +4,10 @@
 	<meta charset="UTF-8">
 	<title>跳过网站等待、验证码及登录 - 配置</title>
 	<link rel="stylesheet" href="./res/main.css">
-	<link rel="stylesheet" href="//yandex.st/highlightjs/8.2/styles/github.min.css">
+	<link rel="stylesheet" href="https://yandex.st/highlightjs/8.2/styles/github.min.css">
 
 	<script async defer src="https://greasyfork.org/scripts/5266/code/js-beautify.js"></script>
-	<script async defer src="//yandex.st/highlightjs/8.2/highlight.min.js"
+	<script async defer src="https://yandex.st/highlightjs/8.2/highlight.min.js"
 		onload="hljs.configure({languages:['javascript'],tabReplace:'\t'})"></script>
 	<script src="./res/main.js"></script>
 </head>
@@ -21,18 +21,58 @@
 			</span>
 			。
 		</p>
+
 		<h2>脚本配置</h2>
-		<div class="option">
-			<label><input type="checkbox" name="bUseUri" /> 使用 <code>cuwcl4c://</code> 协议的下载地址</label>
+		<div class="option" id="main-config">
+			<label><input type="radio" name="dUriType" value="0" /> 不使用自定义下载协议</label>
+			<p>
+				如果您不希望使用第三方下载工具，请勾选此项。
+			</p>
+
+			<label><input type="radio" name="dUriType" value="1" /> 使用 <code>cuwcl4c://</code> 协议的下载地址</label>
 			<p>
 				如 <a href="cuwcl4c://|1|http://imgsrc.baidu.com/forum/pic/item/508c2f9759ee3d6d9f1decb940166d224e4ade1e.jpg|我读书少 你不要骗我.jpg|http://tieba.baidu.com/p/123456">我读书少 你不要骗我.jpg</a>、<a href="cuwcl4c://|1|http://imgsrc.baidu.com/forum/pic/item/4f93d42a2834349b86403882caea15ce37d3beb5.jpg|挖掘机.gif">挖掘机.gif</a>，可自定义下载文件名。
 			</p>
+
+			<label><input type="radio" name="dUriType" value="2" /> 使用 <code>Aria2 JSON RPC</code> 下载方式</label>
+			<p>
+				如 <a href="aria2://http://imgsrc.baidu.com/forum/pic/item/508c2f9759ee3d6d9f1decb940166d224e4ade1e.jpg|我读书少 你不要骗我.jpg|http://tieba.baidu.com/p/123456">我读书少 你不要骗我.jpg</a>、<a href="aria2://http://imgsrc.baidu.com/forum/pic/item/4f93d42a2834349b86403882caea15ce37d3beb5.jpg|挖掘机.gif">挖掘机.gif</a>。
+				<br />
+				缺陷则是脚本会在页面上等候单击事件，有被原始页面的脚本“截胡”的可能。
+			</p>
 		</div>
+
+		<section id="aria2-config" class="hide">
+			<h3>Aria2 配置</h3>
+			<div class="option">
+				<h4>验证方式</h4>
+				<section id="aria2-auth">
+					<label><input type="radio" name="dAria_auth" value="0" /> 没有验证</label>
+					<label><input type="radio" name="dAria_auth" value="1" /> 用户名 / 密码</label>
+					<label><input type="radio" name="dAria_auth" value="2" /> 密文验证</label>
+				</section>
+
+				<h4>配置信息</h4>
+				http://
+				<span id="blockAuthInfo">
+					<span id="blockAuthUser">
+						<input class="auth" type="text" name="sAria_user" placeholder="用户名">
+						:
+					</span>
+					<input class="auth" type="text" name="sAria_pass" placeholder="密码 / Secret">
+					@ 
+				</span>
+				<input class="auth" type="text" name="sAria_host" placeholder="域名">
+				/jsonrpc
+			</div>
+
+		</section>
+
 		<h2>自定义规则</h2>
 		<div class="option">
 			<label><input type="checkbox" name="bUseCustomRules" /> 启用自定义规则</label>
 			<p>
-				您可以在此填入您自己的规则，您可以参考下属文档: <a href="//api.jquery.com/">jQuery API</a>、<a href="">H 库</a>。<br />
+				您可以在此填入您自己的规则，您可以参考下属文档: <a href="//api.jquery.com/">jQuery API</a>、<a href="https://github.com/JixunMoe/cuwcl4c/blob/master/src/helper.js">H 库</a>。<br />
 				<span class="red">请注意</span>：规则会被脚本<code>eval</code>执行，如果有任何错误将导致所有自定义规则失效。
 			</p>
 

@@ -1,6 +1,5 @@
 document.addEventListener ('DOMContentLoaded', (function ( $, click ) {
 setTimeout (function () {
-
 	this.configPageLoaded = true;
 
 	var msgBox = $('opLog');
@@ -72,7 +71,6 @@ setTimeout (function () {
 			// Don't have a new line or not selected, replace with a tab.
 			pRuleEditor.value = b + '\t' + a;
 			pRuleEditor.selectionEnd = pRuleEditor.selectionStart = ++s;
-			// pRuleEditor.selectionEnd = pRuleEditor.selectionStart;
 		} else {
 			// Indent all selected lines.
 			var bNeedReCalc = false;
@@ -107,8 +105,8 @@ setTimeout (function () {
 		});
 
 		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: JSON.stringify(_conf) }) );
-		postMessage ('设定储存完毕!');
-	});
+		postMessage (this.rScriptVersion ? '设定储存完毕!' : '请先启用脚本!');
+	}.bind(this));
 
 	click ($('btnResetConfig'), function () {
 		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: '{}' }) );
@@ -116,6 +114,48 @@ setTimeout (function () {
 		setTimeout (postMessage, 400, '设定重设完毕, 刷新页面 ..');
 		setTimeout (location.reload.bind(location), 700);
 	});
+
+	this.j = (function (sid, scriptInfo) {
+		this.j = null;
+		clearTimeout (sid);
+		$('scriptLatestVer').textContent = scriptInfo.version;
+		if (this.rScriptVersion && this.rScriptVersion !== scriptInfo.version)
+			$('updateLink').classList.remove ('hide');
+	}).bind(this, setTimeout (function () {
+		$('scriptLatestVer').textContent = '超时 :<';
+	}, 3000));
+
+	var toggleEl  = [$('aria2-auth'), $('main-config')];
+	var authUser  = $('blockAuthUser'),
+		authPass  = configForm.elements.sAria_pass,
+		authBlock = $('blockAuthInfo');
+	toggleEl[0].addEventListener ('change', function (e) {
+		var hideUser = false, hidePass = false, passPlaceHolder = '密码';
+		switch (parseInt(configForm.dAria_auth.value, 10)) {
+			case 0:
+				hideUser = hidePass = true;
+				break;
+
+			case 1:
+				break;
+
+			case 2:
+				hideUser = true;
+				passPlaceHolder = 'Secret';
+				break;
+		}
+
+		authUser.classList[hideUser ? 'add' : 'remove'] ('hide');
+		authBlock.classList[hideUser && hidePass ? 'add' : 'remove'] ('hide');
+		authPass.placeholder = passPlaceHolder;
+	});
+
+	var aria2Config = $('aria2-config');
+	toggleEl[1].addEventListener ('change', function (e) {
+		var showAria2 = configForm.dUriType.value == '2';
+		aria2Config.classList[showAria2 ? 'remove' : 'add'] ('hide');
+	}, false);
+
 
 	if (this.rScriptConfig) {
 		var _conf = JSON.parse (this.rScriptConfig);
@@ -137,20 +177,13 @@ setTimeout (function () {
 		$('noteNoScript').classList.remove('hide');
 	}
 
-	this.j = (function (sid, scriptInfo) {
-		this.j = null;
-		clearTimeout (sid);
-		$('scriptLatestVer').textContent = scriptInfo.version;
-		if (this.rScriptVersion && this.rScriptVersion !== scriptInfo.version)
-			$('updateLink').classList.remove ('hide');
-	}).bind(this, setTimeout (function () {
-		$('scriptLatestVer').textContent = '超时 :<';
-	}, 3000));
+	toggleEl.forEach (function (e) {
+		e.dispatchEvent (new CustomEvent ('change'));
+	});
 
 	var jsonpInfo = document.createElement ('script');
 	jsonpInfo.src = 'https://greasyfork.org/scripts/2600-跳过网站等待-验证码及登录.jsonp?callback=j&antiCache=' + (new Date()).getDate();
 	document.head.appendChild (jsonpInfo);
-
 }.bind(this), 50);
 }).bind (window, function ( $ ) {
 	return document.getElementById ($);

@@ -14,11 +14,28 @@
 }
 
 body, button, input {
-	font-family: 'Ubuntu Light', 'Microsoft JhengHei UI Light', 'Microsoft JhengHei', 'Microsoft YaHei UI', sans-serif;
+	font-family: 'Ubuntu Light', 'Microsoft JhengHei UI Light',
+				 'Microsoft JhengHei', 'Microsoft YaHei UI', sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
 	font-weight: lighter;
+}
+
+h2 {
+	border-bottom: 2px #ccc solid;
+	border-left: 3px blue solid;
+	padding-left: .5em;
+	transition: border-left .2s;
+}
+
+h2:hover {
+	border-left: 6px orange solid;
+}
+
+h3, h4, h5, h6 {
+	margin-top: .5em;
+	margin-bottom: 0;
 }
 
 .main {
@@ -139,4 +156,8 @@ pre:empty {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
+}
+
+input.auth {
+	width: 7em;
 }
