@@ -160,9 +160,14 @@ setTimeout (function () {
 
 	if (this.rScriptConfig) {
 		var _conf = JSON.parse (this.rScriptConfig);
-		
+
 		for (var name in _conf) {
 			if (_conf.hasOwnProperty (name)) {
+				if (!configForm[name]) {
+					console.info ('Obsoleted or not implemented config: %s', name);
+					continue;
+				}
+				
 				switch (name[0]) {
 					case 'b':
 						configForm[name].checked = _conf[name];

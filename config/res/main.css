@@ -27,6 +27,7 @@ h2 {
 	border-left: 3px blue solid;
 	padding-left: .5em;
 	transition: border-left .2s;
+	margin-bottom: 0;
 }
 
 h2:hover {
@@ -165,4 +166,52 @@ pre:empty {
 
 input.auth {
 	width: 7em;
+}
+
+label {
+	cursor: pointer;
+}
+
+label:not(.inline) {
+	padding-bottom: 2px;
+	display: block;
+}
+
+label > input[type="checkbox"],
+label > input[type="radio"] {
+	visibility: hidden;
+	width: 16px;
+	font-family: monospace;
+}
+
+label > input[type="radio"]::before,
+label > input[type="checkbox"]::before {
+	cursor: pointer;
+	content: ' ';
+	display: block;
+	background: url(checkbox.png) no-repeat;
+	width: 16px;
+	height: 17px;
+
+	visibility: visible;
+}
+
+label > input[type="radio"]:checked::before,
+label > input[type="checkbox"]:checked::before {
+	background-position: -15px 0;
+}
+
+label,
+label + p {
+	transition: background-color .3s;
+}
+
+label:hover,
+label:hover + p {
+	background: #ddf;
+}
+
+
+a:hover {
+	background: lightgreen;
 }

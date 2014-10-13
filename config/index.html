@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 	<!-- Highlight.JS -->
-	<link rel="stylesheet" href="ext/github.css">
-	<script async defer src="ext/highlight.js"
+	<link rel="stylesheet" href="../ext/github.css">
+	<script async defer src="../ext/highlight.js"
 		onload="hljs.configure({languages:['javascript'],tabReplace:'\t'})"></script>
 
 	<meta charset="UTF-8">
@@ -26,35 +26,46 @@
 
 		<h2>脚本配置</h2>
 		<div class="option" id="main-config">
-			<label><input type="radio" name="dUriType" value="0" /> 不使用自定义下载协议</label>
-			<p>
-				如果您不希望使用第三方下载工具，请勾选此项。
-			</p>
+			<section>
+				<h3>日志系统</h3>
+				<label><input type="checkbox" name="bDiaplayLog" /> 输出脚本调试日志</label>
+				<p>
+					如果您觉得控制台的输出太乱的话，可以将此项关闭。
+				</p>
+			</section>
 
-			<label><input type="radio" name="dUriType" value="1" /> 使用 <code>cuwcl4c://</code> 协议的下载地址</label>
-			<p>
-				如 <a href="cuwcl4c://|1|http://imgsrc.baidu.com/forum/pic/item/508c2f9759ee3d6d9f1decb940166d224e4ade1e.jpg|我读书少 你不要骗我.jpg|http://tieba.baidu.com/p/123456">我读书少 你不要骗我.jpg</a>、<a href="cuwcl4c://|1|http://imgsrc.baidu.com/forum/pic/item/4f93d42a2834349b86403882caea15ce37d3beb5.jpg|挖掘机.gif">挖掘机.gif</a>，可自定义下载文件名。
-			</p>
+			<section>
+				<h3>下载协议</h3>
+				<label><input type="radio" name="dUriType" value="0" /> 不使用自定义下载协议</label>
+				<p>
+					如果您不希望使用第三方下载工具，请勾选此项。
+				</p>
 
-			<label><input type="radio" name="dUriType" value="2" /> 使用 <code>Aria2 JSON RPC</code> 下载方式</label>
-			<p>
-				如 <a href="aria2://|http://imgsrc.baidu.com/forum/pic/item/508c2f9759ee3d6d9f1decb940166d224e4ade1e.jpg|我读书少 你不要骗我.jpg|http://tieba.baidu.com/p/123456">我读书少 你不要骗我.jpg</a>、<a href="aria2://|http://imgsrc.baidu.com/forum/pic/item/4f93d42a2834349b86403882caea15ce37d3beb5.jpg|挖掘机.gif">挖掘机.gif</a>。
-				<br />
-				缺陷则是脚本会在页面上等候单击事件，有被原始页面的脚本“截胡”的可能。
-			</p>
+				<label><input type="radio" name="dUriType" value="1" /> 使用 <code>cuwcl4c://</code> 协议的下载地址</label>
+				<p>
+					如 <a href="cuwcl4c://|1|http://imgsrc.baidu.com/forum/pic/item/508c2f9759ee3d6d9f1decb940166d224e4ade1e.jpg|我读书少 你不要骗我.jpg|http://tieba.baidu.com/p/123456">我读书少 你不要骗我.jpg</a>、<a href="cuwcl4c://|1|http://imgsrc.baidu.com/forum/pic/item/4f93d42a2834349b86403882caea15ce37d3beb5.jpg|挖掘机.gif">挖掘机.gif</a>，可自定义下载文件名。
+				</p>
+
+				<label><input type="radio" name="dUriType" value="2" /> 使用 <code>Aria2 JSON RPC</code> 下载方式</label>
+				<p>
+					如 <a href="aria2://|http://imgsrc.baidu.com/forum/pic/item/508c2f9759ee3d6d9f1decb940166d224e4ade1e.jpg|我读书少 你不要骗我.jpg|http://tieba.baidu.com/p/123456">我读书少 你不要骗我.jpg</a>、<a href="aria2://|http://imgsrc.baidu.com/forum/pic/item/4f93d42a2834349b86403882caea15ce37d3beb5.jpg|挖掘机.gif">挖掘机.gif</a>。
+					<br />
+					缺陷则是脚本会在页面上等候单击事件，有被原始页面的脚本“截胡”的可能。
+				</p>
+			</section>
 		</div>
 
 		<section id="aria2-config" class="hide">
-			<h3>Aria2 配置 (<a href="http://aria2.sourceforge.net/" target="_blank">下载</a>)</h3>
+			<h3>Aria2 配置 (<a href="http://aria2.sourceforge.net/" target="_blank">下载 Aria2</a>)</h3>
 			<div class="option">
 				<h4>验证方式</h4>
 				<section id="aria2-auth">
-					<label><input type="radio" name="dAria_auth" value="0" /> 没有验证</label>
-					<label><input type="radio" name="dAria_auth" value="1" /> 用户名 / 密码</label>
-					<label><input type="radio" name="dAria_auth" value="2" /> 密文验证</label>
+					<label class="inline"><input type="radio" name="dAria_auth" value="0" /> 没有验证</label>
+					<label class="inline"><input type="radio" name="dAria_auth" value="1" /> 基础用户名 / 密码验证</label>
+					<label class="inline"><input type="radio" name="dAria_auth" value="2" /> 密文验证 [推荐]</label>
 				</section>
 
-				<h4>配置信息</h4>
+				<h4>通信配置</h4>
 				<p>
 					http://
 					<span id="blockAuthInfo">
@@ -63,7 +74,7 @@
 							:
 						</span>
 						<input class="auth" type="text" name="sAria_pass" placeholder="密码 / Secret">
-						@ 
+						@
 					</span>
 					<input class="auth" type="text" name="sAria_host" placeholder="域名">
 					: <input class="auth" type="number" name="dAria_port" placeholder="端口" min=1 max=65535>
