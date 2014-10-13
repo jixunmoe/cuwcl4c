@@ -1,17 +1,16 @@
 .m-pbar, .m-pbar .barbg {
-	width: 425px;
+	width: calc( 455px - 2.5em );
 }
 
 .m-playbar .play {
-	width: 520px;
+	width: calc( 570px - 2.5em );
 }
 
 .m-playbar .oper {
-	width: 110px;
+	width: initial;
 }
 
 .jx_dl {
-	text-indent: 0;
 	font-size: 1.5em;
 	margin: 13px 2px 0 0;
 	float: left;

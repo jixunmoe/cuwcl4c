@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.295
+// @version        3.0.297
 
 // 全局匹配
 // @include *
@@ -739,19 +739,18 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
   css: /* Resource: com.163.music.dl.css */
 H.extract(function () { /*
 .m-pbar, .m-pbar .barbg {
-	width: 425px;
+	width: calc( 455px - 2.5em );
 }
 
 .m-playbar .play {
-	width: 520px;
+	width: calc( 570px - 2.5em );
 }
 
 .m-playbar .oper {
-	width: 110px;
+	width: initial;
 }
 
 .jx_dl {
-	text-indent: 0;
 	font-size: 1.5em;
 	margin: 13px 2px 0 0;
 	float: left;
@@ -762,6 +761,7 @@ H.extract(function () { /*
 .jx_dl:hover {
 	color: white;
 }
+
 */}),
   onBody: function() {
     this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper')).attr({
