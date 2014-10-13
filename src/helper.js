@@ -189,25 +189,7 @@ H.config = H.merge ({
 	if (!conf) return {};
 
 	try {
-		var _conf = JSON.parse (conf);
-
-		for (var name in _conf) {
-			if (_conf.hasOwnProperty (name)) {
-				switch (name[0]) {
-					case 'b':
-						_conf[name] = _conf[name] == 'on';
-						break;
-
-					case 'd':
-						_conf[name] = parseInt(_conf[name], 10);
-						break;
-
-					// s and default are not parsed.
-				}
-			}
-		}
-
-		return _conf;
+		return JSON.parse (conf);
 	} catch (e) {
 		H.info ('配置文件 [%s] 无效, 现在使用空白配置.', conf);
 		return {};
