@@ -150,9 +150,25 @@ setTimeout (function () {
 	click ($('btnSaveConfig'), function () {
 		var _conf = {};
 		[].forEach.call (configForm.elements, function (el) {
-			if (el.hasAttribute ('name') && !_conf.hasOwnProperty(el.name))
-				_conf[el.name] = configForm[el.name].value;
+			if (el.hasAttribute ('name') && !_conf.hasOwnProperty(el.name)) {
+				switch (el.name[0]) {
+					case 'd':
+						_conf[el.name] = parseInt(configForm[el.name].value);
+						break;
+
+					case 'b':
+						_conf[el.name] = configForm[el.name].checked;
+						break;
+
+					// case 's':
+					default:
+						_conf[el.name] = configForm[el.name].value;
+						break;
+				}
+			}
 		});
+
+		console.info (_conf);
 
 		document.dispatchEvent ( new CustomEvent ('SaveConfig', {detail: JSON.stringify(_conf) }) );
 		postMessage (this.rScriptVersion ? '设定储存完毕!' : '请先启用脚本!');
@@ -167,7 +183,7 @@ setTimeout (function () {
 					console.info ('Obsoleted or not implemented config: %s', name);
 					continue;
 				}
-				
+
 				switch (name[0]) {
 					case 'b':
 						configForm[name].checked = _conf[name];
@@ -200,7 +216,7 @@ setTimeout (function () {
 	[].map.call(configForm.querySelectorAll ('input'), updCtrl);
 
 	var jsonpInfo = document.createElement ('script');
-	jsonpInfo.src = 'https://greasyfork.org/scripts/2600-跳过网站等待-验证码及登录.jsonp?callback=j&antiCache=' + (new Date()).getDate();
+	jsonpInfo.src = 'https://greasyfork.org/scripts/2600.jsonp?callback=j&antiCache=' + (new Date()).getDate();
 	document.head.appendChild (jsonpInfo);
 }.bind(this), 50);
 }).bind (window, function ( $ ) {
