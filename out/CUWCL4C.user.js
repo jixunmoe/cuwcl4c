@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.297
+// @version        3.0.298
 
 // 全局匹配
 // @include *
@@ -88,7 +88,7 @@ var H = {
 
 		for (var i = argLen; i--; )
 			sourceStr = sourceStr.replace (new RegExp('%' + i + '([^\\d]|$)','g'), args[i]);
-		
+
 		return sourceStr;
 	},
 
@@ -100,7 +100,7 @@ var H = {
 
 		for (var i = 1; i < argLen; i++)
 			sourceStr = sourceStr.replace (/%[sd]/i, args[i]);
-		
+
 		return sourceStr;
 	},
 
@@ -153,7 +153,7 @@ var H = {
 			host: H.config.sAria_host,
 			port: H.config.dAria_port
 		});
-		
+
 		$(el || document).click(function (e) {
 			var linkEl = e.target;
 
@@ -195,7 +195,7 @@ H.merge (H, {
 			H._log.apply (0, [].concat.apply([_prefix], args));
 		}
 	}.bind (H, H.sprintf ('[%s][日志] ', H.scriptName)),
-	
+
 	info: function (_prefix, msg) {
 		var args = [].slice.call(arguments, 1);
 
@@ -206,10 +206,10 @@ H.merge (H, {
 			H._inf.apply (0, [].concat.apply([_prefix], args));
 		}
 	}.bind (H, H.sprintf ('[%s][信息] ', H.scriptName)),
-	
+
 	error: function (_prefix, msg) {
 		var args = [].slice.call(arguments, 1).concat ('\n\n错误追踪' + new Error().stack);
-		
+
 		if (typeof msg == 'string') {
 			H._err.apply (0, [].concat.apply ([_prefix + msg], args.slice(1)));
 		} else {
@@ -219,6 +219,8 @@ H.merge (H, {
 });
 
 H.config = H.merge ({
+	bDiaplayLog: true,
+
 	dUriType: 0,
 	dAria_auth: 0,
 
@@ -258,6 +260,13 @@ H.config = H.merge ({
 		return {};
 	}
 })(GM_getValue (H.scriptName)));
+
+if (!H.config.bDiaplayLog) {
+	// 屏蔽日志函数
+	['log', 'info', 'error'].map(function (fooName) {
+		H['_' + fooName.slice(0, 3)] = H[fooName] = H.nop;
+	});
+}
 
 H.merge (H, {
 	hookRequire: function (namespace, foo, callback) {
@@ -329,23 +338,23 @@ H.merge (H, {
 		// jQuery element fix.
 		if (!ele) return {};
 		if (ele.jquery) ele = ele[0];
-		
+
 		// Check if is a flash object
 		if (ele.type.indexOf('flash') == -1) return {};
-		
+
 		for(var flashObject, flashVars = {}, i = ele.childNodes.length; i--;)
 			if (ele.childNodes[i].name == 'flashvars') {
 				flashObject = ele.childNodes[i];
 				break;
 			}
-		
+
 		if (flashObject) {
 			flashObject.value.replace(/&amp;/g, '&').replace(/([\s\S]+?)=([\s\S]+?)(&|$)/g, function (n, key, value) {
 				// 利用正则的批量替换功能抓取数据 ^^
 				flashVars [key] = decodeURIComponent(value);
 			});
 		}
-		
+
 		return flashVars;
 	},
 
@@ -366,7 +375,7 @@ H.merge (H, {
 
 	getLinkExtFromQuery: function (url) {
 		if (H.contains(url, '?')) {
-			var parts = link3.slice(link3.indexOf('?') + 1).replace(/[^=]+?=(.+?(&|$))/g, '$1').split('&');		
+			var parts = link3.slice(link3.indexOf('?') + 1).replace(/[^=]+?=(.+?(&|$))/g, '$1').split('&');
 			for (var i = parts.length, exts; i--; ) {
 				if (exts = parts[i].match(/\.(?:[a-z0-9]{2,9})/)) {
 					return exts[0];
@@ -453,7 +462,7 @@ H.merge (H, {
 					return ;
 			}
 			clearInterval(timer);
-			
+
 			if (replaceVar && typeof (unsafeWindow[ver4Check]) == 'function') {
 				var $obj = {};
 				$obj[ver4Check] = replaceVar;
