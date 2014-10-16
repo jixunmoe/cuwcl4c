@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.301
+// @version        3.0.303
 
 // 全局匹配
 // @include *
@@ -668,25 +668,6 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 }
 ,
 {
-	name: '通用 phpDisk 网盘规则',
-	host: ['azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me'],
-	hide: [
-		// azpan, gxdisk
-		'.Downpagebox',
-
-		// 2kuai.com
-		'.ad', '#vcode', '#tui', '.dcode', '#down_box2', '#dl_tips', '.nal', '.scbar_hot_td', '#incode'
-	],
-	show: [
-		// 2kuai.com
-		'#down_box', '#dl_addr'
-	],
-	onStart: function () {
-		unsafeDefineFunction ('down_process', tFunc);
-		H.phpDiskAutoRedir ();
-	}
-},
-{
 	name: '乐盘',
 	host: ['lepan.cc', 'sx566.com'],
 	hide: [
@@ -969,31 +950,6 @@ H.extract(function () { /*
 
 		H.waitUntil('authad', function () {
 			unsafeDefineFunction ('authad', tFunc);
-		});
-	}
-},
-{
-	name: '79 盘',
-	host: '79pan.com',
-
-	hide: ['#code_box', '#down_box2'],
-	show: '#down_box',
-
-	onStart: function () {
-		unsafeOverwriteFunctionSafeProxy ({
-			open: tFunc
-		});
-	},
-	onBody: function () {
-		H.waitUntil ('down_file_link', function () {
-			// 强制显示地址
-			unsafeWindow.down_file_link ();
-			var dlBtn = $('.down_btn')[0];
-			// 激活链接
-			unsafeWindow.show_down_url (dlBtn.id);
-
-			// 然后跳过去
-			H.reDirWithRef (dlBtn.href);
 		});
 	}
 },
@@ -1727,16 +1683,6 @@ H.extract(function () { /*
 	}
 },
 {
-	name: 'VV 网盘',
-	host: 'vvpan.com',
-	hide: ['#code_box', '.talk_show', '.banner_2', '.w_305', '.ad'],
-	show: '#down_box',
-
-	onStart: function () {
-		H.phpDiskAutoRedir ();
-	}
-},
-{
 	name: '虾米音乐',
 	host: 'www.xiami.com',
 	noSubHost: true,
@@ -2093,6 +2039,64 @@ div#jx_douban_dl_wrap {
 				}
 			});
 		});
+	}
+},
+{
+	name: '通用 phpDisk.a 网盘规则',
+	// 相关规则: 跳转 /file-xxx -> /download.php?id=xxx&key=xxx
+	
+	host: ['79pan.com', '7mv.cc', 'pan.52zz.org', '258pan.com', 'huimeiku.com'],
+
+	hide: ['#code_box', '#down_box2', '#codefrm'],
+	show: '#down_box',
+
+	onStart: function () {
+		unsafeOverwriteFunctionSafeProxy ({
+			open: tFunc
+		});
+	},
+	onBody: function () {
+		H.waitUntil ('down_file_link', function () {
+			// 避免地址被覆盖
+			unsafeWindow.update_sec = null;
+			// 强制显示地址
+			unsafeWindow.down_file_link ();
+
+			// 强制显示下载地址
+			if (unsafeWindow.show_down_url)
+				unsafeWindow.show_down_url ('down_a1');
+
+			var jumpUrl = $('#down_link').find('a').attr('href');
+
+			// 然后跳过去
+			if (jumpUrl) {
+				H.reDirWithRef (jumpUrl);
+			} else {
+				alert (H.sprintf('[%s]: 应用 %s 失败:\n找不到跳转地址.', H.scriptName, this.name));
+			}
+		});
+	}
+},
+{
+	name: '通用 phpDisk.z 网盘规则',
+	// 相关规则: 直接跳转 /file-xxx -> /down-xxx
+	host: ['azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 'vvpan.com'],
+	hide: [
+		// azpan, gxdisk
+		'.Downpagebox',
+
+		'.talk_show', '.banner_2', '.w_305',
+
+		// 2kuai.com
+		'.ad', '#vcode', '#tui', '.dcode', '#down_box2', '#dl_tips', '.nal', '.scbar_hot_td', '#incode'
+	],
+	show: [
+		// 2kuai.com
+		'#down_box', '#dl_addr'
+	],
+	onStart: function () {
+		unsafeDefineFunction ('down_process', tFunc);
+		H.phpDiskAutoRedir ();
 	}
 },
 {

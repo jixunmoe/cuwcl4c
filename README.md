@@ -12,7 +12,6 @@
 
 ## 自带规则
 - 脚本配置页面 - `[localhost, jixunmoe.github.io]`
-- 通用 phpDisk 网盘规则 - `[azpan.com, gxdisk.com, 2kuai.com, 1wp.me]`
 - 乐盘 - `[lepan.cc, sx566.com]`
 - 威盘 - `[vdisk.cn]`
 - 119g 网盘 - `[d.119g.com]`
@@ -21,7 +20,6 @@
 - 565656 音乐 - `[www.565656.com]`
 - 5sing 下载解析 - `[5sing.com, 5sing.kugou.com]`
 - 千军万马网盘系列 - `[7958.com, qjwm.com]`
-- 79 盘 - `[79pan.com]`
 - 9酷音乐 - `[www.9ku.com]`
 - 百度盘免下载管家 - `[yun.baidu.com, pan.baidu.com]`
 - 可乐盘 - `[colafile.com]`
@@ -39,13 +37,14 @@
 - 飞速网 - `[rayfile.com]`
 - SongTaste 下载解析 - `[songtaste.com]`
 - 速度盘 - `[sudupan.com]`
-- VV 网盘 - `[vvpan.com]`
 - 虾米音乐 - `[www.xiami.com]`
 - 一木禾网盘 - `[yimuhe.com]`
 - 音悦台下载解析 - `[yinyuetai.com]`
 - 豆瓣电台 - `[douban.fm]`
 - Jing.fm - `[jing.fm]`
 - 萌电台 [moe.fm] - `[moe.fm]`
+- 通用 phpDisk.a 网盘规则 - `[79pan.com, 7mv.cc, pan.52zz.org, 258pan.com, huimeiku.com]`
+- 通用 phpDisk.z 网盘规则 - `[azpan.com, gxdisk.com, 2kuai.com, 1wp.me, vvpan.com]`
 - 9盘 - `[www.9pan.net]`
 
 测试于 Chrome & Firefox 32 (GreasyMonkey 2.2)
