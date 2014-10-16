@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.299
+// @version        3.0.301
 
 // 全局匹配
 // @include *
@@ -976,26 +976,24 @@ H.extract(function () { /*
 	name: '79 盘',
 	host: '79pan.com',
 
-	fullHost: 'www.79pan.com',
+	hide: ['#code_box', '#down_box2'],
+	show: '#down_box',
+
 	onStart: function () {
 		unsafeOverwriteFunctionSafeProxy ({
 			open: tFunc
 		});
-
-		H.log ('隐藏、显示必要元素');
-		H.forceShow.call(H.forceHide ('#code_box', '#down_box2'), '#down_box');
-
-		H.log ('修正网站获取下载地址');
-		if (this.fullHost != location.hostname)
-			location.hostname = this.fullHost;
 	},
 	onBody: function () {
 		H.waitUntil ('down_file_link', function () {
 			// 强制显示地址
 			unsafeWindow.down_file_link ();
+			var dlBtn = $('.down_btn')[0];
+			// 激活链接
+			unsafeWindow.show_down_url (dlBtn.id);
 
 			// 然后跳过去
-			location.href = $('.down_btn').attr('href');
+			H.reDirWithRef (dlBtn.href);
 		});
 	}
 },
@@ -1732,6 +1730,8 @@ H.extract(function () { /*
 	name: 'VV 网盘',
 	host: 'vvpan.com',
 	hide: ['#code_box', '.talk_show', '.banner_2', '.w_305', '.ad'],
+	show: '#down_box',
+
 	onStart: function () {
 		H.phpDiskAutoRedir ();
 	}
