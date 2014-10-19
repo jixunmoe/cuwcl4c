@@ -1,31 +1,31 @@
-# 跳过网站等待、验证码及登录 [CUWCL4C]
+# 繞過站點等待、識別碼及登錄 [CUWCL4C]
 
-基于 `简单成就下载 by Yulei`，在此表示感谢。
+基於腳本 `简单成就下载 by Yulei`，在此表示感謝。
 
-脚本配置界面：[Github.io](https://jixunmoe.github.io/cuwcl4c/config/)
+腳本配置介面：[Github.io](https://jixunmoe.github.io/cuwcl4c/config/)
 
-脚本安装地址：[GreasyFork (主站)](https://greasyfork.org/zh-CN/scripts/2600)、[GitHub](https://github.com/JixunMoe/cuwcl4c/raw/master/out/CUWCL4C.user.js)
+腳本安裝地址：[GreasyFork (主)](https://greasyfork.org/zh-CN/scripts/2600)、[GitHub](https://github.com/JixunMoe/cuwcl4c/raw/master/out/CUWCL4C.user.js)
 
-相关源码托管至：[GitHub](https://github.com/JixunMoe/cuwcl4c)
+源碼託管於：[GitHub](https://github.com/JixunMoe/cuwcl4c)
 
-订阅 ABP 规则屏蔽广告: [Simple List](https://jixunmoe.github.io/SimpleList/)
+訂閱 ABP 過濾器屏蔽廣告: [Simple List](https://jixunmoe.github.io/SimpleList/)
 
-## 特色功能
+## 腳本特色
 
-### 快速下载文件
+### 快速下載檔案
 
-快速跳过倒计时等待，直达下载地址。  
-下载从未如此轻松!
+快速跳過倒計時等待，直接抵達下載地址。  
+下載變得如此輕鬆!
 
-> 不支持 `YunFile`; 其它网盘兼容请参见下方自带规则。
+> 不支援 `YunFile`; 其它網盤的兼容情況請參考下方的「自帶規則」。
 
-### 批量下载歌单
+### 批量下載歌單
 
-![批量下载歌曲](https://jixunmoe.github.io/cuwcl4c/res/batchDownloadSong.png)
+![批量下載歌曲](https://jixunmoe.github.io/cuwcl4c/res/batchDownloadSong.png)
 
-> 目前仅限`网易云音乐`，需要启用 Aria2 下载方式
+> 目前僅支援 `网易云音乐`，並且需要啟用 Aria2 下載工具。
 
-## 自带规则
+## 自帶規則 (簡體)
 - 脚本配置页面 - `[localhost, jixunmoe.github.io]`
 - 乐盘 - `[lepan.cc, sx566.com]`
 - 威盘 - `[vdisk.cn]`
@@ -62,15 +62,4 @@
 - 通用 phpDisk.z 网盘规则 - `[azpan.com, gxdisk.com, 2kuai.com, 1wp.me, vvpan.com]`
 - 9盘 - `[www.9pan.net]`
 
-测试于 Chrome & Firefox 32 (GreasyMonkey 2.2)
-
-
-## 脚本内嵌资源标记
-`<% Filename %>`
-
- 标记  | 含义
-:-----:|:---------
-   ~   | Stuff in `res` directory, passed as function-comment-extract.
-   $   | Stuff in `res` directory, passed as raw file i.e. no quote no wrapper.
-  \#   | Execute script and get its return (from `src` directory).
-   @   | Include raw file from `src` directory.
+測試於 Chrome & Firefox 32 (GreasyMonkey 2.2)

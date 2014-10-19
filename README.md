@@ -10,6 +10,21 @@
 
 订阅 ABP 规则屏蔽广告: [Simple List](https://jixunmoe.github.io/SimpleList/)
 
+## 特色功能
+
+### 快速下载文件
+
+快速跳过倒计时等待，直达下载地址。  
+下载从未如此轻松!
+
+> 不支持 `YunFile`; 其它网盘兼容请参见下方自带规则。
+
+### 批量下载歌单
+
+![批量下载歌曲](https://jixunmoe.github.io/cuwcl4c/res/batchDownloadSong.png)
+
+> 目前仅限`网易云音乐`，需要启用 Aria2 下载方式
+
 ## 自带规则
 - 脚本配置页面 - `[localhost, jixunmoe.github.io]`
 - 乐盘 - `[lepan.cc, sx566.com]`
