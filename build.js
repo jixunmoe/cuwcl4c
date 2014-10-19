@@ -1,5 +1,15 @@
 var fs = require ('fs');
 
+var args = (function (argv) {
+	var ret = {};
+	argv.slice(2).forEach(function (e) {
+		if (e[0] === '-') {
+			ret[e.slice(1).replace(/-./g, function (z){ return z[1].toUpperCase() })] = true;
+		}
+	});
+	return ret;
+})(process.argv);
+
 global.resDir = __dirname + '/res/';
 global.srcDir = __dirname + '/src/';
 global.outDir = __dirname + '/out/';
@@ -32,5 +42,6 @@ var parseScript = function (s) {
 	});
 };
 
-fs.writeFile (outDir + 'CUWCL4C.user.js', parseScript (fs.readFileSync(srcDir + 'main.js')));
-fs.writeFile (__dirname + '/README.md',   parseScript (fs.readFileSync(__dirname + '/README.template')));
+if (args.main)       fs.writeFile (outDir + 'CUWCL4C.user.js',       parseScript (fs.readFileSync(srcDir + 'main.js')));
+if (args.readme)     fs.writeFile (__dirname + '/README.md',         parseScript (fs.readFileSync(__dirname + '/README.zh-CN.tpl.md')));
+if (args.readmeZhTW) fs.writeFile (__dirname + '/README.zh-TW.md',   parseScript (fs.readFileSync(__dirname + '/README.zh-TW.tpl.md')));

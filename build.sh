@@ -11,4 +11,4 @@ else
 	fi
 fi
 
-$n build.js && git commit -a;
+$n build.js -main -readme-zh-TW -readme && git commit -a;
