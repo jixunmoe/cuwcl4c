@@ -156,11 +156,9 @@ setTimeout (function () {
 						_conf[el.name] = parseInt(configForm[el.name].value);
 						break;
 
+					case 'x':
 					case 'b':
 						_conf[el.name] = configForm[el.name].checked;
-						break;
-
-					case 'x':
 						break;
 
 					// case 's':
