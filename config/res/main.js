@@ -187,6 +187,7 @@ setTimeout (function () {
 
 				switch (name[0]) {
 					case 'b':
+					case 'x':
 						configForm[name].checked = _conf[name];
 						break;
 
