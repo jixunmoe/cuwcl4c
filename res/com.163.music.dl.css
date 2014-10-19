@@ -10,7 +10,13 @@
 	width: initial;
 }
 
-.jx_dl {
+.jx_dl:hover {
+	color: white;
+}
+
+-- 底部单曲下载
+.m-playbar .oper .jx_dl {
+	text-indent: 0;
 	font-size: 1.5em;
 	margin: 13px 2px 0 0;
 	float: left;
@@ -20,4 +26,16 @@
 
 .jx_dl:hover {
 	color: white;
+}
+
+-- 播放列表下载
+.m-playbar .listhdc .jx_dl.addall {
+	left: 306px;
+	line-height: 1em;
+	-- 多一个 px, 对齐文字
+	top: 13px;
+}
+
+.m-playbar .listhdc .line.jx_dl_line {
+	left: 385px;
 }

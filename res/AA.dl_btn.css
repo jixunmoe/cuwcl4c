@@ -5,7 +5,7 @@
 	font-style: normal;
 }
 
-.%s::before {
+%s::before {
 	font-family: ccc;
 	content: "\f019";
 	padding-right: .5em;

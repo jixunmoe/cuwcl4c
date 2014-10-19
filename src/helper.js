@@ -5,13 +5,21 @@ var H = {
 	scriptName: 'CUWCL4C',
 	scriptHome: 'https://greasyfork.org/zh-CN/scripts/2600',
 	reportUrl:  'https://greasyfork.org/forum/post/discussion?Discussion/ScriptID=2600',
+	isFrame: (function () {
+		try {
+			return unsafeWindow.top != unsafeWindow.self;
+		} catch (e) {
+			return true;
+		}
+	})(),
 
 	version:    GM_info.script.version,
 	currentUrl: location.href.split ('#')[0],
 	lowerHost:  location.hostname.toLowerCase(),
 	directHost: location.hostname.match(/\w+\.?\w+?$/)[0].toLowerCase(),
 
-	defaultDlIcon: 'jx_dl',
+	defaultDlIcon:   'jx_dl',
+	defaultDlClass: '.jx_dl',
 
 	nop: function () {},
 
@@ -91,29 +99,36 @@ var H = {
 		}
 	},
 
+	setupAria: function (bForceNew) {
+		if (bForceNew || !H.aria) {
+			H.aria2 = new Aria2({
+				auth: {
+					type: H.config.dAria_auth,
+					user: H.config.sAria_user,
+					pass: H.config.sAria_pass
+				},
+				host: H.config.sAria_host,
+				port: H.config.dAria_port
+			});
+		}
+
+		return H.aria2;
+	},
+
 	captureAria: function (el) {
 		if (H.config.dUriType !== 2)
 			return ;
 
 		H.hasAriaCapture = true;
-
-		var aria2 = new Aria2({
-			auth: {
-				type: H.config.dAria_auth,
-				user: H.config.sAria_user,
-				pass: H.config.sAria_pass
-			},
-			host: H.config.sAria_host,
-			port: H.config.dAria_port
-		});
-
+		H.setupAria ();
+		
 		$(el || document).click(function (e) {
 			var linkEl = e.target;
 
 			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
 				e.stopPropagation ();
 				var link = linkEl.href.split('|');
-				aria2.addUri ([link[1]], {
+				H.aria2.addUri ([link[1]], {
 					out: decodeURIComponent(link[2]),
 					referer: link[3],
 					dir: H.config.sAria_dir,
@@ -130,6 +145,31 @@ var H = {
 				});
 			}
 		});
+	},
+
+	batchDownload: function (fCallback, ref, arrDownloads) {
+		H.setupAria ();
+
+		var baseParam = {
+			referer: ref || location.href,
+			dir: H.config.sAria_dir,
+			'user-agent': navigator.userAgent
+		};
+
+		return H.aria2.batchAddUri.apply (
+			// this
+			H.aria2, 
+
+			// fCallback, file1, file2, ...
+			[ fCallback ].concat (
+				arrDownloads.map (function (arg) {
+					if (!arg.options) arg.options = {};
+
+					arg.options = H.merge ({}, baseParam, arg.options);
+					return arg;
+				})
+			)
+		);
 	}
 };
 
@@ -369,12 +409,16 @@ H.merge (H, {
 		H.log('WordPress Audio 插件通用代码 结束');
 	},
 
-	waitUntil: function (ver4Check, func, replaceVar, timeInterval) {
-		if ('string' == typeof ver4Check && ver4Check.indexOf ('.') !== -1) {
-			ver4Check = ver4Check.split ('.');
+	waitUntil: function (checkCond, fCallback, nTimeOut, nTimeInterval) {
+		if (typeof fCallback != 'function')
+			// Required.
+			return ;
+
+		if ('string' == typeof checkCond && checkCond.indexOf ('.') !== -1) {
+			checkCond = checkCond.split ('.');
 		}
-		if (ver4Check instanceof Array) {
-			ver4Check = function (vars) {
+		if (checkCond instanceof Array) {
+			checkCond = function (vars) {
 				for (var i = 0, r = unsafeWindow; i < vars.length; i++) {
 					r = r[vars[i]];
 					if (!r)
@@ -382,36 +426,36 @@ H.merge (H, {
 				}
 
 				return true;
-			}.bind (null, ver4Check.slice());
+			}.bind (null, checkCond.slice());
 		};
+
 		var timer = setInterval(function () {
-			if (typeof (ver4Check) == 'function') {
+			if ('function' == typeof checkCond) {
 				try {
-					if (!ver4Check()) return;
+					if (!checkCond()) return;
 				} catch (e) {
 					// Not ready yet.
 					return ;
 				}
-			} else if ('string' == typeof ver4Check) {
-				if (typeof (unsafeWindow[ver4Check]) == 'undefined')
+			} else if ('string' == typeof checkCond) {
+				if (typeof (unsafeWindow[checkCond]) == 'undefined')
 					return ;
 			}
 			clearInterval(timer);
-
-			if (replaceVar && typeof (unsafeWindow[ver4Check]) == 'function') {
-				var $obj = {};
-				$obj[ver4Check] = replaceVar;
-				unsafeOverwriteFunction ($obj);
-				H.log('Function [ ' + ver4Check + ' ] Hooked.');
+			try {
+				fCallback.call(this);
+			} catch (e) {
+				H.error ('[H.waitUntil] Callback for %s had an error: %s', ver, e.message);
 			}
-			if (typeof (func) == 'function')
-				func();
-		}, 150);
+		}, nTimeInterval || 150);
 
-		setTimeout (function () {
-			// Timeout
-			clearInterval(timer);
-		}, timeInterval || 10000);
+		// 如果 nTimeOut 的传入值为 true, 则无限制等待.
+		if (nTimeOut !== true) {
+			setTimeout (function () {
+				// Timeout
+				clearInterval(timer);
+			}, nTimeOut || 10000);
+		}
 	},
 
 	makeFineCss: function (name, param) {

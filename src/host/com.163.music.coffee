@@ -5,11 +5,13 @@
 
 name: '网易音乐下载解析',
 host: 'music.163.com',
-noSubHost: true,
-dl_icon: true,
+noSubHost: yes,
+noFrame: yes,
+dl_icon: yes,
 css: `<% ~com.163.music.dl.css %>`,
 
 onBody: ->
+	# 单曲下载
 	@linkDownload = $('<a>')
 		.addClass(H.defaultDlIcon)
 		.appendTo($ '.m-playbar .oper')
@@ -19,7 +21,33 @@ onBody: ->
 			e.stopPropagation()
 			return
 
+	# 播放列表下载
+	@linkDownloadAll = $('<a>')
+		.addClass(H.defaultDlIcon)
+		.addClass('addall')
+		.text('全部下载')
+		.attr
+			title: '下载列表里的所有歌曲'
+		.click (e) ->
+			# 编译出来的代码量好大!
+			H.batchDownload (bAddDownloadFailed, err) ->
+				if bAddDownloadFailed is yes
+					alert err
+			, no, do (trackQueue = localStorage['track-queue']) ->
+				for i, track of JSON.parse trackQueue
+					uri: track.mp3Url
+					options: 
+						out: "#{track.name} [#{track.artists.map((artist) -> artist.name).join '、'}].mp3"
+			e.stopPropagation()
+			return
+
 	H.captureAria @linkDownload
+
+	H.waitUntil () -> $('.listhdc > .addall').length,
+	() =>
+		@linkDownloadAll
+			.insertBefore $('.m-playbar .listhdc .addall')
+			.after $('<a>').addClass 'line jx_dl_line'
 
 	H.waitUntil('nm.m.f.xr.prototype.Al', (->
 		unsafeExec (scriptName) ->
@@ -42,7 +70,7 @@ onBody: ->
 
 			@linkDownload
 				.attr
-					href: H.uri(songObj.url, H.sprintf('%s [%s].mp3', songObj.name, songObj.artist))
+					href: H.uri(songObj.url, "#{songObj.name} [#{songObj.artist}].mp3")
 					title: '下载: ' + songObj.name
 			return
 		).bind(this))

@@ -2,6 +2,9 @@
 var site, eve, host, hostMatch;
 for (var i = sites.length; i--; ) {
 	site = sites[i];
+	if (H.isFrame && site.noFrame)
+		continue;
+	
 	eve  = site[event];
 
 	while (typeof eve == 'string') {
@@ -80,8 +83,11 @@ for (var i = sites.length; i--; ) {
 
 		// 下载按钮
 		if (site.dl_icon) {
-			if (typeof site.dl_icon != 'string')
-				site.dl_icon = H.defaultDlIcon;
+			if (site.dl_icon.map) {
+				site.dl_icon = site.dl_icon.join ('::before, ');
+			} else if (typeof site.dl_icon != 'string') {
+				site.dl_icon = H.defaultDlClass;
+			}
 
 			H.injectStyle.call (styleBlock, H.sprintf(<% ~AA.dl_btn.css %>, site.dl_icon));
 		}
