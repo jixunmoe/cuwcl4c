@@ -41,6 +41,8 @@ onBody: ->
 			e.stopPropagation()
 			return
 
+	@linkDownloadAll.addClass('jx_hide') if H.config.dAria_auth isnt 2
+
 	H.captureAria @linkDownload
 
 	H.waitUntil () -> $('.listhdc > .addall').length,

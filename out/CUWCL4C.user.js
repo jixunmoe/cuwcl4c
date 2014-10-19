@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.309
+// @version        3.0.310
 
 // 全局匹配
 // @include *
@@ -829,6 +829,9 @@ H.extract(function () { /*
       })(localStorage['track-queue']));
       e.stopPropagation();
     });
+    if (H.config.dAria_auth !== 2) {
+      this.linkDownloadAll.addClass('jx_hide');
+    }
     H.captureAria(this.linkDownload);
     H.waitUntil(function() {
       return $('.listhdc > .addall').length;
@@ -2320,6 +2323,10 @@ H.extract(function () { /*
 	font-family: ccc;
 	content: "\f019";
 	padding-right: .5em;
+}
+
+.jx_hide {
+	display: none;
 }
 */}), site.dl_icon));
 		}

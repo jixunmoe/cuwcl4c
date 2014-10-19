@@ -10,3 +10,7 @@
 	content: "\f019";
 	padding-right: .5em;
 }
+
+.jx_hide {
+	display: none;
+}
