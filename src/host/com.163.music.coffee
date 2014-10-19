@@ -48,8 +48,10 @@ onBody: ->
 		@linkDownloadAll
 			.insertBefore $('.m-playbar .listhdc .addall')
 			.after $('<a>').addClass 'line jx_dl_line'
+		return
+	, yes, 500
 
-	H.waitUntil('nm.m.f.xr.prototype.Al', (->
+	H.waitUntil 'nm.m.f.xr.prototype.Al', =>
 		unsafeExec (scriptName) ->
 			_bakPlayerAl = nm.m.f.xr::Al
 			nm.m.f.xr::Al = (songObj) ->
@@ -65,7 +67,7 @@ onBody: ->
 		, H.scriptName
 
 		# 接收文件数据
-		document.addEventListener H.scriptName, (((e) ->
+		document.addEventListener H.scriptName, (e) =>
 			songObj = e.detail
 
 			@linkDownload
@@ -73,8 +75,6 @@ onBody: ->
 					href: H.uri(songObj.url, "#{songObj.name} [#{songObj.artist}].mp3")
 					title: '下载: ' + songObj.name
 			return
-		).bind(this))
 		return
-	).bind(this))
 	return
 

@@ -32,11 +32,11 @@
 // @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
 
 /// Aria2 RPC
-// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build6.js
+// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build-7.js
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.300
+// @version        3.0.309
 
 // 全局匹配
 // @include *
@@ -489,7 +489,6 @@ H.merge (H, {
 					return ;
 			}
 			clearInterval(timer);
-			
 			try {
 				fCallback.call(this);
 			} catch (e) {
@@ -782,6 +781,10 @@ H.extract(function () { /*
 	text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em #aaa;
 }
 
+.jx_dl:hover {
+	color: white;
+}
+
 -- 播放列表下载
 .m-playbar .listhdc .jx_dl.addall {
 	left: 306px;
@@ -793,7 +796,6 @@ H.extract(function () { /*
 .m-playbar .listhdc .line.jx_dl_line {
 	left: 385px;
 }
-
 */}),
   onBody: function() {
     this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper')).attr({
@@ -832,37 +834,39 @@ H.extract(function () { /*
       return $('.listhdc > .addall').length;
     }, (function(_this) {
       return function() {
-        return _this.linkDownloadAll.insertBefore($('.m-playbar .listhdc .addall')).after($('<a>').addClass('line jx_dl_line'));
+        _this.linkDownloadAll.insertBefore($('.m-playbar .listhdc .addall')).after($('<a>').addClass('line jx_dl_line'));
+      };
+    })(this), true, 500);
+    H.waitUntil('nm.m.f.xr.prototype.Al', (function(_this) {
+      return function() {
+        unsafeExec(function(scriptName) {
+          var _bakPlayerAl;
+          _bakPlayerAl = nm.m.f.xr.prototype.Al;
+          return nm.m.f.xr.prototype.Al = function(songObj) {
+            var eveSongObj;
+            eveSongObj = {
+              artist: songObj.artists.map(function(artist) {
+                return artist.name;
+              }).join('、'),
+              name: songObj.name,
+              url: songObj.mp3Url
+            };
+            document.dispatchEvent(new CustomEvent(scriptName, {
+              detail: eveSongObj
+            }));
+            _bakPlayerAl.apply(this, arguments);
+          };
+        }, H.scriptName);
+        document.addEventListener(H.scriptName, function(e) {
+          var songObj;
+          songObj = e.detail;
+          _this.linkDownload.attr({
+            href: H.uri(songObj.url, "" + songObj.name + " [" + songObj.artist + "].mp3"),
+            title: '下载: ' + songObj.name
+          });
+        });
       };
     })(this));
-    H.waitUntil('nm.m.f.xr.prototype.Al', (function() {
-      unsafeExec(function(scriptName) {
-        var _bakPlayerAl;
-        _bakPlayerAl = nm.m.f.xr.prototype.Al;
-        return nm.m.f.xr.prototype.Al = function(songObj) {
-          var eveSongObj;
-          eveSongObj = {
-            artist: songObj.artists.map(function(artist) {
-              return artist.name;
-            }).join('、'),
-            name: songObj.name,
-            url: songObj.mp3Url
-          };
-          document.dispatchEvent(new CustomEvent(scriptName, {
-            detail: eveSongObj
-          }));
-          _bakPlayerAl.apply(this, arguments);
-        };
-      }, H.scriptName);
-      document.addEventListener(H.scriptName, (function(e) {
-        var songObj;
-        songObj = e.detail;
-        this.linkDownload.attr({
-          href: H.uri(songObj.url, "" + songObj.name + " [" + songObj.artist + "].mp3"),
-          title: '下载: ' + songObj.name
-        });
-      }).bind(this));
-    }).bind(this));
   }
 }),
 {
