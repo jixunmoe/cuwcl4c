@@ -16,8 +16,11 @@
 <body>
 	<form class="main" name="config">
 		<p>
-			您安装的脚本版本: <span id="scriptVer">检测中 ..</span>, 最新版: <span id="scriptLatestVer">获取中 ..</span>
-			<sup id="updateLink" class="hide"><a href="https://greasyfork.org/scripts/2600/code/2600.user.js">更新?</a></sup>
+			您安装的脚本版本:
+			<span id="scriptVer">检测中 ..</span>, 最新版: <span id="scriptLatestVer">获取中 ..</span>
+			<sup id="updateLink" class="hide">
+				<a target="_blank" href="https://greasyfork.org/scripts/2600/code/2600.user.js">更新?</a>
+			</sup>
 			<span class="hide red" id="noteNoScript">
 				*如果您禁用了脚本，请先启用脚本然后<a href="javascript:location.reload();">点此刷新</a>
 			</span>
@@ -85,10 +88,39 @@
 				</p>
 
 				<h4>启动 Aria2 后台</h4>
-				<p class="mono small">aria2c --enable-rpc --rpc-listen-all=true --rpc-allow-origin-all
-					<span aria-auth="1">"--rpc-user=<span shown-value="sAria_user"></span>"
-					"--rpc-passwd=<span shown-value="sAria_pass"></span>"</span>
-					<span aria-auth="2">"--rpc-secret=<span shown-value="sAria_pass"></span>"</span>
+				<p>
+					<label><input type="checkbox" name="xBetterDownload" checked>优化下载线程</label>
+					<label><input type="checkbox" name="xAlwaysResume" checked>目标文件存在时尝试继续下载</label>
+					<label><input type="checkbox" name="xBindLocal" checked>仅监听本地请求 (如果作为本机服务器自己用建议勾选)</label>
+					<label><input type="checkbox" name="xFastAlloc">快速分配下载文件空间 (FAT32、EXT3 格式分区请勿勾选)</label>
+				</p>
+
+				<p class="mono small">
+					aria2c --enable-rpc
+					--rpc-allow-origin-all
+					<span shown-when="!xBindLocal">
+						--rpc-listen-all=true
+					</span>
+					<span shown-when="xBetterDownload">
+						--max-connection-per-server=3
+						--max-concurrent-downloads=5
+
+						--max-download-result=10
+						--log-level=info --force-sequential=true
+					</span>
+					<span shown-when="xFastAlloc">
+						--file-allocation=falloc
+					</span>
+					<span shown-when="xAlwaysResume">
+						--continue=true
+					</span>
+					<span aria-auth="1">
+						"--rpc-user=<span shown-value="sAria_user"></span>"
+						"--rpc-passwd=<span shown-value="sAria_pass"></span>"
+					</span>
+					<span aria-auth="2">
+						"--rpc-secret=<span shown-value="sAria_pass"></span>"
+					</span>
 				</p>
 			</div>
 

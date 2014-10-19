@@ -160,6 +160,9 @@ setTimeout (function () {
 						_conf[el.name] = configForm[el.name].checked;
 						break;
 
+					case 'x':
+						break;
+
 					// case 's':
 					default:
 						_conf[el.name] = configForm[el.name].value;
@@ -204,13 +207,24 @@ setTimeout (function () {
 	$('aria2-auth') .dispatchEvent (evChange);
 
 	var updCtrl = function (ctrlEdit) {
-		[].map.call ($$('[shown-value="' + ctrlEdit.name + '"]'), function (el) {
-			el.textContent = ctrlEdit.value;
-		});
+		if (ctrlEdit.type == 'checkbox') {
+			[].map.call ($$('[shown-when="' + ctrlEdit.name + '"]'), function (el) {
+				toggleShow (el, ctrlEdit.checked);
+			});
+			[].map.call ($$('[shown-when="!' + ctrlEdit.name + '"]'), function (el) {
+				toggleShow (el, !ctrlEdit.checked);
+			});
+		} else {
+			[].map.call ($$('[shown-value="' + ctrlEdit.name + '"]'), function (el) {
+				el.textContent = ctrlEdit.value;
+			});
+		}
 	};
 	document.body.addEventListener('keyup', function (e) {
-		if (e.target.name)
-			updCtrl (e.target);
+		if (e.target.name) updCtrl (e.target);
+	});
+	document.body.addEventListener('change', function (e) {
+		if (e.target.name) updCtrl (e.target);
 	});
 
 	[].map.call(configForm.querySelectorAll ('input'), updCtrl);
