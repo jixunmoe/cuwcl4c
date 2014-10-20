@@ -29,9 +29,11 @@ var H = {
 
 		var args = arguments;
 		for (var i = 1; i < arguments.length; i++) {
-			Object.keys (arguments[i]).forEach (function (key) {
-				parent[key] = args[i][key];
-			});
+			if (arguments[i]) {
+				Object.keys (arguments[i]).forEach (function (key) {
+					parent[key] = args[i][key];
+				});
+			}
 		}
 
 		return parent;
@@ -147,14 +149,16 @@ var H = {
 		});
 	},
 
-	batchDownload: function (fCallback, ref, arrDownloads) {
-		H.setupAria ();
-
-		var baseParam = {
-			referer: ref || location.href,
+	buildAriaParam: function (opts) {
+		return H.merge ({
+			referer: location.href,
 			dir: H.config.sAria_dir,
 			'user-agent': navigator.userAgent
-		};
+		}, opts);
+	},
+
+	batchDownload: function (fCallback, ref, arrDownloads) {
+		H.setupAria ();
 
 		return H.aria2.batchAddUri.apply (
 			// this
@@ -163,9 +167,7 @@ var H = {
 			// fCallback, file1, file2, ...
 			[ fCallback ].concat (
 				arrDownloads.map (function (arg) {
-					if (!arg.options) arg.options = {};
-
-					arg.options = H.merge ({}, baseParam, arg.options);
+					arg.options = H.buildAriaParam (H.merge({ referer: ref }, arg.options));
 					return arg;
 				})
 			)

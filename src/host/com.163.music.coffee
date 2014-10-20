@@ -30,20 +30,20 @@ onBody: ->
 			title: '下载列表里的所有歌曲'
 		.click (e) ->
 			# 编译出来的代码量好大!
-			H.batchDownload (bAddDownloadFailed, err) ->
-				if bAddDownloadFailed is yes
-					alert err
-			, no, do (trackQueue = localStorage['track-queue']) ->
-				for i, track of JSON.parse trackQueue
-					uri: track.mp3Url
-					options: 
-						out: "#{track.name} [#{track.artists.map((artist) -> artist.name).join '、'}].mp3"
 			e.stopPropagation()
+			do (trackQueue = localStorage['track-queue'], aria2 = new Aria2.BATCH(H.aria2, -> H.info arguments)) ->
+				for i, track of JSON.parse trackQueue
+					aria2.add Aria2.fn.addUri, [track.mp3Url], H.buildAriaParam
+						out: "#{track.name} [#{track.artists.map((artist) -> artist.name).join '、'}].mp3"
+				aria2.send yes
+				return
 			return
 
-	@linkDownloadAll.addClass('jx_hide') if H.config.dAria_auth isnt 2
+	if H.config.dAria_auth is 2
+		H.captureAria @linkDownload
+	else
+		@linkDownloadAll.addClass('jx_hide')
 
-	H.captureAria @linkDownload
 
 	H.waitUntil () -> $('.listhdc > .addall').length,
 	() =>

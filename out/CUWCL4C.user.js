@@ -32,11 +32,11 @@
 // @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
 
 /// Aria2 RPC
-// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build-7.js
+// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build-9.js
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.310
+// @version        3.0.317
 
 // 全局匹配
 // @include *
@@ -76,9 +76,11 @@ var H = {
 
 		var args = arguments;
 		for (var i = 1; i < arguments.length; i++) {
-			Object.keys (arguments[i]).forEach (function (key) {
-				parent[key] = args[i][key];
-			});
+			if (arguments[i]) {
+				Object.keys (arguments[i]).forEach (function (key) {
+					parent[key] = args[i][key];
+				});
+			}
 		}
 
 		return parent;
@@ -194,14 +196,16 @@ var H = {
 		});
 	},
 
-	batchDownload: function (fCallback, ref, arrDownloads) {
-		H.setupAria ();
-
-		var baseParam = {
-			referer: ref || location.href,
+	buildAriaParam: function (opts) {
+		return H.merge ({
+			referer: location.href,
 			dir: H.config.sAria_dir,
 			'user-agent': navigator.userAgent
-		};
+		}, opts);
+	},
+
+	batchDownload: function (fCallback, ref, arrDownloads) {
+		H.setupAria ();
 
 		return H.aria2.batchAddUri.apply (
 			// this
@@ -210,9 +214,7 @@ var H = {
 			// fCallback, file1, file2, ...
 			[ fCallback ].concat (
 				arrDownloads.map (function (arg) {
-					if (!arg.options) arg.options = {};
-
-					arg.options = H.merge ({}, baseParam, arg.options);
+					arg.options = H.buildAriaParam (H.merge({ referer: ref }, arg.options));
 					return arg;
 				})
 			)
@@ -806,33 +808,28 @@ H.extract(function () { /*
     this.linkDownloadAll = $('<a>').addClass(H.defaultDlIcon).addClass('addall').text('全部下载').attr({
       title: '下载列表里的所有歌曲'
     }).click(function(e) {
-      H.batchDownload(function(bAddDownloadFailed, err) {
-        if (bAddDownloadFailed === true) {
-          return alert(err);
-        }
-      }, false, (function(trackQueue) {
-        var i, track, _ref, _results;
+      e.stopPropagation();
+      (function(trackQueue, aria2) {
+        var i, track, _ref;
         _ref = JSON.parse(trackQueue);
-        _results = [];
         for (i in _ref) {
           track = _ref[i];
-          _results.push({
-            uri: track.mp3Url,
-            options: {
-              out: "" + track.name + " [" + (track.artists.map(function(artist) {
-                return artist.name;
-              }).join('、')) + "].mp3"
-            }
-          });
+          aria2.add(Aria2.fn.addUri, [track.mp3Url], H.buildAriaParam({
+            out: "" + track.name + " [" + (track.artists.map(function(artist) {
+              return artist.name;
+            }).join('、')) + "].mp3"
+          }));
         }
-        return _results;
-      })(localStorage['track-queue']));
-      e.stopPropagation();
+        aria2.send(true);
+      })(localStorage['track-queue'], new Aria2.BATCH(H.aria2, function() {
+        return H.info(arguments);
+      }));
     });
-    if (H.config.dAria_auth !== 2) {
+    if (H.config.dAria_auth === 2) {
+      H.captureAria(this.linkDownload);
+    } else {
       this.linkDownloadAll.addClass('jx_hide');
     }
-    H.captureAria(this.linkDownload);
     H.waitUntil(function() {
       return $('.listhdc > .addall').length;
     }, (function(_this) {
