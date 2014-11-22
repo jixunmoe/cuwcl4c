@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.317
+// @version        3.0.321
 
 // 全局匹配
 // @include *
@@ -2142,7 +2142,10 @@ div#jx_douban_dl_wrap {
 	name: '通用 phpDisk.a 网盘规则',
 	// 相关规则: 跳转 /file-xxx -> /download.php?id=xxx&key=xxx
 	
-	host: ['79pan.com', '7mv.cc', 'pan.52zz.org', '258pan.com', 'huimeiku.com'],
+	host: [
+		'79pan.com', '7mv.cc', 'pan.52zz.org', '258pan.com',
+		'huimeiku.com', '77pan.cc', 'wpan.cc'
+	],
 
 	hide: ['#code_box', '#down_box2', '#codefrm'],
 	show: '#down_box',

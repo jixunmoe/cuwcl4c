@@ -7,7 +7,11 @@ fs.readdirSync (modDir).forEach (function (m) {
 		var file = fs.readFileSync (modDir + m).toString ();
 		var name = file.match (/name\s*:\s*'([^']+)/);
 		name = name ? name[1] : m.slice(-3);
-		var hosts = file.match (/host\s*:\s*(\[.+?\]|'[^']+)/)[1].replace(/'/g, '').replace (/\/\*[\s\S]+\*\//g, '');
+		var hosts = file.match (/host\s*:\s*(\[[\s\S]+?\]|'[^']+)/)[1]
+			.replace(/'/g, '')
+			.replace(/\s+/g, ' ')
+			.replace (/\/\*[\s\S]+\*\//g, '');
+		
 		if (hosts[0] !== '[')
 			hosts = '[' + hosts + ']';
 
