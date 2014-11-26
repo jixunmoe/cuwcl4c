@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.321
+// @version        3.0.322
 
 // 全局匹配
 // @include *
@@ -1149,7 +1149,11 @@ H.extract(function () { /*
 			return that.randcode && that.randcode.value.length == 4;
 		});
 		
-		document.user_form.hash_key.value = H.base64Decode(document.user_form.hash_info.value);
+		try {
+			document.user_form.hash_key.value = H.base64Decode(document.user_form.hash_info.value);
+		} catch (e) {
+			H.info ('缺失或无效的 hash_key 属性值, 跳过…')
+		}
 		$('.captcha_right').css('float', 'left');
 		
 		$('#vfcode:first').parent()

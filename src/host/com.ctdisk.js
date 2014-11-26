@@ -9,7 +9,11 @@
 			return that.randcode && that.randcode.value.length == 4;
 		});
 		
-		document.user_form.hash_key.value = H.base64Decode(document.user_form.hash_info.value);
+		try {
+			document.user_form.hash_key.value = H.base64Decode(document.user_form.hash_info.value);
+		} catch (e) {
+			H.info ('缺失或无效的 hash_key 属性值, 跳过…')
+		}
 		$('.captcha_right').css('float', 'left');
 		
 		$('#vfcode:first').parent()
