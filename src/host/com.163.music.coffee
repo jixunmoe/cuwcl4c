@@ -10,6 +10,14 @@ noFrame: yes,
 dl_icon: yes,
 css: `<% ~com.163.music.dl.css %>`,
 
+onStart: ->
+	# 优先使用 HTML5 播放器, 如果没有再考虑 Flash 支援
+	unsafeExec ->
+		fakePlatForm = navigator.platform + "--Fake-mac"
+		Object.defineProperty navigator, "platform",
+			get: -> fakePlatForm
+			set: -> null
+
 onBody: ->
 	# 单曲下载
 	@linkDownload = $('<a>')

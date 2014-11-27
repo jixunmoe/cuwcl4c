@@ -36,7 +36,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.323
+// @version        3.0.326
 
 // 全局匹配
 // @include *
@@ -799,6 +799,20 @@ H.extract(function () { /*
 	left: 385px;
 }
 */}),
+  onStart: function() {
+    return unsafeExec(function() {
+      var fakePlatForm;
+      fakePlatForm = navigator.platform + "--Fake-mac";
+      return Object.defineProperty(navigator, "platform", {
+        get: function() {
+          return fakePlatForm;
+        },
+        set: function() {
+          return null;
+        }
+      });
+    });
+  },
   onBody: function() {
     this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper')).attr({
       title: '播放音乐, 即刻解析'
