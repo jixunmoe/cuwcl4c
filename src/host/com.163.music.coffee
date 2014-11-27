@@ -53,10 +53,10 @@ onBody: ->
 		return
 	, yes, 500
 
-	H.waitUntil 'nm.m.f.xr.prototype.Al', =>
+	H.waitUntil 'nm.m.f.baR.prototype.jj', =>
 		unsafeExec (scriptName) ->
-			_bakPlayerAl = nm.m.f.xr::Al
-			nm.m.f.xr::Al = (songObj) ->
+			_bakPlayerUpdateUI = nm.m.f.baR::jj
+			nm.m.f.baR::jj = (songObj) ->
 				eveSongObj = 
 					artist: songObj.artists.map((artist) -> artist.name).join '、'
 					name: songObj.name
@@ -64,7 +64,7 @@ onBody: ->
 
 				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj);
 
-				_bakPlayerAl.apply this, arguments
+				_bakPlayerUpdateUI.apply this, arguments
 				return
 		, H.scriptName
 
