@@ -4,14 +4,20 @@ var coffee = require ('coffee-script');
 
 var ret = [];
 fs.readdirSync (modDir).forEach (function (m) {
-	if (m.slice(-3) === '.js')
-		ret.push (fs.readFileSync (modDir + m));
-	else if (m.slice(-7) === '.coffee')
+	var msg = '/* Compiled from ' + m + ' */\n';
+
+	if (m.slice(-3) === '.js') {
+		ret.push (msg + fs.readFileSync (modDir + m));
+	} else if (m.slice(-7) === '.coffee') {
 		ret.push (
+			msg + 
 			coffee.compile (fs.readFileSync (modDir + m).toString(), {bare: true})
 				// 修正结尾的 ;
 				.replace(/;\s*$/, '')
 		);
+	} else {
+		console.error ('Unknown file %s, skip...', m);
+	}
 });
 
 module.exports = ret.join (',\n');

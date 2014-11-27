@@ -24,9 +24,11 @@
 // 骑牛的会请求不存在的 jquery.map 文件，改用官网的
 // @require        http://code.jquery.com/jquery-2.1.1.min.js
 
-/// 骑牛 CDN
+/// CryptoJS 相关库
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/core-min.js
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/enc-base64-min.js
+// @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/md5-min.js
+// @require        https://greasyfork.org/scripts/6696/code/CryptoJS-ByteArray.js
 
 /// 兼容 GM 1.x, 2.x
 // @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js

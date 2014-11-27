@@ -19,6 +19,8 @@ onStart: ->
 			set: -> null
 
 onBody: ->
+	getUri = (song) => @getUri song
+
 	# 单曲下载
 	@linkDownload = $('<a>')
 		.addClass(H.defaultDlIcon)
@@ -36,12 +38,14 @@ onBody: ->
 		.text('全部下载')
 		.attr
 			title: '下载列表里的所有歌曲'
-		.click (e) ->
+		.click (e) =>
 			# 编译出来的代码量好大!
 			e.stopPropagation()
-			do (trackQueue = localStorage['track-queue'], aria2 = new Aria2.BATCH(H.aria2, -> H.info arguments)) ->
+			do (trackQueue = localStorage['track-queue'],
+				aria2 = new Aria2.BATCH(H.aria2, -> H.info arguments),
+			) ->
 				for i, track of JSON.parse trackQueue
-					aria2.add Aria2.fn.addUri, [track.mp3Url], H.buildAriaParam
+					aria2.add Aria2.fn.addUri, [getUri track], H.buildAriaParam
 						out: "#{track.name} [#{track.artists.map((artist) -> artist.name).join '、'}].mp3"
 				aria2.send yes
 				return
@@ -68,7 +72,7 @@ onBody: ->
 				eveSongObj = 
 					artist: songObj.artists.map((artist) -> artist.name).join '、'
 					name: songObj.name
-					url: songObj.mp3Url
+					song: JSON.stringify songObj
 
 				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj);
 
@@ -82,9 +86,32 @@ onBody: ->
 
 			@linkDownload
 				.attr
-					href: H.uri(songObj.url, "#{songObj.name} [#{songObj.artist}].mp3")
+					href: H.uri(getUri(JSON.parse songObj.song), "#{songObj.name} [#{songObj.artist}].mp3")
 					title: '下载: ' + songObj.name
 			return
 		return
 	return
 
+dfsHash: ( () ->
+	strToKeyCodes = (str) -> Array::slice.call(String(str).split '').map (e) -> e.charCodeAt()
+
+	# 还原:
+	# arr.map(function (e) { return String.fromCharCode(e) }).join('');
+	# 不能直接传 String.fromCharCode !! 参数2 的 index 会玩坏返回值
+	(dfsid) ->
+		key = [ 51, 103, 111, 56, 38, 36, 56, 42, 51, 42, 51, 104, 48, 107, 40, 50, 41, 50 ]
+		fids = strToKeyCodes(dfsid).map (fid, i) -> (fid ^ key[i % key.length]) & 0xFF
+		
+		CryptoJS
+			.MD5(CryptoJS.lib.ByteArray(fids))
+			.toString(CryptoJS.enc.Base64)
+			.replace(/\//g, "_")
+			.replace(/\+/g, "-")
+)()
+
+getUri: (song) ->
+	dsfId = (song.hMusic || song.mMusic || song.lMusic).dfsId;
+
+	# 服务器 1 ~ 4
+	randServer = Math.floor(Math.random() * 4) + 1
+	return "http://m#{randServer}.music.126.net/#{@dfsHash(dsfId)}/#{dsfId}.mp3";

@@ -24,9 +24,11 @@
 // 骑牛的会请求不存在的 jquery.map 文件，改用官网的
 // @require        http://code.jquery.com/jquery-2.1.1.min.js
 
-/// 骑牛 CDN
+/// CryptoJS 相关库
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/core-min.js
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/enc-base64-min.js
+// @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/md5-min.js
+// @require        https://greasyfork.org/scripts/6696/code/CryptoJS-ByteArray.js
 
 /// 兼容 GM 1.x, 2.x
 // @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
@@ -36,7 +38,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.326
+// @version        3.0.328
 
 // 全局匹配
 // @include *
@@ -687,7 +689,8 @@ H.log ('域名: %s; 完整地址: %s; 请求参数: %s', H.directHost, H.current
 H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢。', H.version, H.reportUrl);
 
 
-	var sites = [ {
+	var sites = [ /* Compiled from AA.config.js */
+{
 	name: '脚本配置页面',
 	host: ['localhost', 'jixunmoe.github.io'],
 	path: ['/conf/', '/cuwcl4c/config/'],
@@ -713,6 +716,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 }
 ,
+/* Compiled from cc.lepan.js */
 {
 	name: '乐盘',
 	host: ['lepan.cc', 'sx566.com'],
@@ -727,12 +731,14 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 		$('#header:first').next().remove ();
 	}
 },
+/* Compiled from cn.vdisk.js */
 {
 	name: '威盘',
 	host: ['vdisk.cn'],
 	hide: ['#loadingbox', '#yanzhengbox', '#yzmbox', '#getbox > .btn:first-child'],
 	show: ['#btnbox']
 },
+/* Compiled from com.119g.js */
 {
 	name: '119g 网盘',
 	host: ['d.119g.com'],
@@ -744,6 +750,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 		}
 	}
 },
+/* Compiled from com.163.music.coffee */
 ({
 
   /*
@@ -814,6 +821,12 @@ H.extract(function () { /*
     });
   },
   onBody: function() {
+    var getUri;
+    getUri = (function(_this) {
+      return function(song) {
+        return _this.getUri(song);
+      };
+    })(this);
     this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper')).attr({
       title: '播放音乐, 即刻解析'
     }).click(function(e) {
@@ -821,24 +834,26 @@ H.extract(function () { /*
     });
     this.linkDownloadAll = $('<a>').addClass(H.defaultDlIcon).addClass('addall').text('全部下载').attr({
       title: '下载列表里的所有歌曲'
-    }).click(function(e) {
-      e.stopPropagation();
-      (function(trackQueue, aria2) {
-        var i, track, _ref;
-        _ref = JSON.parse(trackQueue);
-        for (i in _ref) {
-          track = _ref[i];
-          aria2.add(Aria2.fn.addUri, [track.mp3Url], H.buildAriaParam({
-            out: "" + track.name + " [" + (track.artists.map(function(artist) {
-              return artist.name;
-            }).join('、')) + "].mp3"
-          }));
-        }
-        aria2.send(true);
-      })(localStorage['track-queue'], new Aria2.BATCH(H.aria2, function() {
-        return H.info(arguments);
-      }));
-    });
+    }).click((function(_this) {
+      return function(e) {
+        e.stopPropagation();
+        (function(trackQueue, aria2) {
+          var i, track, _ref;
+          _ref = JSON.parse(trackQueue);
+          for (i in _ref) {
+            track = _ref[i];
+            aria2.add(Aria2.fn.addUri, [getUri(track)], H.buildAriaParam({
+              out: "" + track.name + " [" + (track.artists.map(function(artist) {
+                return artist.name;
+              }).join('、')) + "].mp3"
+            }));
+          }
+          aria2.send(true);
+        })(localStorage['track-queue'], new Aria2.BATCH(H.aria2, function() {
+          return H.info(arguments);
+        }));
+      };
+    })(this));
     if (H.config.dAria_auth === 2) {
       H.captureAria(this.linkDownload);
     } else {
@@ -863,7 +878,7 @@ H.extract(function () { /*
                 return artist.name;
               }).join('、'),
               name: songObj.name,
-              url: songObj.mp3Url
+              song: JSON.stringify(songObj)
             };
             document.dispatchEvent(new CustomEvent(scriptName, {
               detail: eveSongObj
@@ -875,14 +890,37 @@ H.extract(function () { /*
           var songObj;
           songObj = e.detail;
           _this.linkDownload.attr({
-            href: H.uri(songObj.url, "" + songObj.name + " [" + songObj.artist + "].mp3"),
+            href: H.uri(getUri(JSON.parse(songObj.song)), "" + songObj.name + " [" + songObj.artist + "].mp3"),
             title: '下载: ' + songObj.name
           });
         });
       };
     })(this));
+  },
+  dfsHash: (function() {
+    var strToKeyCodes;
+    strToKeyCodes = function(str) {
+      return Array.prototype.slice.call(String(str).split('')).map(function(e) {
+        return e.charCodeAt();
+      });
+    };
+    return function(dfsid) {
+      var fids, key;
+      key = [51, 103, 111, 56, 38, 36, 56, 42, 51, 42, 51, 104, 48, 107, 40, 50, 41, 50];
+      fids = strToKeyCodes(dfsid).map(function(fid, i) {
+        return (fid ^ key[i % key.length]) & 0xFF;
+      });
+      return CryptoJS.MD5(CryptoJS.lib.ByteArray(fids)).toString(CryptoJS.enc.Base64).replace(/\//g, "_").replace(/\+/g, "-");
+    };
+  })(),
+  getUri: function(song) {
+    var dsfId, randServer;
+    dsfId = (song.hMusic || song.mMusic || song.lMusic).dfsId;
+    randServer = Math.floor(Math.random() * 4) + 1;
+    return "http://m" + randServer + ".music.126.net/" + (this.dfsHash(dsfId)) + "/" + dsfId + ".mp3";
   }
 }),
+/* Compiled from com.1ting.js */
 {
 	name: '一听音乐',
 	host: ['www.1ting.com'],
@@ -918,6 +956,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.565656.js */
 {
 	name: '565656 音乐',
 	host: 'www.565656.com',
@@ -933,6 +972,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.5sing.js */
 {
 	name: '5sing 下载解析',
 	host: ['5sing.com', '5sing.kugou.com'],
@@ -1046,6 +1086,7 @@ H.extract(function () { /*
 	},
 
 },
+/* Compiled from com.7958.js */
 {
 	name: '千军万马网盘系列',
 	host: ['7958.com', 'qjwm.com'],
@@ -1064,6 +1105,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.9ku.js */
 {
 	name: '9酷音乐',
 	host: 'www.9ku.com',
@@ -1095,6 +1137,7 @@ H.extract(function () { /*
 		}).html (this.dlLink);
 	}
 },
+/* Compiled from com.baidu.dl.js */
 {
 	name: '百度盘免下载管家',
 	host: ['yun.baidu.com', 'pan.baidu.com'],
@@ -1110,6 +1153,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.colafile.js */
 {
 	name: '可乐盘',
 	host: 'colafile.com',
@@ -1152,6 +1196,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.ctdisk.js */
 {
 	name: '城通网盘系列',
 	host: ['400gb.com', 'ctdisk.com', 'pipipan.com', 'bego.cc'],
@@ -1179,6 +1224,7 @@ H.extract(function () { /*
 		H.log ('城通就绪.');
 	}
 },
+/* Compiled from com.djcc.js */
 {
 	name: 'DJCC 舞曲',
 	host: ['www.djcc.com'/* , 'www.dj.cc' */],
@@ -1255,6 +1301,7 @@ H.extract(function () { /*
 			.css ('min-height', '160');
 	}
 },
+/* Compiled from com.djkk.js */
 {
 	name: 'DJ 嗨嗨',
 	host: 'www.djkk.com',
@@ -1295,6 +1342,7 @@ H.extract(function () { /*
 		this.dlHolder.appendTo ($('.main-panel'));
 	}
 },
+/* Compiled from com.djye.js */
 {
 	name: 'DJ 爷爷网',
 	host: 'www.djye.com',
@@ -1343,6 +1391,7 @@ H.extract(function () { /*
 			.prev().css('padding-left', 25);
 	}
 },
+/* Compiled from com.duole.js */
 {
 	name: '多乐音乐',
 	host: 'www.duole.com',
@@ -1404,6 +1453,7 @@ H.extract(function () { /*
 		}, false);
 	}
 },
+/* Compiled from com.duomi.ear.js */
 {
 	name: '邻居的耳朵',
 	host: 'ear.duomi.com',
@@ -1412,6 +1462,7 @@ H.extract(function () { /*
 		H.wordpressAudio ();
 	}
 },
+/* Compiled from com.howfile.js */
 {
 	name: '好盘',
 	host: 'howfile.com',
@@ -1419,6 +1470,7 @@ H.extract(function () { /*
 	hide: ['#floatdiv div', '.row1_right'],
 	css : '#floatdiv { top: 150px; z-index: 99999; display: block !important; }'
 },
+/* Compiled from com.oyinyue.js */
 {
 	name: '噢音乐下载解析',
 	host: 'oyinyue.com',
@@ -1478,6 +1530,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.qq.fm.js */
 {
 	name: 'QQ 电台下载解析',
 	host: 'fm.qq.com',
@@ -1518,6 +1571,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.qq.music.iplimit.js */
 {
 	name: 'QQ 音乐、电台海外访问限制解除',
 	host: ['y.qq.com', 'fm.qq.com'],
@@ -1532,6 +1586,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.qq.y.js */
 {
 	name: 'QQ 音乐下载解析',
 	host: 'y.qq.com',
@@ -1592,6 +1647,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.rayfile.js */
 {
 	name: '飞速网',
 	host: 'rayfile.com',
@@ -1610,6 +1666,7 @@ H.extract(function () { /*
 		}
 	}
 },
+/* Compiled from com.songtaste.js */
 {
 	name: 'SongTaste 下载解析',
 	host: ['songtaste.com'],
@@ -1787,6 +1844,7 @@ H.extract(function () { /*
 		});
 	}
 },
+/* Compiled from com.sudupan.js */
 {
 	name: '速度盘',
 	host: ['sudupan.com'],
@@ -1797,6 +1855,7 @@ H.extract(function () { /*
 		}
 	}
 },
+/* Compiled from com.xiami.js */
 {
 	name: '虾米音乐',
 	host: 'www.xiami.com',
@@ -1910,6 +1969,7 @@ H.extract(function () { /*
 		return unescape(ret.substr(0, link.length)).replace(/\^/g, '0').replace(/\+/g, ' ');
 	}
 },
+/* Compiled from com.yimuhe.js */
 {
 	name: '一木禾网盘',
 	host: 'yimuhe.com',
@@ -1945,6 +2005,7 @@ H.extract(function () { /*
 			}));
 	}
 },
+/* Compiled from com.yinyuetai.js */
 {
 	name: '音悦台下载解析',
 	host: ['yinyuetai.com'],
@@ -2032,6 +2093,7 @@ H.extract(function () { /*
 		this._linkHolder.append(H.sprintf ('提供: %s %s ', H.scriptName, H.version));
 	}
 },
+/* Compiled from fm.douban.js */
 {
 	name: '豆瓣电台',
 	host: 'douban.fm',
@@ -2095,6 +2157,7 @@ div#jx_douban_dl_wrap {
 		});
 	}
 },
+/* Compiled from fm.jing.js */
 {
 	name: 'Jing.fm',
 	host: 'jing.fm',
@@ -2131,6 +2194,7 @@ div#jx_douban_dl_wrap {
 		}.bind (this), false);
 	}
 },
+/* Compiled from fm.moe.js */
 {
 	name: '萌电台 [moe.fm]',
 	host: 'moe.fm',
@@ -2156,6 +2220,7 @@ div#jx_douban_dl_wrap {
 		});
 	}
 },
+/* Compiled from genetic.phpdisk.a.js */
 {
 	name: '通用 phpDisk.a 网盘规则',
 	// 相关规则: 跳转 /file-xxx -> /download.php?id=xxx&key=xxx
@@ -2195,6 +2260,7 @@ div#jx_douban_dl_wrap {
 		});
 	}
 },
+/* Compiled from genetic.phpdisk.z.js */
 {
 	name: '通用 phpDisk.z 网盘规则',
 	// 相关规则: 直接跳转 /file-xxx -> /down-xxx
@@ -2217,6 +2283,7 @@ div#jx_douban_dl_wrap {
 		H.phpDiskAutoRedir ();
 	}
 },
+/* Compiled from net.9pan.js */
 {
 	name: '9盘',
 	host: 'www.9pan.net',
