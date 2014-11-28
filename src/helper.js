@@ -130,13 +130,18 @@ var H = {
 			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
 				e.stopPropagation ();
 				var link = linkEl.href.split('|');
-				H.aria2.addUri ([link[1]], {
+				var ariaParam = {
 					out: decodeURIComponent(link[2]),
 					referer: link[3],
 					dir: H.config.sAria_dir,
 					'user-agent': navigator.userAgent,
-					header: ['Cookie: ' + document.cookie]
-				}, H.nop, function (r) {
+					header: []
+				};
+
+				if (linkEl.classList.contains('aria-cookie'))
+					ariaParam.header.push ('Cookie: ' + document.cookie);
+
+				H.aria2.addUri ([link[1]], ariaParam, H.nop, function (r) {
 					var sErrorMsg;
 					if (r.error) {
 						sErrorMsg = H.sprintf ('提交任务发生错误!\n\n错误代码 %s: %s', r.error.code, r.error.message);
@@ -151,6 +156,11 @@ var H = {
 	},
 
 	buildAriaParam: function (opts) {
+		if (opts.cookie) {
+			opts.header = opts.header || [];
+			opts.header.push ('Cookie: ' + (opts.cookie || document.cookie));
+			delete opts.cookie;
+		}
 		return H.merge ({
 			referer: location.href,
 			dir: H.config.sAria_dir,

@@ -21,6 +21,7 @@
 			H.fixStyleOrder (styleToFix);
 
 			var dlBtn = $('<a>')
+				.addClass('aria-cookie')
 				.attr('title', '播放音乐, 即刻下载')
 				.appendTo (
 					$('<strong>')
