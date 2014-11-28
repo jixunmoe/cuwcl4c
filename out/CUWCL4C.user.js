@@ -38,7 +38,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.328
+// @version        3.0.329
 
 // 全局匹配
 // @include *
@@ -866,12 +866,12 @@ H.extract(function () { /*
         _this.linkDownloadAll.insertBefore($('.m-playbar .listhdc .addall')).after($('<a>').addClass('line jx_dl_line'));
       };
     })(this), true, 500);
-    H.waitUntil('nm.m.f.baR.prototype.jj', (function(_this) {
+    H.waitUntil('nm.m.f.xr.prototype.Al', (function(_this) {
       return function() {
         unsafeExec(function(scriptName) {
           var _bakPlayerUpdateUI;
-          _bakPlayerUpdateUI = nm.m.f.baR.prototype.jj;
-          return nm.m.f.baR.prototype.jj = function(songObj) {
+          _bakPlayerUpdateUI = nm.m.f.xr.prototype.Al;
+          return nm.m.f.xr.prototype.Al = function(songObj) {
             var eveSongObj;
             eveSongObj = {
               artist: songObj.artists.map(function(artist) {

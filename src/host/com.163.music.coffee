@@ -65,10 +65,10 @@ onBody: ->
 		return
 	, yes, 500
 
-	H.waitUntil 'nm.m.f.baR.prototype.jj', =>
+	H.waitUntil 'nm.m.f.xr.prototype.Al', =>
 		unsafeExec (scriptName) ->
-			_bakPlayerUpdateUI = nm.m.f.baR::jj
-			nm.m.f.baR::jj = (songObj) ->
+			_bakPlayerUpdateUI = nm.m.f.xr::Al
+			nm.m.f.xr::Al = (songObj) ->
 				eveSongObj = 
 					artist: songObj.artists.map((artist) -> artist.name).join '、'
 					name: songObj.name
