@@ -7,6 +7,10 @@ for (var i = sites.length; i--; ) {
 	
 	eve  = site[event];
 
+	if (site._styleApplied)
+		// 修正 CSS 可能被覆盖的错误
+		H.fixStyleOrder (site.styleBlock);
+
 	while (typeof eve == 'string') {
 		if (eve == site[eve]) {
 			H.error ('Repetitive ' + event + ' handler (' + eve + '), skip ..');

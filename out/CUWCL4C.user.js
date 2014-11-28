@@ -38,7 +38,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.329
+// @version        3.0.332
 
 // 全局匹配
 // @include *
@@ -183,7 +183,8 @@ var H = {
 					out: decodeURIComponent(link[2]),
 					referer: link[3],
 					dir: H.config.sAria_dir,
-					'user-agent': navigator.userAgent
+					'user-agent': navigator.userAgent,
+					header: ['Cookie: ' + document.cookie]
 				}, H.nop, function (r) {
 					var sErrorMsg;
 					if (r.error) {
@@ -227,6 +228,7 @@ var H = {
 H.merge (H, {
 	_log: console.log.bind (console),
 	_inf: console.info.bind (console),
+	_war: console.warn.bind (console),
 	_err: console.error.bind (console),
 
 	log: function (_prefix, msg) {
@@ -259,7 +261,18 @@ H.merge (H, {
 		} else {
 			H._err.apply (0, [].concat.apply([_prefix], args));
 		}
-	}.bind (H, H.sprintf ('[%s][错误] ', H.scriptName))
+	}.bind (H, H.sprintf ('[%s][错误] ', H.scriptName)),
+
+	warn: function (_prefix, msg) {
+		var args = [].slice.call(arguments, 1);
+
+		if (typeof msg == 'string') {
+			// TODO: Simplify this?
+			H._inf.apply (0, [].concat.apply ([_prefix + msg], args.slice(1)));
+		} else {
+			H._inf.apply (0, [].concat.apply([_prefix], args));
+		}
+	}.bind (H, H.sprintf ('[%s][警告] ', H.scriptName))
 });
 
 H.config = H.merge ({
@@ -670,6 +683,10 @@ H.merge (H, {
 			}, unsafeWindow.$[namespace].prototype, '.$.' + namespace + '.prototype');
 			H.info ('绑定完毕, enjoy~');
 		});
+	},
+
+	fixStyleOrder: function (elStyle) {
+		$('head').append (elStyle);
 	}
 });
 
@@ -1594,24 +1611,41 @@ H.extract(function () { /*
 
 	css: /* Resource: com.qq.y.dl.css */
 H.extract(function () { /*
-.m_player .bar_op {
-	left:  230px;
-	width: 310px;
+@media screen {
+	.m_player .bar_op {
+		left:  208px;
+		width: 310px;
+	}
+
+	.jx_dl_bt {
+		transform: rotate(90deg);
+	}
+
+	.jx_dl_bt > a {
+		width:   100%;
+		height:  100%;
+		display: block;
+		outline: 0 !important;
+	}
 }
 
-.jx_dl_bt {
-	transform: rotate(90deg);
-}
-
-.jx_dl_bt > a {
-	width:   100%;
-	height:  100%;
-	display: block;
-	outline: 0 !important;
-}
 */}),
 	onBody: function () {
+		if (H.config.dUriType == 1) {
+			H.warn (
+				'%s\n%s',
+				'当前版本的协议尚未支援 Cookie 输入, 回滚至连接版',
+				'如果您确实需要自动填入用户名, 请改用 Aria2 版'
+			);
+
+			H.config.dUriType = 0;
+		}
+
+		var styleToFix = this.styleBlock;
+
 		H.waitUntil ('MUSIC.module.webPlayer.interFace.getSongUrl', function () {
+			H.fixStyleOrder (styleToFix);
+
 			var dlBtn = $('<a>')
 				.attr('title', '播放音乐, 即刻下载')
 				.appendTo (
@@ -1625,11 +1659,9 @@ H.extract(function () { /*
 
 				window.MUSIC.module.webPlayer.interFace.getSongUrl = function (songObj, cb) {
 					document.dispatchEvent ( new CustomEvent (scriptName, {detail: {
-						mp3: 'http://stream%(stream).qqmusic.qq.com/%(sid).mp3'.jstpl_format({
-							stream: parseInt(songObj.mstream, 10) + 10,
-							sid: parseInt(songObj.mid, 10) + 30000000
-						}),
-						name: songObj.msong
+						host: 'http://stream' + (parseInt(songObj.mstream) + 10) + '.qqmusic.qq.com/',
+						path: "M800" + songObj.mmid + ".mp3",
+						name: songObj.msong + '[' + songObj.msinger + ']'
 					} }) );
 
 					return oldGetSong.apply (this, arguments);
@@ -1640,7 +1672,7 @@ H.extract(function () { /*
 				var songObj = e.detail;
 
 				dlBtn.attr ({
-					href: H.uri (songObj.mp3, songObj.name + '.mp3'),
+					href: H.uri (songObj.host + songObj.path, songObj.name + '.mp3'),
 					title: '下载: ' + songObj.name
 				});
 			}, false);
@@ -2312,6 +2344,10 @@ for (var i = sites.length; i--; ) {
 		continue;
 	
 	eve  = site[event];
+
+	if (site._styleApplied)
+		// 修正 CSS 可能被覆盖的错误
+		H.fixStyleOrder (site.styleBlock);
 
 	while (typeof eve == 'string') {
 		if (eve == site[eve]) {

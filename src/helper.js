@@ -134,7 +134,8 @@ var H = {
 					out: decodeURIComponent(link[2]),
 					referer: link[3],
 					dir: H.config.sAria_dir,
-					'user-agent': navigator.userAgent
+					'user-agent': navigator.userAgent,
+					header: ['Cookie: ' + document.cookie]
 				}, H.nop, function (r) {
 					var sErrorMsg;
 					if (r.error) {
@@ -178,6 +179,7 @@ var H = {
 H.merge (H, {
 	_log: console.log.bind (console),
 	_inf: console.info.bind (console),
+	_war: console.warn.bind (console),
 	_err: console.error.bind (console),
 
 	log: function (_prefix, msg) {
@@ -210,7 +212,18 @@ H.merge (H, {
 		} else {
 			H._err.apply (0, [].concat.apply([_prefix], args));
 		}
-	}.bind (H, H.sprintf ('[%s][错误] ', H.scriptName))
+	}.bind (H, H.sprintf ('[%s][错误] ', H.scriptName)),
+
+	warn: function (_prefix, msg) {
+		var args = [].slice.call(arguments, 1);
+
+		if (typeof msg == 'string') {
+			// TODO: Simplify this?
+			H._inf.apply (0, [].concat.apply ([_prefix + msg], args.slice(1)));
+		} else {
+			H._inf.apply (0, [].concat.apply([_prefix], args));
+		}
+	}.bind (H, H.sprintf ('[%s][警告] ', H.scriptName))
 });
 
 H.config = H.merge ({
@@ -621,6 +634,10 @@ H.merge (H, {
 			}, unsafeWindow.$[namespace].prototype, '.$.' + namespace + '.prototype');
 			H.info ('绑定完毕, enjoy~');
 		});
+	},
+
+	fixStyleOrder: function (elStyle) {
+		$('head').append (elStyle);
 	}
 });
 
