@@ -117,6 +117,33 @@ var H = {
 		return H.aria2;
 	},
 
+	addToAria: function (url, filename, referer, cookie, headers) {
+		var ariaParam = {
+			out: filename,
+			referer: referer || location.href,
+			dir: H.config.sAria_dir,
+			'user-agent': navigator.userAgent,
+			header: headers || []
+		};
+
+		if (cookie === true)
+			cookie = document.cookie;
+
+		if (cookie)
+			ariaParam.header.push ('Cookie: ' + cookie);
+
+		H.aria2.addUri ([url], ariaParam, H.nop, function (r) {
+			var sErrorMsg;
+			if (r.error) {
+				sErrorMsg = H.sprintf ('错误代码 %s: %s', r.error.code, r.error.message);
+			} else {
+				sErrorMsg = '与 Aria2 后台通信失败, 服务未开启?';
+			}
+
+			alert (H.sprintf('[%s] 提交任务发生错误!\n\n%s', H.scriptName, sErrorMsg));
+		});
+	},
+
 	captureAria: function (el) {
 		if (H.config.dUriType !== 2)
 			return ;
@@ -129,28 +156,9 @@ var H = {
 
 			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
 				e.stopPropagation ();
+
 				var link = linkEl.href.split('|');
-				var ariaParam = {
-					out: decodeURIComponent(link[2]),
-					referer: link[3],
-					dir: H.config.sAria_dir,
-					'user-agent': navigator.userAgent,
-					header: []
-				};
-
-				if (linkEl.classList.contains('aria-cookie'))
-					ariaParam.header.push ('Cookie: ' + document.cookie);
-
-				H.aria2.addUri ([link[1]], ariaParam, H.nop, function (r) {
-					var sErrorMsg;
-					if (r.error) {
-						sErrorMsg = H.sprintf ('提交任务发生错误!\n\n错误代码 %s: %s', r.error.code, r.error.message);
-					} else {
-						sErrorMsg = '与 Aria2 后台通信失败, 服务未开启?'
-					}
-
-					alert (H.sprintf('[%s] %s', H.scriptName, sErrorMsg));
-				});
+				H.addToAria(link[1], decodeURIComponent(link[2]), link[3], linkEl.classList.contains('aria-cookie'));
 			}
 		});
 	},
@@ -261,9 +269,10 @@ H.config = H.merge ({
 	}
 })(GM_getValue (H.scriptName)));
 
-if (!H.config.bDiaplayLog) {
+// 2014.11.30: 不显示日志
+if (!H.config.bDiaplayLog || H.isFrame) {
 	// 屏蔽日志函数
-	['log', 'info', 'error'].map(function (fooName) {
+	['log', 'info'].map(function (fooName) {
 		H['_' + fooName.slice(0, 3)] = H[fooName] = H.nop;
 	});
 }

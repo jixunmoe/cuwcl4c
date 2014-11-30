@@ -31,6 +31,9 @@
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/md5-min.js
 // @require        https://greasyfork.org/scripts/6696/code/CryptoJS-ByteArray.js
 
+/// 非同步枚举
+// @require        https://greasyfork.org/scripts/3588-interval-looper/code/Interval-Looper.js
+
 /// 兼容 GM 1.x, 2.x
 // @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
 

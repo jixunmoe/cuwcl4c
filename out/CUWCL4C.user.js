@@ -31,6 +31,9 @@
 // @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/md5-min.js
 // @require        https://greasyfork.org/scripts/6696/code/CryptoJS-ByteArray.js
 
+/// 非同步枚举
+// @require        https://greasyfork.org/scripts/3588-interval-looper/code/Interval-Looper.js
+
 /// 兼容 GM 1.x, 2.x
 // @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
 
@@ -39,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.335
+// @version        3.0.345
 
 // 全局匹配
 // @include *
@@ -167,6 +170,33 @@ var H = {
 		return H.aria2;
 	},
 
+	addToAria: function (url, filename, referer, cookie, headers) {
+		var ariaParam = {
+			out: filename,
+			referer: referer || location.href,
+			dir: H.config.sAria_dir,
+			'user-agent': navigator.userAgent,
+			header: headers || []
+		};
+
+		if (cookie === true)
+			cookie = document.cookie;
+
+		if (cookie)
+			ariaParam.header.push ('Cookie: ' + cookie);
+
+		H.aria2.addUri ([url], ariaParam, H.nop, function (r) {
+			var sErrorMsg;
+			if (r.error) {
+				sErrorMsg = H.sprintf ('错误代码 %s: %s', r.error.code, r.error.message);
+			} else {
+				sErrorMsg = '与 Aria2 后台通信失败, 服务未开启?';
+			}
+
+			alert (H.sprintf('[%s] 提交任务发生错误!\n\n%s', H.scriptName, sErrorMsg));
+		});
+	},
+
 	captureAria: function (el) {
 		if (H.config.dUriType !== 2)
 			return ;
@@ -179,28 +209,9 @@ var H = {
 
 			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
 				e.stopPropagation ();
+
 				var link = linkEl.href.split('|');
-				var ariaParam = {
-					out: decodeURIComponent(link[2]),
-					referer: link[3],
-					dir: H.config.sAria_dir,
-					'user-agent': navigator.userAgent,
-					header: []
-				};
-
-				if (linkEl.classList.contains('aria-cookie'))
-					ariaParam.header.push ('Cookie: ' + document.cookie);
-
-				H.aria2.addUri ([link[1]], ariaParam, H.nop, function (r) {
-					var sErrorMsg;
-					if (r.error) {
-						sErrorMsg = H.sprintf ('提交任务发生错误!\n\n错误代码 %s: %s', r.error.code, r.error.message);
-					} else {
-						sErrorMsg = '与 Aria2 后台通信失败, 服务未开启?'
-					}
-
-					alert (H.sprintf('[%s] %s', H.scriptName, sErrorMsg));
-				});
+				H.addToAria(link[1], decodeURIComponent(link[2]), link[3], linkEl.classList.contains('aria-cookie'));
 			}
 		});
 	},
@@ -311,9 +322,10 @@ H.config = H.merge ({
 	}
 })(GM_getValue (H.scriptName)));
 
-if (!H.config.bDiaplayLog) {
+// 2014.11.30: 不显示日志
+if (!H.config.bDiaplayLog || H.isFrame) {
 	// 屏蔽日志函数
-	['log', 'info', 'error'].map(function (fooName) {
+	['log', 'info'].map(function (fooName) {
 		H['_' + fooName.slice(0, 3)] = H[fooName] = H.nop;
 	});
 }
@@ -1179,6 +1191,166 @@ H.extract(function () { /*
 				});
 			});
 		});
+	}
+},
+/* Compiled from com.baidu.play.js */
+{
+	name: '百度音乐盒',
+	host: 'play.baidu.com',
+	path: '/',
+
+	show: '#floatBtn>.lossless',
+
+	onBody: function () {
+		var that = this;
+		that.qualities = 'auto_1 mp3_320+_1 mp3_320_1'.split(' ');
+
+		// Batch download queue
+		if (H.config.dUriType == 2) {
+			H.setupAria ();
+			this.$q = new IntervalLoop([], this._batch.bind(this), 300);
+			this.$q.loop(); // 准备接收数据
+			document.addEventListener (H.scriptName + '-BATCH', this._batchDownload.bind (this), false);
+		} else {
+			H.warn ('批量下载仅支援 Aria2 模式!');
+		}
+
+		document.addEventListener (H.scriptName, this._recvEvent.bind (this), false);
+
+		// fmPlayerView 是最后一个
+		H.waitUntil ('fmPlayerView', function () {
+			that.$dlBtn = $('.main-panel .download > a');
+
+			unsafeExec(function (scriptName, hookBatch) {
+				// 黄金 VIP
+				var oldSetVip = HQ.model.setVipInfo;
+				HQ.model.setVipInfo = function ( isVip, z ) {
+					if (!isVip) {
+						isVip = true;
+					}
+
+					return oldSetVip.call (this, isVip, z);
+				};
+				HQ.model.isGold = function () { return true; };
+				HQ.model.setVipInfo ();
+
+				var bakExtractUserInfo = UserModel.prototype._getUserInfo;
+				UserModel.prototype._getUserInfo = function () {
+					var r = bakExtractUserInfo.apply(this, arguments);
+					if (!r.vip) {
+						r.vip = {
+							cloud: {
+								service_level: 'gold'
+							}
+						};
+					}
+					r.isShowSourceIcon = false;
+
+					return r;
+				};
+
+				// 屏蔽日志发送, 刷屏好烦
+				logCtrl.sendLog = function () {};
+
+				if (hookBatch) {
+					var instFloatBtn = listView.tip.data("ui-floatButton");
+					listView.download = function (songIndex, isFlac) {
+						var songData = instFloatBtn.listElem.reelList("option", "data").filter(function (e, i) {
+							return -1 !== songIndex.indexOf(i)
+						}).map (function (e) {
+							return {
+								songName:   e.songName,
+								artistName: e.artistName,
+								songId:     e.songId,
+								isFlac:     !!isFlac
+							};
+						});
+
+						document.dispatchEvent (new CustomEvent (scriptName + '-BATCH', { detail: JSON.stringify(songData) }));
+					};
+				}
+
+				(function () {
+					// 取消下载按钮点击
+					this.$title.find('.download').off('click');
+
+					// 绑定播放事件
+					this.listCtrl.on('change:songLink', function (z, songData) {
+						document.dispatchEvent (new CustomEvent (scriptName, {detail: JSON.stringify (songData)}));
+					});
+				}).call (window.songInfoView);
+			}, H.scriptName, H.config.dUriType == 2);
+		});
+	},
+
+	_recvEvent: function (e) {
+		var songData = JSON.parse (e.detail);
+
+		for (var i = 3/* this.qualities.length */, song; !song && i--; )
+			song = songData.links[this.qualities[i]];
+
+		// 获取歌曲失败
+		if (!song || !song.songLink) {
+			H.warn ('解析下载地址失败, 可能百度更新了获取方式.');
+			return ;
+		}
+
+		this.$dlBtn.attr ({
+			title: song.songName,
+			href: H.uri(song.songLink, H.sprintf('%s [%s].%s', songData.songName, songData.artistName, song.format))
+		});
+	},
+
+	_batch: function (next, objSong) {
+		GM_xmlhttpRequest ({
+			method: 'GET',
+			url: 'http://yinyueyun.baidu.com/data/cloud/download?songIds=' + objSong.songId,
+			onload: function (r) {
+				// 智能选取当前最高码率
+				var dl = JSON.parse(r.responseText.replace(/\s/g, '')).data.data;
+
+				// 除非选择下无损 否则不采用无损
+				if (!objSong.isFlac && dl.flac)
+					delete dl.flac;
+
+				var qu = Object.keys(dl).sort(function (a, b) {
+					if (!dl[a]) return dl[b] ? -1 : 0;
+					if (!dl[b]) return  1;
+					return dl[a].rate - dl[b].rate;
+				}).pop();
+
+				var songDl = dl[qu];
+				var url = H.sprintf(
+					'http://yinyueyun.baidu.com/data/cloud/downloadsongfile?songIds=%s&rate=%s&format=%s',
+					objSong.songId, songDl.rate, songDl.format
+				);
+
+				var file = H.sprintf('%s [%s].%s', objSong.songName, objSong.artistName, songDl.format);
+
+				// 解析不需要 Cookie 下载的地址
+				GM_xmlhttpRequest ({
+					method: 'GET',
+					url: url,
+					headers: {
+						// 不用在浏览器处理下载, 取出第一个字节就行
+						Range: 'bytes=0-1'
+					},
+					onload: function (r) {
+						// 虽然因为编码问题导致 finalUrl 的文件名部分乱码,
+						// 但是识别歌曲用的 id 和 xcode 没有乱
+						H.addToAria(r.finalUrl, file);
+						next ();
+					}
+				});
+			}
+		});
+	},
+
+	_batchDownload: function (e) {
+		var arrSongs = JSON.parse (e.detail);
+		var $q = this.$q;
+
+		$q.add.apply($q, arrSongs);
 	}
 },
 /* Compiled from com.colafile.js */

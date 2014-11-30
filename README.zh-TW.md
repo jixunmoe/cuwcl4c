@@ -37,6 +37,7 @@
 - 千军万马网盘系列 - `[7958.com, qjwm.com]`
 - 9酷音乐 - `[www.9ku.com]`
 - 百度盘免下载管家 - `[yun.baidu.com, pan.baidu.com]`
+- 百度音乐盒 - `[play.baidu.com]`
 - 可乐盘 - `[colafile.com]`
 - 城通网盘系列 - `[400gb.com, ctdisk.com, pipipan.com, bego.cc]`
 - DJCC 舞曲 - `[www.djcc.com]`
