@@ -5,6 +5,7 @@
 // @grant          GM_registerMenuCommand
 // @grant          GM_getValue
 // @grant          GM_setValue
+// @grant          GM_info
 
 // @run-at         document-start
 // @name:en        Bypass Wait, Code & Login on Websites

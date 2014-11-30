@@ -5,6 +5,7 @@
 // @grant          GM_registerMenuCommand
 // @grant          GM_getValue
 // @grant          GM_setValue
+// @grant          GM_info
 
 // @run-at         document-start
 // @name:en        Bypass Wait, Code & Login on Websites
@@ -38,7 +39,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.333
+// @version        3.0.334
 
 // 全局匹配
 // @include *
@@ -2270,7 +2271,7 @@ div#jx_douban_dl_wrap {
 	
 	host: [
 		'79pan.com', '7mv.cc', 'pan.52zz.org', '258pan.com',
-		'huimeiku.com', '77pan.cc', 'wpan.cc'
+		'huimeiku.com', 'wpan.cc'
 	],
 
 	hide: ['#code_box', '#down_box2', '#codefrm'],
@@ -2307,7 +2308,10 @@ div#jx_douban_dl_wrap {
 {
 	name: '通用 phpDisk.z 网盘规则',
 	// 相关规则: 直接跳转 /file-xxx -> /down-xxx
-	host: ['azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 'vvpan.com'],
+	host: [
+		'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 
+		'77pan.cc', 'vvpan.com'
+	],
 	hide: [
 		// azpan, gxdisk
 		'.Downpagebox',

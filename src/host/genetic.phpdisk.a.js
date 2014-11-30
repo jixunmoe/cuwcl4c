@@ -4,7 +4,7 @@
 	
 	host: [
 		'79pan.com', '7mv.cc', 'pan.52zz.org', '258pan.com',
-		'huimeiku.com', '77pan.cc', 'wpan.cc'
+		'huimeiku.com', 'wpan.cc'
 	],
 
 	hide: ['#code_box', '#down_box2', '#codefrm'],

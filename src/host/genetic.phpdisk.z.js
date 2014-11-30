@@ -1,7 +1,10 @@
 {
 	name: '通用 phpDisk.z 网盘规则',
 	// 相关规则: 直接跳转 /file-xxx -> /down-xxx
-	host: ['azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 'vvpan.com'],
+	host: [
+		'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 
+		'77pan.cc', 'vvpan.com'
+	],
 	hide: [
 		// azpan, gxdisk
 		'.Downpagebox',
