@@ -59,7 +59,7 @@
 - Jing.fm - `[jing.fm]`
 - 萌电台 [moe.fm] - `[moe.fm]`
 - 通用 phpDisk.a 网盘规则 - `[ 79pan.com, 7mv.cc, pan.52zz.org, 258pan.com, huimeiku.com, wpan.cc ]`
-- 通用 phpDisk.z 网盘规则 - `[ azpan.com, gxdisk.com, 2kuai.com, 1wp.me, 77pan.cc, vvpan.com ]`
+- 通用 phpDisk.z 网盘规则 - `[ azpan.com, gxdisk.com, 2kuai.com, 1wp.me, 77pan.cc, vvpan.com, fmdisk.com ]`
 - 9盘 - `[www.9pan.net]`
 
 测试于 Chrome & Firefox 32 (GreasyMonkey 2.2)
