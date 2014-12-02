@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.348
+// @version        3.0.349
 
 // 全局匹配
 // @include *
@@ -1349,7 +1349,7 @@ H.extract(function () { /*
 						} else {
 							// 不是 Aria, 弹出链接
 							// 修正下链接名
-							GM_openInTab (H.uri(r.finalUrl.replace(/(\/\d+\/).+\./, '$1' + file + '.'), file), true);
+							GM_openInTab (H.uri(r.finalUrl.replace(/(\/\d+\/).+\?/, '$1' + file + '?'), file), true);
 						}
 						next ();
 					}
