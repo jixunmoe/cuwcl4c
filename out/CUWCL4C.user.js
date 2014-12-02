@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.345
+// @version        3.0.348
 
 // 全局匹配
 // @include *
@@ -1203,15 +1203,16 @@ H.extract(function () { /*
 
 	onBody: function () {
 		var that = this;
-		that.qualities = 'auto_1 mp3_320+_1 mp3_320_1'.split(' ');
+		this.qualities = 'auto_1 mp3_320+_1 mp3_320_1'.split(' ');
+		this.isAria = H.config.dUriType == 2;
 
 		// Batch download queue
-		if (H.config.dUriType == 2) {
-			H.setupAria ();
-			this.$q = new IntervalLoop([], this._batch.bind(this), 300);
-			this.$q.loop(); // 准备接收数据
-			document.addEventListener (H.scriptName + '-BATCH', this._batchDownload.bind (this), false);
-		} else {
+		H.setupAria ();
+		this.$q = new IntervalLoop([], this._batch.bind(this), 300);
+		this.$q.loop(); // 准备接收数据
+		document.addEventListener (H.scriptName + '-BATCH', this._batchDownload.bind (this), false);
+
+		if (!this.isAria) {
 			H.warn ('批量下载仅支援 Aria2 模式!');
 		}
 
@@ -1252,23 +1253,26 @@ H.extract(function () { /*
 				// 屏蔽日志发送, 刷屏好烦
 				logCtrl.sendLog = function () {};
 
-				if (hookBatch) {
-					var instFloatBtn = listView.tip.data("ui-floatButton");
-					listView.download = function (songIndex, isFlac) {
-						var songData = instFloatBtn.listElem.reelList("option", "data").filter(function (e, i) {
-							return -1 !== songIndex.indexOf(i)
-						}).map (function (e) {
-							return {
-								songName:   e.songName,
-								artistName: e.artistName,
-								songId:     e.songId,
-								isFlac:     !!isFlac
-							};
-						});
+				var instFloatBtn = listView.tip.data("ui-floatButton");
+				var oldMusicDownload = listView.download;
+				listView.download = function (songIndex, isFlac) {
+					// 批量下载, 但是不是 Aria 模式则放弃
+					if (!hookBatch && songIndex.length > 1) {
+						return oldMusicDownload.apply(this, arguments);
+					}
+					var songData = instFloatBtn.listElem.reelList("option", "data").filter(function (e, i) {
+						return -1 !== songIndex.indexOf(i)
+					}).map (function (e) {
+						return {
+							songName:   e.songName,
+							artistName: e.artistName,
+							songId:     e.songId,
+							isFlac:     !!isFlac
+						};
+					});
 
-						document.dispatchEvent (new CustomEvent (scriptName + '-BATCH', { detail: JSON.stringify(songData) }));
-					};
-				}
+					document.dispatchEvent (new CustomEvent (scriptName + '-BATCH', { detail: JSON.stringify(songData) }));
+				};
 
 				(function () {
 					// 取消下载按钮点击
@@ -1279,7 +1283,7 @@ H.extract(function () { /*
 						document.dispatchEvent (new CustomEvent (scriptName, {detail: JSON.stringify (songData)}));
 					});
 				}).call (window.songInfoView);
-			}, H.scriptName, H.config.dUriType == 2);
+			}, H.scriptName, this.isAria);
 		});
 	},
 
@@ -1302,6 +1306,8 @@ H.extract(function () { /*
 	},
 
 	_batch: function (next, objSong) {
+		var that = this;
+
 		GM_xmlhttpRequest ({
 			method: 'GET',
 			url: 'http://yinyueyun.baidu.com/data/cloud/download?songIds=' + objSong.songId,
@@ -1338,7 +1344,13 @@ H.extract(function () { /*
 					onload: function (r) {
 						// 虽然因为编码问题导致 finalUrl 的文件名部分乱码,
 						// 但是识别歌曲用的 id 和 xcode 没有乱
-						H.addToAria(r.finalUrl, file);
+						if (that.isAria) {
+							H.addToAria(r.finalUrl, file);
+						} else {
+							// 不是 Aria, 弹出链接
+							// 修正下链接名
+							GM_openInTab (H.uri(r.finalUrl.replace(/(\/\d+\/).+\./, '$1' + file + '.'), file), true);
+						}
 						next ();
 					}
 				});
