@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.349
+// @version        3.0.350
 
 // 全局匹配
 // @include *
@@ -756,21 +756,6 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 }
 ,
-/* Compiled from cc.lepan.js */
-{
-	name: '乐盘',
-	host: ['lepan.cc', 'sx566.com'],
-	hide: [
-		'.ad', '[class^="banner"]', '#dl_tips',
-		'.content_l > .down_list_1', '.file_tip',
-		'.down_list_1 > .putong:first-child', '#code_box'
-	],
-	show: ['#down_box'],
-	onBody: function () {
-		H.phpDiskAutoRedir ();
-		$('#header:first').next().remove ();
-	}
-},
 /* Compiled from cn.vdisk.js */
 {
 	name: '威盘',
@@ -2455,10 +2440,10 @@ div#jx_douban_dl_wrap {
 	
 	host: [
 		'79pan.com', '7mv.cc', 'pan.52zz.org', '258pan.com',
-		'huimeiku.com', 'wpan.cc'
+		'huimeiku.com', 'wpan.cc', 'lepan.cc', 'sx566.com'
 	],
 
-	hide: ['#code_box', '#down_box2', '#codefrm'],
+	hide: ['#code_box', '#down_box2', '#codefrm', '.ad', '[class^="banner"]'],
 	show: '#down_box',
 
 	onStart: function () {

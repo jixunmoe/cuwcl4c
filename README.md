@@ -27,7 +27,6 @@
 
 ## 自带规则
 - 脚本配置页面 - `[localhost, jixunmoe.github.io]`
-- 乐盘 - `[lepan.cc, sx566.com]`
 - 威盘 - `[vdisk.cn]`
 - 119g 网盘 - `[d.119g.com]`
 - 网易音乐下载解析 - `[music.163.com]`
@@ -59,7 +58,7 @@
 - 豆瓣电台 - `[douban.fm]`
 - Jing.fm - `[jing.fm]`
 - 萌电台 [moe.fm] - `[moe.fm]`
-- 通用 phpDisk.a 网盘规则 - `[ 79pan.com, 7mv.cc, pan.52zz.org, 258pan.com, huimeiku.com, wpan.cc ]`
+- 通用 phpDisk.a 网盘规则 - `[ 79pan.com, 7mv.cc, pan.52zz.org, 258pan.com, huimeiku.com, wpan.cc, lepan.cc, sx566.com ]`
 - 通用 phpDisk.z 网盘规则 - `[ azpan.com, gxdisk.com, 2kuai.com, 1wp.me, 77pan.cc, vvpan.com, fmdisk.com ]`
 - 9盘 - `[www.9pan.net]`
 
