@@ -21,14 +21,17 @@ onStart: ->
 _doRemoval: ->
 	# 因为 nm.x.mK 后加载, 能保证 nej.e.bK 存在
 	H.waitUntil 'nm.x.mK', ->
-		unsafeExec ->
+		unsafeExec (bIsFrame)->
 			_bK = nej.e.bK
 			nej.e.bK = (z, name) ->
 				return 1 if name is 'copyright' or name is 'resCopyright'
 				_bK.apply this, arguments
 			nm.x.mK =-> false
+			if bIsFrame and nm.m.c.xB::zB
+				nm.m.c.xB::zB =-> true
 			return
-		return 
+		, H.isFrame
+		return
 	, 7000, 500
 	return
 

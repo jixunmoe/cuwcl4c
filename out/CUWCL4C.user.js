@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.354
+// @version        3.0.360
 
 // 全局匹配
 // @include *
@@ -847,7 +847,7 @@ H.extract(function () { /*
   },
   _doRemoval: function() {
     H.waitUntil('nm.x.mK', function() {
-      unsafeExec(function() {
+      unsafeExec(function(bIsFrame) {
         var _bK;
         _bK = nej.e.bK;
         nej.e.bK = function(z, name) {
@@ -859,7 +859,12 @@ H.extract(function () { /*
         nm.x.mK = function() {
           return false;
         };
-      });
+        if (bIsFrame && nm.m.c.xB.prototype.zB) {
+          nm.m.c.xB.prototype.zB = function() {
+            return true;
+          };
+        }
+      }, H.isFrame);
     }, 7000, 500);
   },
   onBody: function() {
