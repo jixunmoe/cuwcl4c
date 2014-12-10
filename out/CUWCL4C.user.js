@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.360
+// @version        3.0.361
 
 // 全局匹配
 // @include *
@@ -1847,6 +1847,8 @@ H.extract(function () { /*
 			H.config.dUriType = 0;
 		}
 
+		if (H.isFrame) return this.onFrame();
+
 		var styleToFix = this.styleBlock;
 
 		H.waitUntil ('MUSIC.module.webPlayer.interFace.getSongUrl', function () {
@@ -1883,6 +1885,38 @@ H.extract(function () { /*
 					title: '下载: ' + songObj.name
 				});
 			}, false);
+		});
+	},
+
+	onFrame: function () {
+		H.waitUntil ('MUSIC.widget.trackServ.formatMusic', function () {
+			unsafeExec(function () {
+				var _formatMusic = MUSIC.widget.trackServ.formatMusic;
+				MUSIC.widget.trackServ.formatMusic = function () {
+					var _music = _formatMusic.apply(this, arguments);
+
+					_music.mstatus = parseInt(_music.mstatus) || 1;
+
+					_music.msize = _music.msize || 1;
+					_music.minterval = _music.minterval || 1;
+
+					if (_music.msongurl) {
+						var _pre;
+						if (_music.size320) {
+							_pre = 'M800';
+						} else if (_music.size128) {
+							_pre = 'M500';
+						}
+
+						if (_pre) {
+							_music.msongurl = 'http://stream' + (parseInt(_music.mstream) + 10) +
+												'.qqmusic.qq.com/' + _pre + _music.mmid + '.mp3';
+						}
+					}
+
+					return _music;
+				};
+			});
 		});
 	}
 },
