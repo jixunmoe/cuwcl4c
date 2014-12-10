@@ -6,7 +6,7 @@
 name: '网易音乐下载解析',
 host: 'music.163.com',
 noSubHost: yes,
-noFrame: yes,
+noFrame: no,
 dl_icon: yes,
 css: `<% ~com.163.music.dl.css %>`,
 
@@ -18,7 +18,24 @@ onStart: ->
 			get: -> fakePlatForm
 			set: -> null
 
+_doRemoval: ->
+	# 因为 nm.x.mK 后加载, 能保证 nej.e.bK 存在
+	H.waitUntil 'nm.x.mK', ->
+		unsafeExec ->
+			_bK = nej.e.bK
+			nej.e.bK = (z, name) ->
+				return 1 if name is 'copyright' or name is 'resCopyright'
+				_bK.apply this, arguments
+			nm.x.mK =-> false
+			return
+		return 
+	, 7000, 500
+	return
+
 onBody: ->
+	@_doRemoval()
+	return if H.isFrame
+
 	getUri = (song) => @getUri song
 
 	# 单曲下载
@@ -77,7 +94,7 @@ onBody: ->
 				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj);
 
 				_bakPlayerUpdateUI.apply this, arguments
-				return
+			return
 		, H.scriptName
 
 		# 接收文件数据

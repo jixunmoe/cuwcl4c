@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.350
+// @version        3.0.354
 
 // 全局匹配
 // @include *
@@ -785,7 +785,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
   name: '网易音乐下载解析',
   host: 'music.163.com',
   noSubHost: true,
-  noFrame: true,
+  noFrame: false,
   dl_icon: true,
   css: /* Resource: com.163.music.dl.css */
 H.extract(function () { /*
@@ -845,8 +845,29 @@ H.extract(function () { /*
       });
     });
   },
+  _doRemoval: function() {
+    H.waitUntil('nm.x.mK', function() {
+      unsafeExec(function() {
+        var _bK;
+        _bK = nej.e.bK;
+        nej.e.bK = function(z, name) {
+          if (name === 'copyright' || name === 'resCopyright') {
+            return 1;
+          }
+          return _bK.apply(this, arguments);
+        };
+        nm.x.mK = function() {
+          return false;
+        };
+      });
+    }, 7000, 500);
+  },
   onBody: function() {
     var getUri;
+    this._doRemoval();
+    if (H.isFrame) {
+      return;
+    }
     getUri = (function(_this) {
       return function(song) {
         return _this.getUri(song);
@@ -896,7 +917,7 @@ H.extract(function () { /*
         unsafeExec(function(scriptName) {
           var _bakPlayerUpdateUI;
           _bakPlayerUpdateUI = nm.m.f.xr.prototype.Al;
-          return nm.m.f.xr.prototype.Al = function(songObj) {
+          nm.m.f.xr.prototype.Al = function(songObj) {
             var eveSongObj;
             eveSongObj = {
               artist: songObj.artists.map(function(artist) {
@@ -908,7 +929,7 @@ H.extract(function () { /*
             document.dispatchEvent(new CustomEvent(scriptName, {
               detail: eveSongObj
             }));
-            _bakPlayerUpdateUI.apply(this, arguments);
+            return _bakPlayerUpdateUI.apply(this, arguments);
           };
         }, H.scriptName);
         document.addEventListener(H.scriptName, function(e) {
