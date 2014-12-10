@@ -48,7 +48,7 @@
 - 噢音乐下载解析 - `[oyinyue.com]`
 - QQ 电台下载解析 - `[fm.qq.com]`
 - QQ 音乐、电台海外访问限制解除 - `[y.qq.com, fm.qq.com]`
-- QQ 音乐下载解析 - `[y.qq.com]`
+- QQ 音乐下载解析 - `[y.qq.com, soso.music.qq.com]`
 - 飞速网 - `[rayfile.com]`
 - SongTaste 下载解析 - `[songtaste.com]`
 - 速度盘 - `[sudupan.com]`

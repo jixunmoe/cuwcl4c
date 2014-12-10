@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.361
+// @version        3.0.363
 
 // 全局匹配
 // @include *
@@ -1812,7 +1812,7 @@ H.extract(function () { /*
 /* Compiled from com.qq.y.js */
 {
 	name: 'QQ 音乐下载解析',
-	host: 'y.qq.com',
+	host: ['y.qq.com', 'soso.music.qq.com'],
 	noSubHost: true,
 
 	css: /* Resource: com.qq.y.dl.css */
@@ -1846,8 +1846,6 @@ H.extract(function () { /*
 
 			H.config.dUriType = 0;
 		}
-
-		if (H.isFrame) return this.onFrame();
 
 		var styleToFix = this.styleBlock;
 
@@ -1885,10 +1883,8 @@ H.extract(function () { /*
 					title: '下载: ' + songObj.name
 				});
 			}, false);
-		});
-	},
+		}, 7000, 500);
 
-	onFrame: function () {
 		H.waitUntil ('MUSIC.widget.trackServ.formatMusic', function () {
 			unsafeExec(function () {
 				var _formatMusic = MUSIC.widget.trackServ.formatMusic;
@@ -1916,8 +1912,16 @@ H.extract(function () { /*
 
 					return _music;
 				};
+
+				var getVip = g_user.getVipInfo;
+				g_user.getVipInfo = function (successCb, failCb) {
+					return g_user.getVipInfo (function (info) {
+						if (1 != info.vip) info.vip = 1;
+						if (successCb) successCb (info);
+					}, failCb);
+				};
 			});
-		});
+		}, 7000, 500);
 	}
 },
 /* Compiled from com.rayfile.js */
