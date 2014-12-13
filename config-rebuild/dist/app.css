@@ -1,0 +1,78 @@
+.hide {
+	display: none;
+}
+
+.main-container{
+	background-color: #FFF;
+	margin: 0em auto;
+	box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.05);
+	border-left: 1px solid #DDDDDD;
+	border-right: 1px solid #DDDDDD;
+	border-bottom: 1px solid #DDDDDD;
+	padding: 2em 2em 7em;
+	z-index: 1;
+}
+
+.red {
+	color: red;
+}
+
+
+.mono, code {
+	word-break: break-all;
+	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+	font-size: 85%;
+}
+
+.small {
+	font-size: small;
+}
+
+code {
+	padding: 0;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	margin: 0;
+	background-color: rgba(0,0,0,0.04);
+	border-radius: 3px;
+	color: #444;
+}
+
+code:before, code:after {
+	letter-spacing: -0.2em;
+	content: "\00a0";
+}
+
+.center {
+	text-align: center;
+}
+
+.right {
+	text-align: right;
+}
+
+.full-width {
+	width: 100%;
+}
+
+pre, textarea {
+	tab-size: 4;
+}
+
+/* Copied from Github */
+pre {
+	padding: 2em;
+	overflow: auto;
+	background-color: #f7f7f7;
+	border-radius: 3px;
+}
+
+pre:empty {
+	display: none;
+}
+
+.no-sel {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}

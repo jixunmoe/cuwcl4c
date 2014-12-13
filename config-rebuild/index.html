@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>CUWCL4C 配置</title>
+
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<!-- UI -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.2.0/semantic.min.js"></script>
+	<!-- VueJS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/0.11.4/vue.js"></script>
+	<!-- Highlight.JS -->
+	<link rel="stylesheet" href="../ext/github.css">
+	<script async defer src="../ext/highlight.js"
+		onload="hljs.configure({languages:['javascript'],tabReplace:'\t'})"></script>
+	<!-- JS Beautify -->
+	<script async defer src="//greasyfork.org/scripts/5266/code/js-beautify.js"></script>
+
+	<!-- Pretty UI! -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.2.0/semantic.min.css">
+	<link rel="stylesheet" href="dist/app.css">
+
+	<!-- APP -->
+	<script async defer src="dist/app.js"></script>
+</head>
+<body>
+<div class="ui page grid">
+		
+	<div class="row">
+		<div class="column main-container">
+			<h1 class="ui header">CUWCL4C 配置页面</h1>
+
+			<h2>更新检查</h2>
+<div id="update-check">
+			<div class="ui segment message" v-class="hidden: status != 0">
+				<div class="ui active dimmer">
+					<div class="ui text loader">Loading...</div>
+				</div>
+				<p>正在连接远端服务器.. OK!</p>
+				<p>正在获取最新版本信息.. </p>
+			</div>
+
+			<div class="ui warning message" v-class="hidden: status != 1">
+				<div class="content">
+					<div class="header">
+						发现更新!
+					</div>
+					<p>您当前的版本: <code>{{curVer}}</code>，最新版为: <code>{{latestVer}}。</code></p>
+					<p>您可以单击 <a class="blue ui button" href="https://greasyfork.org/scripts/2600/code/2600.user.js" target="_blank">此处</a> 更新。</p>
+				</div>
+			</div>
+
+			<div class="ui success message" v-class="hidden: status !=  2">
+				<div class="content">
+					<p>恭喜，您使用的脚本为最新版 ({{curVer}})!</p>
+				</div>
+			</div>
+
+			<div class="ui error message" v-class="hidden: status != -1">
+				<div class="content">
+					<p>检测不到脚本，请检查是否被禁用！</p>
+					<p>如果您已经启用了脚本，请按下 F5 刷新页面看看。</p>
+				</div>
+			</div>
+
+			<div class="ui error message" v-class="hidden: status != -2">
+				<div class="content">
+					<p>无法连接 GreasyFork 服务器, <span class="ui primary button" v-class="loading: status == 0" v-on="click: checkUpdate">在检查一次?</span></p>
+				</div>
+			</div>
+</div>
+<div id="form-config">
+			<div class="ui form">
+				<div class="ui horizontal header divider">日志选项</div>
+				<div class="field">
+					<div class="ui toggle checkbox">
+						<input type="checkbox">
+						<label>启用日志: 如果您觉得控制台的输出太乱的话，可以将此项关闭。</label>
+					</div>
+				</div>
+
+				<div class="ui horizontal header divider">下载选项</div>
+
+				<div class="ui column grid">
+					<div class="five wide column">
+						<div class="ui fluid vertical steps">
+							<div class="step" v-class="active: conf.dUriType == 0" v-on="click: conf.dUriType = 0">
+								<i class="browser icon"></i>
+								<div class="content">
+									<div class="title">浏览器</div>
+									<div class="description">使用浏览器下载文件，无需附加插件。</div>
+								</div>
+							</div>
+
+							<div class="step" v-class="active: conf.dUriType == 2" v-on="click: conf.dUriType = 2">
+								<i class="send outline icon"></i>
+								<div class="content">
+									<div class="title">使用 <a href="http://aria2.sourceforge.net/" target="_blank">Aria2</a></div>
+									<div class="description">批量下载、智能带宽限制。</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				
+					<div class="eleven wide column">
+						<!-- 浏览器下载 -->
+						<div v-class="hide: conf.dUriType != 0">
+							<p>很抱歉，浏览器下载方式不提供选项。</p>
+						</div>
+
+						<!-- Aria 2 下载方式 -->
+						<div v-class="hide: conf.dUriType != 2">
+
+<div class="field">
+	<label>验证方式</label>
+	<select v-model="conf.dAria_auth">
+		<option value="0">无验证</option>
+		<option value="1">HTTP 验证</option>
+		<option value="2">密文验证</option>
+	</select>
+</div>
+
+<div class="fields" v-class="
+two: conf.dAria_auth == 0,
+four:  conf.dAria_auth == 1,
+three:  conf.dAria_auth == 2
+">
+	<div class="field" v-class="hide: conf.dAria_auth == 0 || conf.dAria_auth == 2">
+		<label>用户名</label>
+		<input type="text" placeholder="Username" v-model="conf.sAria_user">
+	</div>
+	<div class="field" v-class="hide: conf.dAria_auth == 0">
+		<label>密码/密文</label>
+		<input type="text" placeholder="Password/Secret" v-model="conf.sAria_pass">
+	</div>
+	<div class="field">
+		<label>域名/IP</label>
+		<input type="text" placeholder="127.0.0.1" v-model="conf.sAria_host">
+	</div>
+	<div class="field">
+		<label>端口 (6800)</label>
+		<input type="number" placeholder="6800" min=1 max=65535 number v-model="conf.dAria_port">
+	</div>
+</div>
+<div class="field">
+	<label>下载储存目录</label>
+	<input type="text" placeholder="D:\Download" v-model="conf.sAria_dir">
+</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="ui horizontal header divider">自订规则</div>
+
+				<div class="field">
+					<div class="ui toggle checkbox">
+						<input type="checkbox">
+						<label>启用自定规则</label>
+					</div>
+				</div>
+				<p>
+					您可以在此填入您自己的规则，您可以参考下属文档: <a href="//api.jquery.com/">jQuery API</a>、<a href="https://github.com/JixunMoe/cuwcl4c/blob/master/src/helper.js">H 库</a>。<br />
+					<span class="red">请注意</span>：规则会被脚本 <code>eval</code> 执行，如果有任何错误将导致所有自定义规则失效。
+				</p>
+
+				<p class="no-sel mono"><span class="hljs-keyword">var</span> customRules = [</p>
+				<textarea name="sCustomRule" class="full-width" cols="80" rows="7" v-model="conf.sCustomRule"></textarea>
+				<p class="no-sel mono right">];</p>
+				<pre class="rule-preview full-width"></pre>
+
+				<div class="center">
+					<button class="ui button primary" v-on="click: save()">储存设定</button>
+					<button class="ui button" v-on="click: reset()">恢复默认</button>
+					<button class="ui button" v-on="click: preview()">高亮预览</button>
+				</div>
+			</div>
+</div><!-- /#form-config -->
+		</div>
+	</div>
+</div>
+
+
+<div class="ui modal" id="dlg-reset">
+	<div class="header">
+		请稍后…
+	</div>
+	<div class="content">
+		<p>正在重设设定，稍后将自动刷新该页面。</p>
+	</div>
+</div>
+
+</body>
+</html>
