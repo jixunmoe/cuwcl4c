@@ -159,4 +159,4 @@ jQuery(function (window, $) { setTimeout (function () {
 	});
 	ctrlForm.init();
 	window.x = ctrlForm;
-}, 100) }.bind(0, window));
+}, 10) }.bind(0, window));
