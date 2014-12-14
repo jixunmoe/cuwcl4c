@@ -39,8 +39,6 @@ jQuery(function (window, $) {
 				this.status = 0;
 				var self = this;
 
-				return self.status = 2;
-
 				$.ajax({
 					url: 'https://greasyfork.org/en/scripts/2600.jsonp',
 					jsonpCallback: 'jxCheckVer',
