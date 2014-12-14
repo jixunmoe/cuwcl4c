@@ -9,7 +9,7 @@
 	<!-- UI -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.2.0/semantic.min.js"></script>
 	<!-- VueJS -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/0.11.4/vue.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/0.11.4/vue.min.js"></script>
 	<!-- Highlight.JS -->
 	<link rel="stylesheet" href="../ext/github.css">
 	<script async defer src="../ext/highlight.js"
@@ -75,7 +75,7 @@
 				<div class="ui horizontal header divider">日志选项</div>
 				<div class="field">
 					<div class="ui toggle checkbox">
-						<input type="checkbox">
+						<input type="checkbox" v-model="conf.bDiaplayLog">
 						<label>启用日志: 如果您觉得控制台的输出太乱的话，可以将此项关闭。</label>
 					</div>
 				</div>
@@ -84,12 +84,12 @@
 
 				<div class="ui column grid">
 					<div class="five wide column">
-						<div class="ui fluid vertical steps">
+						<div class="ui fluid vertical steps pointer">
 							<div class="step" v-class="active: conf.dUriType == 0" v-on="click: conf.dUriType = 0">
 								<i class="browser icon"></i>
 								<div class="content">
 									<div class="title">浏览器</div>
-									<div class="description">使用浏览器下载文件，无需附加插件。</div>
+									<div class="description">使用浏览器下载文件，无需额外插件。</div>
 								</div>
 							</div>
 
@@ -114,7 +114,7 @@
 
 <div class="field">
 	<label>验证方式</label>
-	<select v-model="conf.dAria_auth">
+	<select v-model="conf.dAria_auth" v-el="dAuth">
 		<option value="0">无验证</option>
 		<option value="1">HTTP 验证</option>
 		<option value="2">密文验证</option>
@@ -126,11 +126,11 @@ two: conf.dAria_auth == 0,
 four:  conf.dAria_auth == 1,
 three:  conf.dAria_auth == 2
 ">
-	<div class="field" v-class="hide: conf.dAria_auth == 0 || conf.dAria_auth == 2">
+	<div class="field" v-if="conf.dAria_auth == 1">
 		<label>用户名</label>
 		<input type="text" placeholder="Username" v-model="conf.sAria_user">
 	</div>
-	<div class="field" v-class="hide: conf.dAria_auth == 0">
+	<div class="field" v-if="conf.dAria_auth != 0">
 		<label>密码/密文</label>
 		<input type="text" placeholder="Password/Secret" v-model="conf.sAria_pass">
 	</div>
@@ -147,6 +147,66 @@ three:  conf.dAria_auth == 2
 	<label>下载储存目录</label>
 	<input type="text" placeholder="D:\Download" v-model="conf.sAria_dir">
 </div>
+
+
+<div class="ui horizontal header divider">启动后台</div>
+
+<div class="two fields">
+	<div class="field">
+		<div class="ui toggle checkbox">
+			<input type="checkbox" v-model="conf.xBetterDownload">
+			<label>尝试优化下载线程</label>
+		</div>
+	</div>
+	<div class="field">
+		<div class="ui toggle checkbox">
+			<input type="checkbox" v-model="conf.xAlwaysResume">
+			<label>目标文件存在时尝试继续下载</label>
+		</div>
+	</div>
+</div>
+<div class="field">
+	<div class="ui toggle checkbox">
+		<input type="checkbox" v-model="conf.xBindLocal">
+		<label>仅监听本地请求 (只在自己电脑上用建议勾选)</label>
+	</div>
+</div>
+
+<div class="field">
+	<div class="ui toggle checkbox">
+		<input type="checkbox" v-model="conf.xFastAlloc">
+		<label>快速分配下载文件空间 (FAT32、EXT3 或已淘汰的分区格式请勿勾选)</label>
+	</div>
+</div>
+
+<p class="mono small">
+	aria2c --enable-rpc
+	--rpc-allow-origin-all
+	<span v-if="!conf.xBindLocal">
+		--rpc-listen-all=true
+	</span>
+	<span v-if="conf.xBetterDownload">
+		--max-connection-per-server=3
+		--max-concurrent-downloads=5
+
+		--max-download-result=10
+		--log-level=info --force-sequential=true
+	</span>
+	<span v-if="conf.xFastAlloc">
+		--file-allocation=falloc
+	</span>
+	<span v-if="conf.xAlwaysResume">
+		--continue=true
+	</span>
+	<span v-if="conf.dAria_auth == 1">
+		"--rpc-user=<span v-text="conf.sAria_user"></span>"
+		"--rpc-passwd=<span v-text="conf.sAria_pass"></span>"
+	</span>
+	<span v-if="conf.dAria_auth == 2">
+		"--rpc-secret=<span v-text="conf.sAria_pass"></span>"
+	</span>
+</p>
+
 						</div>
 					</div>
 				</div>
@@ -155,17 +215,18 @@ three:  conf.dAria_auth == 2
 
 				<div class="field">
 					<div class="ui toggle checkbox">
-						<input type="checkbox">
-						<label>启用自定规则</label>
+						<input type="checkbox" v-model="conf.bUseCustomRules">
+						<label>启用自定义规则</label>
 					</div>
 				</div>
 				<p>
 					您可以在此填入您自己的规则，您可以参考下属文档: <a href="//api.jquery.com/">jQuery API</a>、<a href="https://github.com/JixunMoe/cuwcl4c/blob/master/src/helper.js">H 库</a>。<br />
-					<span class="red">请注意</span>：规则会被脚本 <code>eval</code> 执行，如果有任何错误将导致所有自定义规则失效。
+					<span class="red">请注意</span>：规则会被脚本 <code>eval</code> 执行，如果存在语法错误将导致所有自定义规则失效。
 				</p>
 
 				<p class="no-sel mono"><span class="hljs-keyword">var</span> customRules = [</p>
-				<textarea name="sCustomRule" class="full-width" cols="80" rows="7" v-model="conf.sCustomRule"></textarea>
+				<textarea class="full-width" cols="80" rows="7" v-model="conf.sCustomRule"
+					v-on="keydown: editor" v-el="sCustomRule" spellcheck="false"></textarea>
 				<p class="no-sel mono right">];</p>
 				<pre class="rule-preview full-width"></pre>
 

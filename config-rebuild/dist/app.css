@@ -1,3 +1,7 @@
+.steps.pointer > .step {
+	cursor: pointer;
+}
+
 .hide {
 	display: none;
 }
@@ -18,7 +22,7 @@
 }
 
 
-.mono, code {
+.mono, code, pre, textarea {
 	word-break: break-all;
 	font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 	font-size: 85%;
