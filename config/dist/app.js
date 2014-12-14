@@ -1,4 +1,4 @@
-jQuery(function (window, $) {
+jQuery(function (window, $) { setTimeout (function () {
 	Vue.config.debug = true;
 
 	// Make v-model and Semantic-UI work with each other.
@@ -159,4 +159,4 @@ jQuery(function (window, $) {
 	});
 	ctrlForm.init();
 	window.x = ctrlForm;
-}.bind(0, window));
+}, 100) }.bind(0, window));
