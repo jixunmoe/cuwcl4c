@@ -158,5 +158,5 @@ jQuery(function (window, $) { setTimeout (function () {
 		}
 	});
 	ctrlForm.init();
-	window.x = ctrlForm;
+	$('.page').removeClass('hide');
 }, 2) }.bind(0, window));
