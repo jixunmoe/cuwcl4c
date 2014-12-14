@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.363
+// @version        3.0.364
 
 // 全局匹配
 // @include *
@@ -300,13 +300,13 @@ H.merge (H, {
 H.config = H.merge ({
 	bDiaplayLog: true,
 
-	dUriType: 0,
+	dUriType:   0,
 	dAria_auth: 0,
 
 	sAria_user: '',
 	sAria_pass: '',
-	sAria_host: null,
-	dAria_port: 0,
+	sAria_host: '127.0.0.1',
+	dAria_port: 6800,
 	sAria_dir: 'D:\\Download\\',
 
 	bUseCustomRules: false,
