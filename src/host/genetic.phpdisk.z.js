@@ -5,7 +5,7 @@
 	
 	host: [
 		'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 
-		'77pan.cc', 'vvpan.com', 'fmdisk.com'
+		'77pan.cc', 'vvpan.com', 'fmdisk.com', 'bx0635.com'
 	],
 	hide: [
 		// azpan, gxdisk

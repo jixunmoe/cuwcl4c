@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.364
+// @version        3.0.366
 
 // 全局匹配
 // @include *
@@ -1376,6 +1376,15 @@ H.extract(function () { /*
 		$q.add.apply($q, arrSongs);
 	}
 },
+/* Compiled from com.bx0635.js */
+{
+	name: '暴雪盘',
+	hide: '#b2>:not(#down_box), .tit + div, .clear+div, .logo_r',
+	host: 'bx0635.com',
+	onStart: function () {
+		unsafeWindow.open = null;
+	}
+},
 /* Compiled from com.colafile.js */
 {
 	name: '可乐盘',
@@ -2545,7 +2554,7 @@ div#jx_douban_dl_wrap {
 	
 	host: [
 		'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 
-		'77pan.cc', 'vvpan.com', 'fmdisk.com'
+		'77pan.cc', 'vvpan.com', 'fmdisk.com', 'bx0635.com'
 	],
 	hide: [
 		// azpan, gxdisk

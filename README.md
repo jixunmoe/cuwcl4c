@@ -37,6 +37,7 @@
 - 9酷音乐 - `[www.9ku.com]`
 - 百度盘免下载管家 - `[yun.baidu.com, pan.baidu.com]`
 - 百度音乐盒 - `[play.baidu.com]`
+- 暴雪盘 - `[bx0635.com]`
 - 可乐盘 - `[colafile.com]`
 - 城通网盘系列 - `[400gb.com, ctdisk.com, pipipan.com, bego.cc]`
 - DJCC 舞曲 - `[www.djcc.com]`
@@ -59,7 +60,7 @@
 - Jing.fm - `[jing.fm]`
 - 萌电台 [moe.fm] - `[moe.fm]`
 - 通用 phpDisk.a 网盘规则 - `[ 79pan.com, 7mv.cc, pan.52zz.org, 258pan.com, huimeiku.com, wpan.cc, lepan.cc, sx566.com ]`
-- 通用 phpDisk.z 网盘规则 - `[ azpan.com, gxdisk.com, 2kuai.com, 1wp.me, 77pan.cc, vvpan.com, fmdisk.com ]`
+- 通用 phpDisk.z 网盘规则 - `[ azpan.com, gxdisk.com, 2kuai.com, 1wp.me, 77pan.cc, vvpan.com, fmdisk.com, bx0635.com ]`
 - 9盘 - `[www.9pan.net]`
 
 测试于 Chrome & Firefox 32 (GreasyMonkey 2.2)
