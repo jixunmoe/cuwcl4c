@@ -1,3 +1,4 @@
+#!/bin/sh
 n=
 
 if type node ; then

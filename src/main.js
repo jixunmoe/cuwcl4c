@@ -1,4 +1,4 @@
-<% @header.js %>
+<% @meta.js %>
 
 (function () {
 	<% @helper.js %>

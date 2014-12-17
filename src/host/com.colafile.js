@@ -7,13 +7,19 @@
 		// 计时下载页的广告
 		'.hotrec-ele', '.viewshare-copy-outer'
 	],
+	genDigit: function () {
+		return Math.ceil(Math.random() * 255);
+	},
+	genValidIp: function () {
+		return [0,0,0,0].map(this.genDigit).join('.');
+	},
 	onBody: function () {
 		var file_id = location.pathname.match(/\d+/)[0];
 
 		$.ajax({
 			url: '/ajax.php?action=downaddress&file_id=' + file_id,
 			headers: {
-				'X-Forwarded-For': 'BAKA-' + Math.random()
+				'X-Forwarded-For': this.genValidIp()
 			},
 			dataType: 'text'
 		}).success (function (r) {

@@ -1,9 +1,12 @@
-var modDir = __dirname + '/host/';
+// Generate site list for building 
+
+var modDir = __dirname + '/../src/host/';
 var fs = require ('fs');
 
 var ret = [];
 fs.readdirSync (modDir).forEach (function (m) {
-	if (m.slice(-3) === '.js' || m.slice(-7) === '.coffee') {
+	var fn = m.match(/(.+)\./)[1];
+	if (!moduleDisabled(fn) && (m.slice(-3) === '.js' || m.slice(-7) === '.coffee')) {
 		var file = fs.readFileSync (modDir + m).toString ();
 		var name = file.match (/name\s*:\s*'([^']+)/);
 		name = name ? name[1] : m.slice(-3);

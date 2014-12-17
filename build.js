@@ -1,4 +1,5 @@
 var fs = require ('fs');
+require ('./build/helper.js');
 
 var args = (function (argv) {
 	var ret = {};
@@ -13,6 +14,7 @@ var args = (function (argv) {
 global.resDir = __dirname + '/res/';
 global.srcDir = __dirname + '/src/';
 global.outDir = __dirname + '/out/';
+global.buildDir = __dirname + '/build/';
 
 var parseScript = function (s) {
 	return s.toString().replace(/<% ([~#\$@])(.+?) %>/g, function (z, code, file) {
@@ -30,7 +32,7 @@ var parseScript = function (s) {
 				break;
 
 			case '#':
-				ret.push (parseScript(require (srcDir + file)));
+				ret.push (parseScript(require (buildDir + file)));
 				break;
 			
 			case '@':
@@ -42,6 +44,14 @@ var parseScript = function (s) {
 	});
 };
 
-if (args.main)       fs.writeFile (outDir + 'CUWCL4C.user.js',       parseScript (fs.readFileSync(srcDir + 'main.js')));
-if (args.readme)     fs.writeFile (__dirname + '/README.md',         parseScript (fs.readFileSync(__dirname + '/README.zh-CN.tpl.md')));
-if (args.readmeZhTW) fs.writeFile (__dirname + '/README.zh-TW.md',   parseScript (fs.readFileSync(__dirname + '/README.zh-TW.tpl.md')));
+if (args.main)
+	fs.writeFile (outDir + 'CUWCL4C.user.js',       parseScript (fs.readFileSync(srcDir + 'main.js')));
+
+
+
+if (args.readme)
+	fs.writeFile (__dirname + '/README.md',         parseScript (fs.readFileSync(__dirname + '/README.zh-CN.tpl.md')));
+
+
+if (args.readmeZhTW)
+	fs.writeFile (__dirname + '/README.zh-TW.md',   parseScript (fs.readFileSync(__dirname + '/README.zh-TW.tpl.md')));

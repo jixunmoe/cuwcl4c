@@ -1,5 +1,5 @@
 var fs = require ('fs'),
-	buildNumberFile = __dirname + '/build';
+	buildNumberFile = __dirname + '/build-number';
 
 var digitBuildNumber = parseInt(fs.readFileSync (buildNumberFile), 10);
 digitBuildNumber ++ ;
