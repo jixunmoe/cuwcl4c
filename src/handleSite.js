@@ -1,5 +1,30 @@
 // 扩展规则函数
 H.rule = {
+	checkPath: function (path, rule) {
+		if (rule instanceof Array) {
+			if (rule.length == 0)
+				return false;
+
+			for (var i = rule.length; i--; ) {
+				if (this.checkPath(path, rule[i]))
+					return true;
+			}
+
+			return false;
+		}
+
+		return 
+			// Function
+			(rule.call && rule(path))
+
+			// String
+			|| (typeof rule == 'string' && H.beginWith (path, rule))
+
+			// Regex match
+			|| (rule instanceof RegExp && rule.test (path))
+		;
+	},
+
 	run: function (site, event) {
 		var eve = site[event];
 
@@ -53,19 +78,8 @@ H.rule = {
 		}
 
 		// 检查路径
-		if (site.path) {
-			if (site.path.call && !site.path(location.pathname)) return ;
-
-			if (typeof site.path == 'string' && !H.beginWith (location.pathname, site.path)) return ;
-
-			if (site.path instanceof RegExp && !site.path.test (location.pathname)) return ;
-
-			if (site.path.map) { 
-				for (var j = site.path.length, doesPathMatch; j-- && !doesPathMatch; )
-					doesPathMatch = H.beginWith (location.pathname, site.path[j]);
-
-				if (!doesPathMatch) return ;
-			}
+		if (site.path && !this.checkPath(location.pathname, site.path)) {
+			return ;
 		}
 
 		if (!site._styleApplied) {
