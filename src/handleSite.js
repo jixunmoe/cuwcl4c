@@ -13,7 +13,7 @@ H.rule = {
 			return false;
 		}
 
-		return 
+		return (
 			// Function
 			(rule.call && rule(path))
 
@@ -22,7 +22,10 @@ H.rule = {
 
 			// Regex match
 			|| (rule instanceof RegExp && rule.test (path))
-		;
+
+			// Failed to match anything :<
+			|| false
+		);
 	},
 
 	run: function (site, event) {
