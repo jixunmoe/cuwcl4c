@@ -1,4 +1,5 @@
 {
+	id: 'fm.jing',
 	name: 'Jing.fm',
 	host: 'jing.fm',
 	noSubHost: true,

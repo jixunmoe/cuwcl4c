@@ -1,4 +1,5 @@
 {
+	id: 'fm.douban',
 	name: '豆瓣电台',
 	host: 'douban.fm',
 	noSubHost: true,

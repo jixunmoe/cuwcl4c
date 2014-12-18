@@ -1,4 +1,5 @@
 {
+	id: 'fm.moe',
 	name: '萌电台 [moe.fm]',
 	host: 'moe.fm',
 	noSubHost: true,

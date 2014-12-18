@@ -1,4 +1,5 @@
 {
+	id: 'internal.config',
 	name: '脚本配置页面',
 	host: ['localhost', 'jixunmoe.github.io'],
 	path: ['/conf/', '/cuwcl4c/config/'],
