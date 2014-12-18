@@ -13,9 +13,9 @@
 		}
 	}
 
-	var handleSite = function (event) {
+	var handleSite = (function () {
 		<% @handleSite.js %>
-	};
+	})();
 
 	try {
 		GM_registerMenuCommand (H.sprintf('配置 %s[%s]', H.scriptName, H.version), function () {
