@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.372
+// @version        3.0.373
 
 // 全局匹配
 // @include *
@@ -1212,7 +1212,10 @@ H.extract(function () { /*
 
 	show: '#floatBtn>.lossless',
 
-	onBody: function () {
+	// jQuery 的 width 计算在火狐下会包括样式表, 即使元素已经不在 body 里…
+	css:  '.column4{width:0 !important}',
+
+	onStart: function () {
 		var that = this;
 		this.qualities = 'auto_1 mp3_320+_1 mp3_320_1'.split(' ');
 		this.isAria = H.config.dUriType == 2;
