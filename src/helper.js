@@ -75,6 +75,14 @@ var H = {
 		return str.indexOf (what) != -1;
 	},
 
+	addDownload: function (url, file) {
+		if (H.config.dUriType == 2) {
+			H.addToAria(url, file);
+		} else {
+			GM_openInTab (H.uri(url, file), true);
+		}
+	},
+
 	uri: function (url, filename, ref) {
 		switch (H.config.dUriType) {
 			case 1:
