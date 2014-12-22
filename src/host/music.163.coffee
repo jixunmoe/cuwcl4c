@@ -72,7 +72,7 @@ onBody: ->
 				return
 			return
 
-	if H.config.dAria_auth is 2
+	if H.config.dUriType is 2
 		H.captureAria @linkDownload
 	else
 		@linkDownloadAll.addClass('jx_hide')
