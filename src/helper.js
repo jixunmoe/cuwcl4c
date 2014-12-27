@@ -164,6 +164,7 @@ var H = {
 
 			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
 				e.stopPropagation ();
+				e.preventDefault  ();
 
 				var link = linkEl.href.split('|');
 				H.addToAria(link[1], decodeURIComponent(link[2]), link[3], linkEl.classList.contains('aria-cookie'));
