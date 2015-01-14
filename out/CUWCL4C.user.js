@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.391
+// @version        3.0.392
 
 // 全局匹配
 // @include *
@@ -899,7 +899,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 		// Fix Anti-ABP as it doesn't check the code.
 		H.waitUntil ('guestviewchkform', function () {
 			unsafeExec(function () {
-				window.guestviewchkform = fucntion (form) {
+				window.guestviewchkform = function (form) {
 					return form.randcode && form.randcode.value.length == 4;
 				};
 			});

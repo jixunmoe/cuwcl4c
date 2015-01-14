@@ -8,7 +8,7 @@
 		// Fix Anti-ABP as it doesn't check the code.
 		H.waitUntil ('guestviewchkform', function () {
 			unsafeExec(function () {
-				window.guestviewchkform = fucntion (form) {
+				window.guestviewchkform = function (form) {
 					return form.randcode && form.randcode.value.length == 4;
 				};
 			});
