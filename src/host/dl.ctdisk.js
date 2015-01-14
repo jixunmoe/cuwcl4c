@@ -6,20 +6,30 @@
 
 	onBody: function () {
 		// Fix Anti-ABP as it doesn't check the code.
-		H.waitUntil ('guestviewchkform', null, function (that) {
-			return that.randcode && that.randcode.value.length == 4;
+		H.waitUntil ('guestviewchkform', function () {
+			unsafeExec(function () {
+				window.guestviewchkform = fucntion (form) {
+					return form.randcode && form.randcode.value.length == 4;
+				};
+			});
 		});
+
+		var keyForm = document.user_form;
+		var $kf = $(keyForm);
 		
 		try {
-			document.user_form.hash_key.value = H.base64Decode(document.user_form.hash_info.value);
+			keyForm.hash_key.value = H.base64Decode(keyForm.hash_info.value);
 		} catch (e) {
-			H.info ('缺失或无效的 hash_key 属性值, 跳过…')
+			H.info ('缺失或无效的 hash_key 属性值, 跳过…');
 		}
+
+		$kf.attr('action', $kf.attr('action').replace(/(V)\d/i, '$12'));
+
 		$('.captcha_right').css('float', 'left');
 		
 		$('#vfcode:first').parent()
 			.append(H.createNumPad(4, $('#randcode')[0], function () {
-				document.user_form.submit();
+				$kf.submit();
 				return true;
 			}));
 
