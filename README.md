@@ -10,6 +10,8 @@
 
 订阅 ABP 规则屏蔽广告: [Simple List](https://jixunmoe.github.io/SimpleList/)
 
+\*\* 跳过短链接等待请使用 [Ads Bypasser](https://greasyfork.org/scripts/4881)，或 [Ads Bypasser Lite](https://greasyfork.org/scripts/4882) (该版去掉了图床网站支援) \*\*
+
 ## 特色功能
 
 ### 快速下载文件

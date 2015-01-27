@@ -10,6 +10,8 @@
 
 訂閱 ABP 過濾器屏蔽廣告: [Simple List](https://jixunmoe.github.io/SimpleList/)
 
+\*\* 如果您需要跳過短址鏈接，請安裝 [Ads Bypasser](https://greasyfork.org/scripts/4881) 或 [Ads Bypasser Lite](https://greasyfork.org/scripts/4882) (無圖片託管站點支援) \*\*
+
 ## 腳本特色
 
 ### 快速下載檔案
