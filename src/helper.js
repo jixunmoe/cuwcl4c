@@ -581,29 +581,16 @@ H.merge (H, {
 	},
 	reDirWithRef: function (targetUrl) {
 		if (!targetUrl) return ;
-
 		H.info ('Redirect to %s...', targetUrl);
-		var GET = H.parseQueryString(targetUrl),
-			form = $('<form>')
-				.attr('action', targetUrl.replace(/\?.*$/, ''))
-				.text('正在跳转: ' + targetUrl).prependTo(document.body)
-				.css ({fontSize: 12});
-
-		if (Object.keys(GET).length == 0) {
-			// POST when there's no param?
-			// form.attr ('method', 'POST');
-		} else {
-			for (var g in GET)
-				if (GET.hasOwnProperty(g))
-					form.append($('<input>').attr({
-						name: g,
-						type: 'hidden'
-					}).val(GET[g]));
-
-		}
-
-		form.submit();
-		return 1;
+		
+		var link = $('<a>')
+			.attr('href', targetUrl)
+			.text('正在跳转 [' + targetUrl + '], 请稍后.. ')
+			.prependTo(document.body)
+			.css ({fontSize: 12, color: 'inherit'});
+		
+		link[0].click();
+		return true;
 	},
 
 	// 网盘地址自动导向 [基于 phpDisk 的网盘]
