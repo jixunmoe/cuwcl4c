@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.394
+// @version        3.0.395
 
 // 全局匹配
 // @include *
@@ -922,6 +922,20 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	
 	hide: ['#floatdiv div', '.row1_right'],
 	css : '#floatdiv { top: 150px; z-index: 99999; display: block !important; }'
+},
+/* Compiled from dl.lepan.cc.js */
+{
+	id: 'cc.lepan',
+	name: '乐盘自动下载地址',
+	host: 'www.lepan.cc',
+	noSubHost: true,
+	hide: '.widget-box',
+	onStart: function () {
+		H.rule.exec('phpdisk.z', 'onStart');
+	},
+	onBody: function () {
+		$('.widget-box:eq(0)').removeClass('widget-box');
+	}
 },
 /* Compiled from dl.rayfile.js */
 {
@@ -2944,7 +2958,7 @@ H.extract(function () { /*
 	
 	host: [
 		'79pan.com', '7mv.cc', 'pan.52zz.org', '258pan.com',
-		'huimeiku.com', 'wpan.cc', 'lepan.cc', 'sx566.com'
+		'huimeiku.com', 'wpan.cc', 'sx566.com'
 	],
 
 	hide: ['#code_box', '#down_box2', '#codefrm', '.ad', '[class^="banner"]'],
@@ -3045,17 +3059,8 @@ H.rule = {
 			|| false
 		);
 	},
-
-	run: function (site, event) {
-		var eve = site[event];
-
-		var hostMatch;
-
-
-		if (site._styleApplied)
-			// 修正 CSS 可能被覆盖的错误
-			H.fixStyleOrder (site.styleBlock);
-
+	
+	check: function (site, eve) {
 		for (var i = 5; i--; ) {
 			if (typeof eve == 'string') {
 				eve = site[eve];
@@ -3069,7 +3074,7 @@ H.rule = {
 			eve = null;
 			return ;
 		}
-
+		
 		// Make this to an array.
 		if (typeof site.host == 'string')
 			site.host = [ site.host ];
@@ -3079,8 +3084,10 @@ H.rule = {
 			H.error ('RULE: key `host` is missing!');
 			return ;
 		}
-
+		
+		
 		// 检查域名
+		var hostMatch;
 		if (!H.contains (site.host, H.lowerHost)) {
 			// 是否检查子域名?
 			if (site.noSubHost)
@@ -3097,11 +3104,24 @@ H.rule = {
 			// No matching host name
 			if (!hostMatch) return;
 		}
-
+		
 		// 检查路径
 		if (site.path && !this.checkPath(location.pathname, site.path)) {
 			return ;
 		}
+		
+		return true;
+	},
+
+	run: function (site, event) {
+		if (!site || !event)
+			return ;
+		
+		var eve = site[event];
+
+		if (site._styleApplied)
+			// 修正 CSS 可能被覆盖的错误
+			H.fixStyleOrder (site.styleBlock);
 
 		if (!site._styleApplied) {
 			site._styleApplied = true;
@@ -3164,12 +3184,16 @@ H.extract(function () { /*
 	},
 
 	/**
-	 * Find rule by ID
+	 * get rule by ID
 	 * @param  {String} id Rule id
 	 * @return {Rule}      Rule Object
 	 */
-	find: function (id) {
+	get: function (id) {
 		return sites.filter(function (site) { return site.id == id; }).pop();
+	},
+	
+	exec: function (id, event) {
+		return this.run(this.get(id), event);
 	}
 };
 
@@ -3178,7 +3202,7 @@ return function (event) {
 		if (H.isFrame && sites[i].noFrame)
 			continue;
 		
-		if (H.rule.run(sites[i], event))
+		if (H.rule.check(sites[i], event) && H.rule.run(sites[i], event))
 			return true;
 	}
 };
