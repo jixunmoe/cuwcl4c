@@ -135,7 +135,7 @@
 							artistName: e.artistName,
 							songId:     e.songId,
 							isFlac:     !!isFlac,
-							inFav:      !!e.hasCollected
+							isFav:      !!e.hasCollected
 						};
 					});
 
@@ -403,7 +403,7 @@
 				if (cbRemoveFav)
 					cbRemoveFav ();
 
-				H.addDownload (self._renameUrl(url), file);
+				H.addDownload (self._renameUrl(url, file), file);
 				next ();
 			});
 		});

@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.395
+// @version        3.0.396
 
 // 全局匹配
 // @include *
@@ -1845,7 +1845,7 @@ H.extract(function () { /*
 							artistName: e.artistName,
 							songId:     e.songId,
 							isFlac:     !!isFlac,
-							inFav:      !!e.hasCollected
+							isFav:      !!e.hasCollected
 						};
 					});
 
@@ -2113,7 +2113,7 @@ H.extract(function () { /*
 				if (cbRemoveFav)
 					cbRemoveFav ();
 
-				H.addDownload (self._renameUrl(url), file);
+				H.addDownload (self._renameUrl(url, file), file);
 				next ();
 			});
 		});
