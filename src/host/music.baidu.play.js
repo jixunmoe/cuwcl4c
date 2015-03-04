@@ -38,7 +38,16 @@
 	 */
 	ERROR: {
 		'22232': {
-			text: '请挂上*大陆*马甲, 因其它地区访问被屏蔽.\n\n如果您会使用相关插件, 请加入下述地址至规则:  \nhttp://music.baidu.com/data/user/collect?*  \n\n您可以按下 Ctrl+C 拷贝该消息.',
+			text: H.extract(function () {/*
+请挂上*大陆*马甲, 因其它地区访问被屏蔽.
+
+如果您会使用相关插件, 请加入下述地址至规则:  
+http://music.baidu.com/data/user/collect?*  
+
+您可以按下 Ctrl+C 拷贝该消息.
+
+相关阅读: https://github.com/JixunMoe/cuwcl4c/wiki/配合大陆代理实现访问解除封锁
+*/}),
 			level: 'error',
 			alert: true
 		},

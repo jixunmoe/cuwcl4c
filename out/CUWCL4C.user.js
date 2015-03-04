@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.396
+// @version        3.0.400
 
 // 全局匹配
 // @include *
@@ -927,10 +927,16 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 {
 	id: 'cc.lepan',
 	name: '乐盘自动下载地址',
-	host: 'www.lepan.cc',
+	host: ['www.lepan.cc', 'www.sx566.com'],
 	noSubHost: true,
 	hide: '.widget-box',
 	onStart: function () {
+		// 破坏广告
+		Object.defineProperty(unsafeWindow, 'google', {
+			set: function () { },
+			get: function () { throw new Error(); }
+		});
+		
 		H.rule.exec('phpdisk.z', 'onStart');
 	},
 	onBody: function () {
@@ -1748,7 +1754,16 @@ H.extract(function () { /*
 	 */
 	ERROR: {
 		'22232': {
-			text: '请挂上*大陆*马甲, 因其它地区访问被屏蔽.\n\n如果您会使用相关插件, 请加入下述地址至规则:  \nhttp://music.baidu.com/data/user/collect?*  \n\n您可以按下 Ctrl+C 拷贝该消息.',
+			text: H.extract(function () {/*
+请挂上*大陆*马甲, 因其它地区访问被屏蔽.
+
+如果您会使用相关插件, 请加入下述地址至规则:  
+http://music.baidu.com/data/user/collect?*  
+
+您可以按下 Ctrl+C 拷贝该消息.
+
+相关阅读: https://github.com/JixunMoe/cuwcl4c/wiki/配合大陆代理实现访问解除封锁
+*/}),
 			level: 'error',
 			alert: true
 		},
@@ -2958,7 +2973,7 @@ H.extract(function () { /*
 	
 	host: [
 		'79pan.com', '7mv.cc', 'pan.52zz.org', '258pan.com',
-		'huimeiku.com', 'wpan.cc', 'sx566.com'
+		'huimeiku.com', 'wpan.cc'
 	],
 
 	hide: ['#code_box', '#down_box2', '#codefrm', '.ad', '[class^="banner"]'],
