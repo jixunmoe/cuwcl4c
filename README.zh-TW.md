@@ -36,6 +36,7 @@
 - 暴雪盘 - `[bx0635.com]`
 - 可乐盘 - `[colafile.com]`
 - 城通网盘系列 - `[400gb.com, ctdisk.com, pipipan.com, bego.cc]`
+- 大连生活网 - `[dlkoo.com]`
 - 好盘 - `[howfile.com]`
 - 乐盘自动下载地址 - `[www.lepan.cc, www.sx566.com]`
 - 飞速网 - `[rayfile.com]`

@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.400
+// @version        3.0.401
 
 // 全局匹配
 // @include *
@@ -912,6 +912,52 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 			}));
 
 		H.log ('城通就绪.');
+	}
+},
+/* Compiled from dl.dlkoo.js */
+{
+	id: 'dl.dlkoo',
+	name: '大连生活网',
+	example: 'http://www.dlkoo.com/down/6/2011/222686754.html',
+	host: ['dlkoo.com'],
+	path: '/down/downfile.asp',
+
+	onStart: function () {
+		document.write = null;
+
+		Object.defineProperty(unsafeWindow, 'navigator', {
+			set: function () {},
+			get: function () {
+				return null;
+			}
+		});
+	},
+
+	onBody: function () {
+		var firstEl = document.body.children[0];
+		if (!firstEl) firstEl = document.body;
+
+		var firstTxt = firstEl.textContent;
+		if (H.beginWith(firstTxt, '防盗链提示') || H.beginWith(firstTxt, '验证码')) {
+			H.reDirWithRef(location.href);
+			return ;
+		} else if (H.beginWith(firstTxt, '防刷新')) {
+			firstEl.style.whiteSpace = 'pre';
+			firstEl.textContent += '\n\n请稍后, 5秒后自动刷新…';
+			setTimeout(H.reDirWithRef, 5500, location.href);
+			return ;
+		}
+
+		var btnDl = document.getElementById('btsubmit');
+		if (btnDl) {
+			btnDl.id = null;
+			btnDl.value = '开始下载';
+			btnDl.disabled = false;
+
+			var fakeBtn = document.createElement('input');
+			fakeBtn.id = 'btsubmit';
+			$(fakeBtn).hide().appendTo('body');
+		}
 	}
 },
 /* Compiled from dl.howfile.js */
