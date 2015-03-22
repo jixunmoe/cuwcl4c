@@ -1,7 +1,10 @@
 {
 	id: 'dl.ctdisk',
 	name: '城通网盘系列',
-	host: ['400gb.com', 'ctdisk.com', 'pipipan.com', 'bego.cc'],
+	host: [
+		'400gb.com', 'ctdisk.com', 'pipipan.com', 'bego.cc',
+		'ctfile.com', 't00y.com'
+	],
 	hide: ['.captcha', '.kk_xshow', 'div.span6:first-child'],
 
 	onBody: function () {

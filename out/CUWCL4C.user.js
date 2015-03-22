@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.401
+// @version        3.0.402
 
 // 全局匹配
 // @include *
@@ -879,7 +879,10 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 {
 	id: 'dl.ctdisk',
 	name: '城通网盘系列',
-	host: ['400gb.com', 'ctdisk.com', 'pipipan.com', 'bego.cc'],
+	host: [
+		'400gb.com', 'ctdisk.com', 'pipipan.com', 'bego.cc',
+		'ctfile.com', 't00y.com'
+	],
 	hide: ['.captcha', '.kk_xshow', 'div.span6:first-child'],
 
 	onBody: function () {
