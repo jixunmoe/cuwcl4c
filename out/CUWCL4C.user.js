@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.403
+// @version        3.0.404
 
 // 全局匹配
 // @include *
@@ -2090,7 +2090,7 @@ http://music.baidu.com/data/user/collect?*
 
 			var isFav = errInfo.code === 22000;
 			var qRemoveFav = $.Deferred();
-			qRemoveFav.success(isFav ? H.nop : function () {
+			qRemoveFav.done(isFav ? H.nop : function () {
 				H.info ('移除为解析而临时添加的歌曲… %s', songId);
 				self._rmFav(songId);
 			});
