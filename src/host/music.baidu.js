@@ -58,7 +58,7 @@
 
 	onBody: function () {
 		var self = this;
-		this.parser = H.rule.find ('music.baidu.play');
+		this.parser = H.rule.get ('music.baidu.play');
 		if (!this.parser) {
 			H.error ('Required rule `music.baidu.play` missing, please re-install this script.');
 			return ;

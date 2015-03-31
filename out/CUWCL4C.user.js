@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.404
+// @version        3.0.405
 
 // 全局匹配
 // @include *
@@ -1701,7 +1701,7 @@ H.extract(function () { /*
 
 	onBody: function () {
 		var self = this;
-		this.parser = H.rule.find ('music.baidu.play');
+		this.parser = H.rule.get ('music.baidu.play');
 		if (!this.parser) {
 			H.error ('Required rule `music.baidu.play` missing, please re-install this script.');
 			return ;
