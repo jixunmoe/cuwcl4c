@@ -54,6 +54,7 @@
 - 9酷音乐 - `[www.9ku.com]`
 - 百度音乐 - `[music.baidu.com]`
 - 百度音乐盒 - `[play.baidu.com]`
+- 音乐云下载 - `[yinyueyun.baidu.com]`
 - DJCC 舞曲 - `[www.djcc.com]`
 - DJ 嗨嗨 - `[www.djkk.com]`
 - DJ 爷爷网 - `[www.djye.com]`

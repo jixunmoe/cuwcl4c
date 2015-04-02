@@ -2,6 +2,7 @@
 	id: 'music.baidu',
 	name: '百度音乐',
 	host: 'music.baidu.com',
+	noSubHost: true,
 	path: /^\/song\/\d+\/download/,
 
 	hide: '.foreign-tip',

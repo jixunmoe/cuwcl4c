@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.407
+// @version        3.0.408
 
 // 全局匹配
 // @include *
@@ -1646,6 +1646,7 @@ H.extract(function () { /*
 	id: 'music.baidu',
 	name: '百度音乐',
 	host: 'music.baidu.com',
+	noSubHost: true,
 	path: /^\/song\/\d+\/download/,
 
 	hide: '.foreign-tip',
@@ -2194,6 +2195,31 @@ http://music.baidu.com/data/user/collect?*
 		var $q = this.$q;
 
 		$q.add.apply($q, arrSongs);
+	}
+},
+/* Compiled from music.baidu.yinyueyun.js */
+{
+	id: 'music.baidu.yinyueyun',
+	name: '音乐云下载',
+	host: 'yinyueyun.baidu.com',
+	noSubHost: true,
+	path: '/',
+
+	onStart: function () {
+		H.waitUntil('userModel.set', function () {
+			unsafeExec(function (scriptName, hookBatch) {
+				var bakUserSetInfo = userModel.set;
+				userModel.set = function (key, val, opts) {
+					if (key === 'userInfo' && val) {
+						val.vip = val.golden = true;
+					}
+					return bakUserSetInfo.apply(userModel, arguments);
+				};
+				
+				// Force update user data via hook
+				userModel.set('userInfo', userModel.get('userInfo'));
+			});
+		});
 	}
 },
 /* Compiled from music.djcc.js */
