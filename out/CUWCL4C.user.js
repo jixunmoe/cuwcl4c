@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.405
+// @version        3.0.407
 
 // 全局匹配
 // @include *
@@ -978,7 +978,8 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	name: '乐盘自动下载地址',
 	host: ['www.lepan.cc', 'www.sx566.com'],
 	noSubHost: true,
-	hide: '.widget-box',
+	show: '#down_box',
+	hide: ['.widget-box', 'a[href="vip.php"]'],
 	onStart: function () {
 		// 破坏广告
 		Object.defineProperty(unsafeWindow, 'google', {
@@ -989,7 +990,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 		H.rule.exec('phpdisk.z', 'onStart');
 	},
 	onBody: function () {
-		$('.widget-box:eq(0)').removeClass('widget-box');
+		$('#down_box .widget-box').removeClass('widget-box');
 	}
 },
 /* Compiled from dl.rayfile.js */

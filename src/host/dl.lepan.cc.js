@@ -3,7 +3,8 @@
 	name: '乐盘自动下载地址',
 	host: ['www.lepan.cc', 'www.sx566.com'],
 	noSubHost: true,
-	hide: '.widget-box',
+	show: '#down_box',
+	hide: ['.widget-box', 'a[href="vip.php"]'],
 	onStart: function () {
 		// 破坏广告
 		Object.defineProperty(unsafeWindow, 'google', {
@@ -14,6 +15,6 @@
 		H.rule.exec('phpdisk.z', 'onStart');
 	},
 	onBody: function () {
-		$('.widget-box:eq(0)').removeClass('widget-box');
+		$('#down_box .widget-box').removeClass('widget-box');
 	}
 }
