@@ -488,7 +488,7 @@ H.merge (H, {
 			try {
 				fCallback.call(this);
 			} catch (e) {
-				H.error ('[H.waitUntil] Callback for %s had an error: %s', ver, e.message);
+				H.error ('[H.waitUntil] Callback for %s had an error: %s', H.version, e.message);
 			}
 		}, nTimeInterval || 150);
 

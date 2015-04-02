@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.408
+// @version        3.0.414
 
 // 全局匹配
 // @include *
@@ -541,7 +541,7 @@ H.merge (H, {
 			try {
 				fCallback.call(this);
 			} catch (e) {
-				H.error ('[H.waitUntil] Callback for %s had an error: %s', ver, e.message);
+				H.error ('[H.waitUntil] Callback for %s had an error: %s', H.version, e.message);
 			}
 		}, nTimeInterval || 150);
 
@@ -1303,9 +1303,17 @@ H.extract(function () { /*
     return unsafeExec(function() {
       var fakePlatForm;
       fakePlatForm = navigator.platform + "--Fake-mac";
-      return Object.defineProperty(navigator, "platform", {
+      Object.defineProperty(navigator, "platform", {
         get: function() {
           return fakePlatForm;
+        },
+        set: function() {
+          return null;
+        }
+      });
+      return Object.defineProperty(window, 'GRestrictive', {
+        get: function() {
+          return false;
         },
         set: function() {
           return null;
@@ -1314,38 +1322,98 @@ H.extract(function () { /*
     });
   },
   _doRemoval: function() {
-    H.waitUntil('nm.x.mK', function() {
-      unsafeExec(function(bIsFrame) {
-        var _bK;
-        _bK = nej.e.bK;
-        nej.e.bK = function(z, name) {
-          if (name === 'copyright' || name === 'resCopyright') {
-            return 1;
-          }
-          return _bK.apply(this, arguments);
-        };
-        nm.x.mK = function() {
-          return false;
-        };
-        if (bIsFrame && nm.m.c.xB.prototype.zB) {
-          nm.m.c.xB.prototype.zB = function() {
-            return true;
-          };
-        }
-      }, H.isFrame);
-    }, 7000, 500);
+    return H.waitUntil('nm.x', (function(_this) {
+      return function() {
+        var hook1, hook2;
+        hook1 = _this.searchFunction(unsafeWindow.nej.e, '.dataset;if');
+        hook2 = _this.searchFunction(unsafeWindow.nm.x, '.copyrightId==');
+        return H.waitUntil('nm.x.' + hook2, function() {
+          return unsafeExec(function(bIsFrame, hook1, hook2) {
+            var _bK;
+            _bK = nej.e[hook1];
+            nej.e[hook1] = function(z, name) {
+              if (name === 'copyright' || name === 'resCopyright') {
+                return 1;
+              }
+              return _bK.apply(this, arguments);
+            };
+            return nm.x[hook2] = function() {
+              return false;
+            };
+          }, H.isFrame, hook1, hook2);
+        }, 7000, 500);
+      };
+    })(this));
   },
-  onBody: function() {
-    var getUri;
-    this._doRemoval();
-    if (H.isFrame) {
-      return;
+  searchFunction: function(base, key) {
+    var baseName, fn, fnStr;
+    for (baseName in base) {
+      fn = base[baseName];
+      if (fn && typeof fn === 'function') {
+        fnStr = String(fn);
+        if (fnStr.indexOf(key) !== -1) {
+          H.info('Search %s, found: %s', key, baseName);
+          return baseName;
+        }
+      }
     }
+    H.info('Search %s, found nothing.', key);
+    return null;
+  },
+  hookPlayer: function() {
+    var getUri;
     getUri = (function(_this) {
       return function(song) {
         return _this.getUri(song);
       };
     })(this);
+    H.waitUntil('nm.m.f', (function(_this) {
+      return function() {
+        var baseName, clsFn, playerHooks, protoName, _ref;
+        playerHooks = null;
+        _ref = unsafeWindow.nm.m.f;
+        for (baseName in _ref) {
+          clsFn = _ref[baseName];
+          protoName = _this.searchFunction(clsFn.prototype, '<em>00:00</em>');
+          if (protoName) {
+            playerHooks = [baseName, protoName];
+            break;
+          }
+        }
+        unsafeExec(function(scriptName, playerHooks) {
+          var _bakPlayerUpdateUI;
+          _bakPlayerUpdateUI = nm.m.f[playerHooks[0]].prototype[playerHooks[1]];
+          nm.m.f[playerHooks[0]].prototype[playerHooks[1]] = function(songObj) {
+            var eveSongObj;
+            eveSongObj = {
+              artist: songObj.artists.map(function(artist) {
+                return artist.name;
+              }).join('、'),
+              name: songObj.name,
+              song: JSON.stringify(songObj)
+            };
+            document.dispatchEvent(new CustomEvent(scriptName, {
+              detail: eveSongObj
+            }));
+            return _bakPlayerUpdateUI.apply(this, arguments);
+          };
+        }, H.scriptName, playerHooks);
+        document.addEventListener(H.scriptName, function(e) {
+          var songObj;
+          songObj = e.detail;
+          _this.linkDownload.attr({
+            href: H.uri(getUri(JSON.parse(songObj.song)), "" + songObj.name + " [" + songObj.artist + "].mp3"),
+            title: '下载: ' + songObj.name
+          });
+        });
+      };
+    })(this));
+  },
+  onBody: function() {
+    this._doRemoval();
+    if (H.isFrame) {
+      return;
+    }
     this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper')).attr({
       title: '播放音乐, 即刻解析'
     }).click(function(e) {
@@ -1385,36 +1453,7 @@ H.extract(function () { /*
         _this.linkDownloadAll.insertBefore($('.m-playbar .listhdc .addall')).after($('<a>').addClass('line jx_dl_line'));
       };
     })(this), true, 500);
-    H.waitUntil('nm.m.f.xr.prototype.Al', (function(_this) {
-      return function() {
-        unsafeExec(function(scriptName) {
-          var _bakPlayerUpdateUI;
-          _bakPlayerUpdateUI = nm.m.f.xr.prototype.Al;
-          nm.m.f.xr.prototype.Al = function(songObj) {
-            var eveSongObj;
-            eveSongObj = {
-              artist: songObj.artists.map(function(artist) {
-                return artist.name;
-              }).join('、'),
-              name: songObj.name,
-              song: JSON.stringify(songObj)
-            };
-            document.dispatchEvent(new CustomEvent(scriptName, {
-              detail: eveSongObj
-            }));
-            return _bakPlayerUpdateUI.apply(this, arguments);
-          };
-        }, H.scriptName);
-        document.addEventListener(H.scriptName, function(e) {
-          var songObj;
-          songObj = e.detail;
-          _this.linkDownload.attr({
-            href: H.uri(getUri(JSON.parse(songObj.song)), "" + songObj.name + " [" + songObj.artist + "].mp3"),
-            title: '下载: ' + songObj.name
-          });
-        });
-      };
-    })(this));
+    return this.hookPlayer();
   },
   dfsHash: (function() {
     var strToKeyCodes;

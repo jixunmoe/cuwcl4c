@@ -18,29 +18,82 @@ onStart: ->
 		Object.defineProperty navigator, "platform",
 			get: -> fakePlatForm
 			set: -> null
+		Object.defineProperty window, 'GRestrictive',
+			get: -> false
+			set: -> null
 
 _doRemoval: ->
-	# 因为 nm.x.mK 后加载, 能保证 nej.e.bK 存在
-	H.waitUntil 'nm.x.mK', ->
-		unsafeExec (bIsFrame)->
-			_bK = nej.e.bK
-			nej.e.bK = (z, name) ->
-				return 1 if name is 'copyright' or name is 'resCopyright'
-				_bK.apply this, arguments
-			nm.x.mK =-> false
-			if bIsFrame and nm.m.c.xB::zB
-				nm.m.c.xB::zB =-> true
+	H.waitUntil 'nm.x', =>
+		hook1 = @searchFunction unsafeWindow.nej.e, '.dataset;if'
+		hook2 = @searchFunction unsafeWindow.nm.x,  '.copyrightId=='
+	
+		# 因为 nm.x.jC 后加载, 能保证 nej.e.bI 存在
+		H.waitUntil 'nm.x.' + hook2, ->
+			unsafeExec (bIsFrame, hook1, hook2)->
+				_bK = nej.e[hook1]
+				nej.e[hook1] = (z, name) ->
+					return 1 if name is 'copyright' or name is 'resCopyright'
+					_bK.apply this, arguments
+				
+				nm.x[hook2] =-> false
+				
+				# 完全忘了下面的是啥
+				#if bIsFrame and nm.m.c.xB::zB
+				#	nm.m.c.xB::zB =-> true
+			, H.isFrame, hook1, hook2
+		, 7000, 500
+	
+searchFunction: (base, key) ->
+	for baseName, fn of base
+		if (fn && typeof fn == 'function')
+			fnStr = String(fn)
+			if fnStr.indexOf(key) != -1
+				H.info('Search %s, found: %s', key, baseName);
+				return baseName
+	
+	H.info('Search %s, found nothing.', key);
+	return null;
+
+hookPlayer: ->
+	getUri = (song) => @getUri song
+	
+	H.waitUntil 'nm.m.f', =>
+		playerHooks = null
+		for baseName, clsFn of unsafeWindow.nm.m.f
+			protoName = @searchFunction clsFn::, '<em>00:00</em>'
+			if protoName
+				playerHooks = [baseName, protoName]
+				break;
+		
+		unsafeExec (scriptName, playerHooks) ->
+			_bakPlayerUpdateUI = nm.m.f[playerHooks[0]]::[playerHooks[1]]
+			nm.m.f[playerHooks[0]]::[playerHooks[1]] = (songObj) ->
+				eveSongObj = 
+					artist: songObj.artists.map((artist) -> artist.name).join '、'
+					name: songObj.name
+					song: JSON.stringify songObj
+
+				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj);
+
+				_bakPlayerUpdateUI.apply this, arguments
 			return
-		, H.isFrame
+		, H.scriptName, playerHooks
+
+		# 接收文件数据
+		document.addEventListener H.scriptName, (e) =>
+			songObj = e.detail
+
+			@linkDownload
+				.attr
+					href: H.uri(getUri(JSON.parse songObj.song), "#{songObj.name} [#{songObj.artist}].mp3")
+					title: '下载: ' + songObj.name
+			return
 		return
-	, 7000, 500
 	return
 
 onBody: ->
 	@_doRemoval()
 	return if H.isFrame
-
-	getUri = (song) => @getUri song
 
 	# 单曲下载
 	@linkDownload = $('<a>')
@@ -86,32 +139,7 @@ onBody: ->
 		return
 	, yes, 500
 
-	H.waitUntil 'nm.m.f.xr.prototype.Al', =>
-		unsafeExec (scriptName) ->
-			_bakPlayerUpdateUI = nm.m.f.xr::Al
-			nm.m.f.xr::Al = (songObj) ->
-				eveSongObj = 
-					artist: songObj.artists.map((artist) -> artist.name).join '、'
-					name: songObj.name
-					song: JSON.stringify songObj
-
-				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj);
-
-				_bakPlayerUpdateUI.apply this, arguments
-			return
-		, H.scriptName
-
-		# 接收文件数据
-		document.addEventListener H.scriptName, (e) =>
-			songObj = e.detail
-
-			@linkDownload
-				.attr
-					href: H.uri(getUri(JSON.parse songObj.song), "#{songObj.name} [#{songObj.artist}].mp3")
-					title: '下载: ' + songObj.name
-			return
-		return
-	return
+	@hookPlayer()
 
 dfsHash: ( () ->
 	strToKeyCodes = (str) -> Array::slice.call(String(str).split '').map (e) -> e.charCodeAt()
