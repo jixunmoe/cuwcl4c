@@ -18,9 +18,7 @@ onStart: ->
 		Object.defineProperty navigator, "platform",
 			get: -> fakePlatForm
 			set: -> null
-		Object.defineProperty window, 'GRestrictive',
-			get: -> false
-			set: -> null
+		window.GRestrictive = false;
 
 _doRemoval: ->
 	H.waitUntil 'nm.x', =>

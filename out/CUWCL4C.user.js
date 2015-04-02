@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.414
+// @version        3.0.415
 
 // 全局匹配
 // @include *
@@ -1311,14 +1311,7 @@ H.extract(function () { /*
           return null;
         }
       });
-      return Object.defineProperty(window, 'GRestrictive', {
-        get: function() {
-          return false;
-        },
-        set: function() {
-          return null;
-        }
-      });
+      return window.GRestrictive = false;
     });
   },
   _doRemoval: function() {
