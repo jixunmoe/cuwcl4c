@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.415
+// @version        3.0.419
 
 // 全局匹配
 // @include *
@@ -883,7 +883,8 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 		'400gb.com', 'ctdisk.com', 'pipipan.com', 'bego.cc',
 		'ctfile.com', 't00y.com'
 	],
-	hide: ['.captcha', '.kk_xshow', 'div.span6:first-child'],
+	path: '/file/',
+	hide: ['.captcha', '.kk_xshow', 'div.span6:first-child', '#top > .alert'],
 
 	onBody: function () {
 		// Fix Anti-ABP as it doesn't check the code.
