@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.422
+// @version        3.0.423
 
 // 全局匹配
 // @include *
@@ -1462,7 +1462,7 @@ H.extract(function () { /*
   getUri: function(song) {
     var dsfId, randServer;
     dsfId = (song.hMusic || song.mMusic || song.lMusic).dfsId;
-    randServer = Math.floor(Math.random() * 4) + 1;
+    randServer = Math.floor(Math.random() * 2) + 1;
     return "http://m" + randServer + ".music.126.net/" + (this.dfsHash(dsfId)) + "/" + dsfId + ".mp3";
   }
 }),

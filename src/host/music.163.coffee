@@ -157,6 +157,6 @@ dfsHash: ( () ->
 getUri: (song) ->
 	dsfId = (song.hMusic || song.mMusic || song.lMusic).dfsId;
 
-	# 服务器 1 ~ 4
-	randServer = Math.floor(Math.random() * 4) + 1
+	# 服务器 1 ~ 4; 但是貌似 1 ~ 2 的最稳定
+	randServer = Math.floor(Math.random() * 2) + 1
 	return "http://m#{randServer}.music.126.net/#{@dfsHash(dsfId)}/#{dsfId}.mp3";
