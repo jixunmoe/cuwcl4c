@@ -53,8 +53,6 @@ searchFunction: (base, key) ->
 	return null;
 
 hookPlayer: ->
-	getUri = (song) => @getUri song
-	
 	H.waitUntil 'nm.m.f', =>
 		playerHooks = null
 		for baseName, clsFn of unsafeWindow.nm.m.f
@@ -83,7 +81,7 @@ hookPlayer: ->
 
 			@linkDownload
 				.attr
-					href: H.uri(getUri(JSON.parse songObj.song), "#{songObj.name} [#{songObj.artist}].mp3")
+					href: H.uri(@getUri(JSON.parse songObj.song), "#{songObj.name} [#{songObj.artist}].mp3")
 					title: '下载: ' + songObj.name
 			return
 		return
@@ -115,10 +113,10 @@ onBody: ->
 			e.stopPropagation()
 			do (trackQueue = localStorage['track-queue'],
 				aria2 = new Aria2.BATCH(H.aria2, -> H.info arguments),
-			) ->
+			) =>
 				for i, track of JSON.parse trackQueue
-					aria2.add Aria2.fn.addUri, [getUri track], H.buildAriaParam
-						out: "#{track.name} [#{track.artists.map((artist) -> artist.name).join '、'}].mp3"
+					aria2.add Aria2.fn.addUri, [@getUri track], H.buildAriaParam
+						out: "#{i}. #{track.name} [#{track.artists.map((artist) -> artist.name).join '、'}].mp3"
 				aria2.send yes
 				return
 			return

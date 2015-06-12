@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.419
+// @version        3.0.422
 
 // 全局匹配
 // @include *
@@ -1355,12 +1355,6 @@ H.extract(function () { /*
     return null;
   },
   hookPlayer: function() {
-    var getUri;
-    getUri = (function(_this) {
-      return function(song) {
-        return _this.getUri(song);
-      };
-    })(this);
     H.waitUntil('nm.m.f', (function(_this) {
       return function() {
         var baseName, clsFn, playerHooks, protoName, _ref;
@@ -1396,7 +1390,7 @@ H.extract(function () { /*
           var songObj;
           songObj = e.detail;
           _this.linkDownload.attr({
-            href: H.uri(getUri(JSON.parse(songObj.song)), "" + songObj.name + " [" + songObj.artist + "].mp3"),
+            href: H.uri(_this.getUri(JSON.parse(songObj.song)), "" + songObj.name + " [" + songObj.artist + "].mp3"),
             title: '下载: ' + songObj.name
           });
         });
@@ -1423,8 +1417,8 @@ H.extract(function () { /*
           _ref = JSON.parse(trackQueue);
           for (i in _ref) {
             track = _ref[i];
-            aria2.add(Aria2.fn.addUri, [getUri(track)], H.buildAriaParam({
-              out: "" + track.name + " [" + (track.artists.map(function(artist) {
+            aria2.add(Aria2.fn.addUri, [_this.getUri(track)], H.buildAriaParam({
+              out: "" + i + ". " + track.name + " [" + (track.artists.map(function(artist) {
                 return artist.name;
               }).join('、')) + "].mp3"
             }));
