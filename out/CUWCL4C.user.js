@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.423
+// @version        3.0.424
 
 // 全局匹配
 // @include *
@@ -1247,8 +1247,8 @@ div#jx_douban_dl_wrap {
 ({
 
   /*
-  	网易音乐下载解析 By Jixun
-  	尝试使用 Coffee Script 写
+    网易音乐下载解析 By Jixun
+    尝试使用 Coffee Script 写
    */
   id: 'music.163',
   name: '网易音乐下载解析',
@@ -1357,11 +1357,11 @@ H.extract(function () { /*
   hookPlayer: function() {
     H.waitUntil('nm.m.f', (function(_this) {
       return function() {
-        var baseName, clsFn, playerHooks, protoName, _ref;
+        var baseName, clsFn, playerHooks, protoName, ref;
         playerHooks = null;
-        _ref = unsafeWindow.nm.m.f;
-        for (baseName in _ref) {
-          clsFn = _ref[baseName];
+        ref = unsafeWindow.nm.m.f;
+        for (baseName in ref) {
+          clsFn = ref[baseName];
           protoName = _this.searchFunction(clsFn.prototype, '<em>00:00</em>');
           if (protoName) {
             playerHooks = [baseName, protoName];
@@ -1390,7 +1390,7 @@ H.extract(function () { /*
           var songObj;
           songObj = e.detail;
           _this.linkDownload.attr({
-            href: H.uri(_this.getUri(JSON.parse(songObj.song)), "" + songObj.name + " [" + songObj.artist + "].mp3"),
+            href: H.uri(_this.getUri(JSON.parse(songObj.song)), songObj.name + " [" + songObj.artist + "].mp3"),
             title: '下载: ' + songObj.name
           });
         });
@@ -1413,12 +1413,12 @@ H.extract(function () { /*
       return function(e) {
         e.stopPropagation();
         (function(trackQueue, aria2) {
-          var i, track, _ref;
-          _ref = JSON.parse(trackQueue);
-          for (i in _ref) {
-            track = _ref[i];
+          var i, ref, track;
+          ref = JSON.parse(trackQueue);
+          for (i in ref) {
+            track = ref[i];
             aria2.add(Aria2.fn.addUri, [_this.getUri(track)], H.buildAriaParam({
-              out: "" + i + ". " + track.name + " [" + (track.artists.map(function(artist) {
+              out: (i < 9 ? '0' + (+i + 1) : +i + 1) + ". " + track.name + " [" + (track.artists.map(function(artist) {
                 return artist.name;
               }).join('、')) + "].mp3"
             }));
