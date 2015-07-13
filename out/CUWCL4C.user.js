@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.423
+// @version        3.0.432
 
 // 全局匹配
 // @include *
@@ -1301,6 +1301,7 @@ H.extract(function () { /*
 }
 */}),
   onStart: function() {
+    this.regPlayer();
     return unsafeExec(function() {
       var fakePlatForm;
       fakePlatForm = navigator.platform + "--Fake-mac";
@@ -1319,8 +1320,8 @@ H.extract(function () { /*
     return H.waitUntil('nm.x', (function(_this) {
       return function() {
         var hook1, hook2;
-        hook1 = _this.searchFunction(unsafeWindow.nej.e, '.dataset;if');
-        hook2 = _this.searchFunction(unsafeWindow.nm.x, '.copyrightId==');
+        hook1 = _this.searchFunction(unsafeWindow.nej.e, 'nej.e', '.dataset;if');
+        hook2 = _this.searchFunction(unsafeWindow.nm.x, 'nm.x', '.copyrightId==');
         return H.waitUntil('nm.x.' + hook2, function() {
           return unsafeExec(function(bIsFrame, hook1, hook2) {
             var _bK;
@@ -1339,20 +1340,32 @@ H.extract(function () { /*
       };
     })(this));
   },
-  searchFunction: function(base, key) {
+  searchFunction: function(base, name, key) {
     var baseName, fn, fnStr;
     for (baseName in base) {
       fn = base[baseName];
       if (fn && typeof fn === 'function') {
         fnStr = String(fn);
         if (fnStr.indexOf(key) !== -1) {
-          H.info('Search %s, found: %s', key, baseName);
+          H.info('Search %s, found: %s.%s', key, name, baseName);
           return baseName;
         }
       }
     }
     H.info('Search %s, found nothing.', key);
     return null;
+  },
+  regPlayer: function() {
+    return document.addEventListener(H.scriptName, (function(_this) {
+      return function(e) {
+        var songObj;
+        songObj = e.detail;
+        return _this.linkDownload.attr({
+          href: H.uri(_this.getUri(JSON.parse(songObj.song)), "" + songObj.name + " [" + songObj.artist + "].mp3"),
+          title: '下载: ' + songObj.name
+        });
+      };
+    })(this));
   },
   hookPlayer: function() {
     H.waitUntil('nm.m.f', (function(_this) {
@@ -1362,7 +1375,7 @@ H.extract(function () { /*
         _ref = unsafeWindow.nm.m.f;
         for (baseName in _ref) {
           clsFn = _ref[baseName];
-          protoName = _this.searchFunction(clsFn.prototype, '<em>00:00</em>');
+          protoName = _this.searchFunction(clsFn.prototype, "nm.m.f." + baseName, '<em>00:00</em>');
           if (protoName) {
             playerHooks = [baseName, protoName];
             break;
@@ -1386,14 +1399,33 @@ H.extract(function () { /*
             return _bakPlayerUpdateUI.apply(this, arguments);
           };
         }, H.scriptName, playerHooks);
-        document.addEventListener(H.scriptName, function(e) {
-          var songObj;
-          songObj = e.detail;
-          _this.linkDownload.attr({
-            href: H.uri(_this.getUri(JSON.parse(songObj.song)), "" + songObj.name + " [" + songObj.artist + "].mp3"),
-            title: '下载: ' + songObj.name
-          });
-        });
+      };
+    })(this));
+  },
+  hookPlayerFm: function() {
+    return H.waitUntil('nm.m.fO', (function(_this) {
+      return function() {
+        var hook;
+        hook = _this.searchFunction(unsafeWindow.nm.m.fO.prototype, 'nm.x', '.mp3Url,true');
+        _this.linkDownload = $('<a>').prependTo('.opts.f-cb>.f-fr').addClass('icon icon-next').html('&nbsp;').css('transform', 'rotate(90deg)');
+        unsafeExec(function(scriptName, hook) {
+          var _bakPlaySong;
+          _bakPlaySong = nm.m.fO.prototype[hook];
+          nm.m.fO.prototype[hook] = function(songObj) {
+            var eveSongObj;
+            eveSongObj = {
+              artist: songObj.artists.map(function(artist) {
+                return artist.name;
+              }).join('、'),
+              name: songObj.name,
+              song: JSON.stringify(songObj)
+            };
+            document.dispatchEvent(new CustomEvent(scriptName, {
+              detail: eveSongObj
+            }));
+            return _bakPlaySong.apply(this, arguments);
+          };
+        }, H.scriptName, hook);
       };
     })(this));
   },
@@ -1441,7 +1473,11 @@ H.extract(function () { /*
         _this.linkDownloadAll.insertBefore($('.m-playbar .listhdc .addall')).after($('<a>').addClass('line jx_dl_line'));
       };
     })(this), true, 500);
-    return this.hookPlayer();
+    if (location.pathname === '/demo/fm') {
+      return this.hookPlayerFm();
+    } else {
+      return this.hookPlayer();
+    }
   },
   dfsHash: (function() {
     var strToKeyCodes;

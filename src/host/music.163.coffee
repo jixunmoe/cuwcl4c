@@ -12,6 +12,8 @@ dl_icon: yes,
 css: `<% ~com.163.music.dl.css %>`,
 
 onStart: ->
+	@regPlayer()
+
 	# 优先使用 HTML5 播放器, 如果没有再考虑 Flash 支援
 	unsafeExec ->
 		fakePlatForm = navigator.platform + "--Fake-mac"
@@ -22,8 +24,8 @@ onStart: ->
 
 _doRemoval: ->
 	H.waitUntil 'nm.x', =>
-		hook1 = @searchFunction unsafeWindow.nej.e, '.dataset;if'
-		hook2 = @searchFunction unsafeWindow.nm.x,  '.copyrightId=='
+		hook1 = @searchFunction unsafeWindow.nej.e, 'nej.e', '.dataset;if'
+		hook2 = @searchFunction unsafeWindow.nm.x, 'nm.x',  '.copyrightId=='
 	
 		# 因为 nm.x.jC 后加载, 能保证 nej.e.bI 存在
 		H.waitUntil 'nm.x.' + hook2, ->
@@ -41,22 +43,32 @@ _doRemoval: ->
 			, H.isFrame, hook1, hook2
 		, 7000, 500
 	
-searchFunction: (base, key) ->
+searchFunction: (base, name, key) ->
 	for baseName, fn of base
 		if (fn && typeof fn == 'function')
 			fnStr = String(fn)
 			if fnStr.indexOf(key) != -1
-				H.info('Search %s, found: %s', key, baseName);
+				H.info('Search %s, found: %s.%s', key, name, baseName);
 				return baseName
 	
 	H.info('Search %s, found nothing.', key);
 	return null;
 
+# 接收文件数据
+regPlayer: ->
+	document.addEventListener H.scriptName, (e) =>
+		songObj = e.detail
+
+		@linkDownload
+			.attr
+				href: H.uri(@getUri(JSON.parse songObj.song), "#{songObj.name} [#{songObj.artist}].mp3")
+				title: '下载: ' + songObj.name
+
 hookPlayer: ->
 	H.waitUntil 'nm.m.f', =>
 		playerHooks = null
 		for baseName, clsFn of unsafeWindow.nm.m.f
-			protoName = @searchFunction clsFn::, '<em>00:00</em>'
+			protoName = @searchFunction clsFn::, "nm.m.f.#{baseName}", '<em>00:00</em>'
 			if protoName
 				playerHooks = [baseName, protoName]
 				break;
@@ -74,18 +86,34 @@ hookPlayer: ->
 				_bakPlayerUpdateUI.apply this, arguments
 			return
 		, H.scriptName, playerHooks
-
-		# 接收文件数据
-		document.addEventListener H.scriptName, (e) =>
-			songObj = e.detail
-
-			@linkDownload
-				.attr
-					href: H.uri(@getUri(JSON.parse songObj.song), "#{songObj.name} [#{songObj.artist}].mp3")
-					title: '下载: ' + songObj.name
-			return
 		return
 	return
+
+hookPlayerFm: ->
+	H.waitUntil 'nm.m.fO', =>
+		hook = @searchFunction unsafeWindow.nm.m.fO::, 'nm.x',  '.mp3Url,true'
+		@linkDownload = $ '<a>'
+			.prependTo '.opts.f-cb>.f-fr'
+			.addClass 'icon icon-next'
+			.html '&nbsp;'
+			.css 'transform', 'rotate(90deg)'
+
+
+		unsafeExec (scriptName, hook) ->
+			_bakPlaySong = nm.m.fO::[hook];
+			nm.m.fO::[hook] = (songObj) ->
+				eveSongObj = 
+					artist: songObj.artists.map((artist) -> artist.name).join '、'
+					name: songObj.name
+					song: JSON.stringify songObj
+
+				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj);
+
+				_bakPlaySong.apply this, arguments
+			return
+		, H.scriptName, hook
+		return
+	
 
 onBody: ->
 	@_doRemoval()
@@ -135,7 +163,7 @@ onBody: ->
 		return
 	, yes, 500
 
-	@hookPlayer()
+	if location.pathname == '/demo/fm' then @hookPlayerFm() else @hookPlayer()
 
 dfsHash: ( () ->
 	strToKeyCodes = (str) -> Array::slice.call(String(str).split '').map (e) -> e.charCodeAt()
