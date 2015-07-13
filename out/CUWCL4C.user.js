@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.432
+// @version        3.0.433
 
 // 全局匹配
 // @include *
@@ -3312,7 +3312,7 @@ H.rule = {
 H.extract(function () { /*
 @font-face {
 	font-family: ccc;
-	src: url(http://cdn.staticfile.org/font-awesome/4.2.0/fonts/fontawesome-webfont.woff) format('woff');
+	src: url(https://cdn.bootcss.com/font-awesome/4.2.0/fonts/fontawesome-webfont.woff) format('woff');
 	font-weight: normal;
 	font-style: normal;
 }
