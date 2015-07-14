@@ -23,12 +23,12 @@
 ////               Based on [Crack Url Wait Code Login] By Yulei
 
 // 骑牛的会请求不存在的 jquery.map 文件，改用官网的
-// @require        http://code.jquery.com/jquery-2.1.1.min.js
+// @require        https://code.jquery.com/jquery-2.1.4.min.js
 
 /// CryptoJS 相关库
-// @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/core-min.js
-// @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/enc-base64-min.js
-// @require        http://cdn.staticfile.org/crypto-js/3.1.2/components/md5-min.js
+// @require        https://cdn.bootcss.com/crypto-js/3.1.2/components/core-min.js
+// @require        https://cdn.bootcss.com/crypto-js/3.1.2/components/enc-base64-min.js
+// @require        https://cdn.bootcss.com/crypto-js/3.1.2/components/md5-min.js
 // @require        https://greasyfork.org/scripts/6696/code/CryptoJS-ByteArray.js
 
 /// 非同步枚举
@@ -42,11 +42,19 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.433
+// @version        3.0.434
 
 // 全局匹配
 // @include *
+
+// 扔掉百度的广告框架页面
 // @exclude http://pos.baidu.com/*
+
+// 扔掉谷歌
+// @exclude http://gmail.com/*
+// @exclude http://.google.tld/*
+// @exclude http://*.gmail.com/*
+// @exclude http://*.google.tld/*
 // ==/UserScript==
 
 
