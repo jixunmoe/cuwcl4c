@@ -37,6 +37,10 @@
 				return true;
 			}));
 
+		$('#page_content')
+			.attr('id', '^_^')
+			.val('cproIframeu12581302|httpubmcmmbaidustaticcomcpromediasmallpng');
+
 		H.log ('城通就绪.');
 	}
 }

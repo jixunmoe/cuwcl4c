@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.434
+// @version        3.0.435
 
 // 全局匹配
 // @include *
@@ -922,6 +922,10 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 				$kf.submit();
 				return true;
 			}));
+
+		$('#page_content')
+			.attr('id', '^_^')
+			.val('cproIframeu12581302|httpubmcmmbaidustaticcomcpromediasmallpng');
 
 		H.log ('城通就绪.');
 	}
