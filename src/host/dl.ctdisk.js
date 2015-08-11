@@ -31,11 +31,13 @@
 
 		$('.captcha_right').css('float', 'left');
 		
+		/* 城通现在的验证码是混合数字、字母
 		$('#vfcode:first').parent()
 			.append(H.createNumPad(4, $('#randcode')[0], function () {
 				$kf.submit();
 				return true;
 			}));
+		*/
 
 		$('#page_content')
 			.attr('id', '^_^')

@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.435
+// @version        3.0.436
 
 // 全局匹配
 // @include *
@@ -917,11 +917,13 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 
 		$('.captcha_right').css('float', 'left');
 		
+		/* 城通现在的验证码是混合数字、字母
 		$('#vfcode:first').parent()
 			.append(H.createNumPad(4, $('#randcode')[0], function () {
 				$kf.submit();
 				return true;
 			}));
+		*/
 
 		$('#page_content')
 			.attr('id', '^_^')
