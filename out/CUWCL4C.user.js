@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.436
+// @version        3.0.437
 
 // 全局匹配
 // @include *
@@ -837,7 +837,7 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 {
 	id: 'dl.colafile',
 	name: '可乐盘',
-	host: 'colafile.com',
+	host: 'colayun.com',
 	hide: [
 		'.table_right', '#down_link3', '.tui', '.ad1 > .ad1 > *:not(.downbox)',
 
