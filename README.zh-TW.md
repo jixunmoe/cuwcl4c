@@ -66,7 +66,7 @@
 - SongTaste 下载解析 - `[songtaste.com]`
 - 虾米音乐 - `[www.xiami.com]`
 - 音悦台下载解析 - `[yinyuetai.com]`
-- 通用 phpDisk.a 网盘规则 - `[ 79pan.com, 7mv.cc, pan.52zz.org, 258pan.com, huimeiku.com, wpan.cc ]`
+- 通用 phpDisk.a 网盘规则 - `[ 79pan.com, 03xg.com, wpan.cc, ypan.cc, 7mv.cc, pan.52zz.org, 258pan.com, huimeiku.com ]`
 - 通用 phpDisk.z 网盘规则 - `[ azpan.com, gxdisk.com, 2kuai.com, 1wp.me, 77pan.cc, vvpan.com, fmdisk.com, bx0635.com, 10pan.cc ]`
 
 測試於 Chrome & Firefox 32 (GreasyMonkey 2.2)

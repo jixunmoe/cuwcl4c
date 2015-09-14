@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.437
+// @version        3.0.438
 
 // 全局匹配
 // @include *
@@ -3125,8 +3125,10 @@ H.extract(function () { /*
 	// 相关规则: 跳转 /file-xxx -> /download.php?id=xxx&key=xxx
 	
 	host: [
-		'79pan.com', '7mv.cc', 'pan.52zz.org', '258pan.com',
-		'huimeiku.com', 'wpan.cc'
+		'79pan.com', '03xg.com',
+		'wpan.cc', 'ypan.cc',
+		
+		'7mv.cc', 'pan.52zz.org', '258pan.com', 'huimeiku.com'
 	],
 
 	hide: ['#code_box', '#down_box2', '#codefrm', '.ad', '[class^="banner"]'],
