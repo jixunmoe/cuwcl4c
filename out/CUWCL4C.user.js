@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.438
+// @version        3.0.440
 
 // 全局匹配
 // @include *
@@ -1006,8 +1006,13 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	},
 	onBody: function () {
 		$('#down_box .widget-box').removeClass('widget-box');
+		$('[href*="down.lepan.cc/?downurl"]').each(function(i, el){
+			el.removeAttribute('onclick');
+			el.href = decodeURIComponent(el.href.split("down.lepan.cc/?downurl=")[1]);
+		});
 	}
-},
+}
+,
 /* Compiled from dl.rayfile.js */
 {
 	id: 'dl.rayfile',

@@ -16,5 +16,9 @@
 	},
 	onBody: function () {
 		$('#down_box .widget-box').removeClass('widget-box');
+		$('[href*="down.lepan.cc/?downurl"]').each(function(i, el){
+			el.removeAttribute('onclick');
+			el.href = decodeURIComponent(el.href.split("down.lepan.cc/?downurl=")[1]);
+		});
 	}
 }
