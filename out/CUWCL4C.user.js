@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.441
+// @version        3.0.443
 
 // 全局匹配
 // @include *
@@ -774,6 +774,24 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 		}
 	}
 },
+/* Compiled from dl.123564.js */
+{
+	id: 'dl.123564',
+	name: '123564 网盘',
+	host: ['123564.com', 'm.123564.com'],
+	noSubHost: true,
+
+	css: '.ad1{height:1px !important}',
+	hide: ['#loading', '#yzm'],
+	show: '#download',
+	onStart: function () {
+		unsafeWindow.killpanads = 1;
+	},
+	onBody: function () {
+		$('#download > a').click();
+	}
+}
+,
 /* Compiled from dl.7958.js */
 {
 	id: 'dl.7958',
