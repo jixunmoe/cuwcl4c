@@ -316,8 +316,10 @@ MODULE
 		this._doRemoval();
 
 		// 不在框架執行
-		if (H.isFrame && location.pathname != '/outchain/player')
+		if (H.isFrame && location.pathname != '/outchain/player') {
+			this.tryEnableMusic();
 			return;
+		}
 
 		this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper')).attr({
 			title: '播放音乐, 即刻解析'
