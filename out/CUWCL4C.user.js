@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.457
+// @version        3.0.458
 
 // 全局匹配
 // @include *
@@ -1512,7 +1512,6 @@ H.extract(function () { /*
 					insertAfter(subTitle, pageTitle);
 					pageTitle.style.cssText = cssTitle;
 					subTitle.style.cssText = cssSubtitle;
-
 				}
 
 
@@ -1535,6 +1534,7 @@ H.extract(function () { /*
 					track.fee = 0;
 
 					subTitle.textContent = '\u25b6 ' + track.name;
+					subTitle.title = track.name;
 
 					// 國際用戶轉換地址
 					if (bInternational)

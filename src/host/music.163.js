@@ -174,7 +174,6 @@ MODULE
 					insertAfter(subTitle, pageTitle);
 					pageTitle.style.cssText = cssTitle;
 					subTitle.style.cssText = cssSubtitle;
-
 				}
 
 
@@ -197,6 +196,7 @@ MODULE
 					track.fee = 0;
 
 					subTitle.textContent = '\u25b6 ' + track.name;
+					subTitle.title = track.name;
 
 					// 國際用戶轉換地址
 					if (bInternational)
