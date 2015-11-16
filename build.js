@@ -40,18 +40,18 @@ var parseScript = function (s) {
 				break;
 		}
 
-		return ret.join ('\n');
+		return ret
+			.join('\n')
+			// 刪除行首的「//-//」符號
+			.replace(/^(\s+)\/\/-\/\/\s*/m, '$1');
 	});
 };
 
 if (args.main)
 	fs.writeFile (outDir + 'CUWCL4C.user.js',       parseScript (fs.readFileSync(srcDir + 'main.js')));
 
-
-
 if (args.readme)
 	fs.writeFile (__dirname + '/README.md',         parseScript (fs.readFileSync(__dirname + '/README.zh-CN.tpl.md')));
-
 
 if (args.readmeZhTW)
 	fs.writeFile (__dirname + '/README.zh-TW.md',   parseScript (fs.readFileSync(__dirname + '/README.zh-TW.tpl.md')));

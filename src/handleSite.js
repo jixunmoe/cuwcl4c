@@ -2,7 +2,7 @@
 H.rule = {
 	checkPath: function (path, rule) {
 		if (rule instanceof Array) {
-			if (rule.length == 0)
+			if (rule.length === 0)
 				return false;
 
 			for (var i = rule.length; i--; ) {
@@ -63,7 +63,7 @@ H.rule = {
 
 			host = H.lowerHost;
 
-			while (hostMatch = host.match (/^.+?\.(.+)/)) {
+			while ((hostMatch = host.match (/^.+?\.(.+)/))) {
 				if (H.contains (site.host, host = hostMatch[1])) {
 					break;
 				}
@@ -121,7 +121,7 @@ H.rule = {
 					site.dl_icon = H.defaultDlClass;
 				}
 
-				H.injectStyle.call (styleBlock, H.sprintf(<% ~AA.dl_btn.css %>, site.dl_icon));
+				//-// H.injectStyle.call (styleBlock, H.sprintf(<% ~AA.dl_btn.css %>, site.dl_icon));
 			}
 
 			site.styleBlock = styleBlock;
