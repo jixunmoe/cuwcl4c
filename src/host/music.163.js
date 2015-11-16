@@ -311,6 +311,23 @@ MODULE
 						.replace(/\+/g, "-");
 	},
 
+	tryEnableMusic: function () {
+		var $disablePlayBtn = $('.u-btni-play-dis');
+		if ($disablePlayBtn.length) {
+			var rid = $disablePlayBtn.parent().data('rid');
+			
+			$disablePlayBtn.replaceWith(H.extract(function(){/*
+				<a data-res-action="play" data-res-id="%id" data-res-type="18"
+				href="javascript:;" class="u-btn2 u-btn2-2 u-btni-addply f-fl" hidefocus="true"
+				title="播放"><i><em class="ply"></em>播放</i></a>
+
+				<a data-res-action="addto" data-res-id="%id"
+				data-res-type="18" href="javascript:;" class="u-btni u-btni-add"
+				hidefocus="true" title="添加到播放列表"></a>
+			*/}).replace(/%id/g, rid));
+		}
+	},
+
 	onBody: function() {
 		var self = this;
 		this._doRemoval();
