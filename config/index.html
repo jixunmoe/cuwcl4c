@@ -26,7 +26,7 @@
 </head>
 <body>
 <div class="ui page grid hide">
-		
+
 	<div class="row">
 		<div class="column main-container">
 			<h1 class="ui header">CUWCL4C 配置页面</h1>
@@ -66,7 +66,7 @@
 
 			<div class="ui error message" v-class="hidden: status != -2">
 				<div class="content">
-					<p>无法连接 GreasyFork 服务器, <span class="ui primary button" v-class="loading: status == 0" v-on="click: checkUpdate">在检查一次?</span></p>
+					<p>无法连接 GreasyFork 服务器, <span class="ui primary button" v-class="loading: status == 0" v-on="click: checkUpdate">再检查一次?</span></p>
 				</div>
 			</div>
 </div>
@@ -79,6 +79,15 @@
 						<label>启用日志: 如果您觉得控制台的输出太乱的话，可以将此项关闭。</label>
 					</div>
 				</div>
+
+				<div class="ui form">
+					<div class="ui horizontal header divider">特殊开关</div>
+					<div class="field">
+						<div class="ui toggle checkbox">
+							<input type="checkbox" v-model="conf.bInternational">
+							<label>海外用户: 尝试修正海外用户无法访问问题，目前提供了云音乐的支援。</label>
+						</div>
+					</div>
 
 				<div class="ui horizontal header divider">下载选项</div>
 
@@ -102,7 +111,7 @@
 							</div>
 						</div>
 					</div>
-				
+
 					<div class="eleven wide column">
 						<!-- 浏览器下载 -->
 						<div v-class="hide: conf.dUriType != 0">
