@@ -194,7 +194,7 @@ MODULE
 					}
 
 					var track = this[tracks][i];
-					track.fee = 0;
+					track.fee = track.status = 0;
 
 					subTitle.textContent = '\u25b6 ' + track.name;
 					subTitle.title = track.name;
