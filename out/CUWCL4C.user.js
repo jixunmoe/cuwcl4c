@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.458
+// @version        3.0.459
 
 // 全局匹配
 // @include *
@@ -1491,7 +1491,8 @@ H.extract(function () { /*
 					transform: 'rotate(90deg)',
 					position: 'absolute',
 					right: '21px',
-					top: '4px'
+					top: '3px',
+					opacity: 0.6
 				});
 
 			// 尋找注入函數

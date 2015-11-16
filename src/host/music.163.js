@@ -153,7 +153,8 @@ MODULE
 					transform: 'rotate(90deg)',
 					position: 'absolute',
 					right: '21px',
-					top: '4px'
+					top: '3px',
+					opacity: 0.6
 				});
 
 			// 尋找注入函數
