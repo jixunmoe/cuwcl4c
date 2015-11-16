@@ -1,0 +1,24 @@
+{
+  "name": "cuwcl4c",
+  "version": "1.0.0",
+  "description": "A userscript to help people to get their stuff quickly",
+  "main": "",
+  "dependencies": {
+    "coffee-script": "^1.10.0",
+    "js-yaml": "^3.4.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JixunMoe/cuwcl4c.git"
+  },
+  "author": "Jixun Moe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JixunMoe/cuwcl4c/issues"
+  },
+  "homepage": "https://github.com/JixunMoe/cuwcl4c#readme"
+}

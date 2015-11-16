@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.443
+// @version        3.0.446
 
 // 全局匹配
 // @include *
@@ -1411,7 +1411,7 @@ H.extract(function () { /*
         var songObj;
         songObj = e.detail;
         return _this.linkDownload.attr({
-          href: H.uri(_this.getUri(JSON.parse(songObj.song)), "" + songObj.name + " [" + songObj.artist + "].mp3"),
+          href: H.uri(_this.getUri(JSON.parse(songObj.song)), songObj.name + " [" + songObj.artist + "].mp3"),
           title: '下载: ' + songObj.name
         });
       };
@@ -1420,22 +1420,25 @@ H.extract(function () { /*
   hookPlayer: function() {
     H.waitUntil('nm.m.f', (function(_this) {
       return function() {
-        var baseName, clsFn, playerHooks, protoName, _ref;
+        var baseName, clsFn, playerHooks, protoName, ref;
         playerHooks = null;
-        _ref = unsafeWindow.nm.m.f;
-        for (baseName in _ref) {
-          clsFn = _ref[baseName];
-          protoName = _this.searchFunction(clsFn.prototype, "nm.m.f." + baseName, '<em>00:00</em>');
+        ref = unsafeWindow.nm.m.f;
+        for (baseName in ref) {
+          clsFn = ref[baseName];
+          protoName = _this.searchFunction(clsFn.prototype, "nm.m.f." + baseName + "::", '<em>00:00</em>');
           if (protoName) {
             playerHooks = [baseName, protoName];
             break;
           }
         }
-        unsafeExec(function(scriptName, playerHooks) {
+        unsafeExec(function(scriptName, playerHooks, bInternational) {
           var _bakPlayerUpdateUI;
           _bakPlayerUpdateUI = nm.m.f[playerHooks[0]].prototype[playerHooks[1]];
           nm.m.f[playerHooks[0]].prototype[playerHooks[1]] = function(songObj) {
             var eveSongObj;
+            if (bInternational) {
+              songObj.mp3Url = songObj.mp3Url.replace('http://m', 'http://p');
+            }
             eveSongObj = {
               artist: songObj.artists.map(function(artist) {
                 return artist.name;
@@ -1448,7 +1451,7 @@ H.extract(function () { /*
             }));
             return _bakPlayerUpdateUI.apply(this, arguments);
           };
-        }, H.scriptName, playerHooks);
+        }, H.scriptName, playerHooks, H.config.bInternational);
       };
     })(this));
   },
@@ -1495,12 +1498,12 @@ H.extract(function () { /*
       return function(e) {
         e.stopPropagation();
         (function(trackQueue, aria2) {
-          var i, track, _ref;
-          _ref = JSON.parse(trackQueue);
-          for (i in _ref) {
-            track = _ref[i];
+          var i, ref, track;
+          ref = JSON.parse(trackQueue);
+          for (i in ref) {
+            track = ref[i];
             aria2.add(Aria2.fn.addUri, [_this.getUri(track)], H.buildAriaParam({
-              out: "" + i + ". " + track.name + " [" + (track.artists.map(function(artist) {
+              out: i + ". " + track.name + " [" + (track.artists.map(function(artist) {
                 return artist.name;
               }).join('、')) + "].mp3"
             }));

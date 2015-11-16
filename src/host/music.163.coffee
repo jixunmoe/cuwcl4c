@@ -20,13 +20,13 @@ onStart: ->
 		Object.defineProperty navigator, "platform",
 			get: -> fakePlatForm
 			set: -> null
-		window.GRestrictive = false;
+		window.GRestrictive = false
 
 _doRemoval: ->
 	H.waitUntil 'nm.x', =>
 		hook1 = @searchFunction unsafeWindow.nej.e, 'nej.e', '.dataset;if'
 		hook2 = @searchFunction unsafeWindow.nm.x, 'nm.x',  '.copyrightId=='
-	
+
 		# 因为 nm.x.jC 后加载, 能保证 nej.e.bI 存在
 		H.waitUntil 'nm.x.' + hook2, ->
 			unsafeExec (bIsFrame, hook1, hook2)->
@@ -34,25 +34,25 @@ _doRemoval: ->
 				nej.e[hook1] = (z, name) ->
 					return 1 if name is 'copyright' or name is 'resCopyright'
 					_bK.apply this, arguments
-				
+
 				nm.x[hook2] =-> false
-				
+
 				# 完全忘了下面的是啥
 				#if bIsFrame and nm.m.c.xB::zB
 				#	nm.m.c.xB::zB =-> true
 			, H.isFrame, hook1, hook2
 		, 7000, 500
-	
+
 searchFunction: (base, name, key) ->
 	for baseName, fn of base
 		if (fn && typeof fn == 'function')
 			fnStr = String(fn)
 			if fnStr.indexOf(key) != -1
-				H.info('Search %s, found: %s.%s', key, name, baseName);
+				H.info('Search %s, found: %s.%s', key, name, baseName)
 				return baseName
-	
-	H.info('Search %s, found nothing.', key);
-	return null;
+
+	H.info('Search %s, found nothing.', key)
+	return null
 
 # 接收文件数据
 regPlayer: ->
@@ -68,24 +68,27 @@ hookPlayer: ->
 	H.waitUntil 'nm.m.f', =>
 		playerHooks = null
 		for baseName, clsFn of unsafeWindow.nm.m.f
-			protoName = @searchFunction clsFn::, "nm.m.f.#{baseName}", '<em>00:00</em>'
+			protoName = @searchFunction clsFn::, "nm.m.f.#{baseName}::", '<em>00:00</em>'
 			if protoName
 				playerHooks = [baseName, protoName]
-				break;
-		
-		unsafeExec (scriptName, playerHooks) ->
+				break
+
+		unsafeExec (scriptName, playerHooks, bInternational) ->
 			_bakPlayerUpdateUI = nm.m.f[playerHooks[0]]::[playerHooks[1]]
 			nm.m.f[playerHooks[0]]::[playerHooks[1]] = (songObj) ->
-				eveSongObj = 
+				if bInternational
+					songObj.mp3Url = songObj.mp3Url.replace('http://m', 'http://p')
+
+				eveSongObj =
 					artist: songObj.artists.map((artist) -> artist.name).join '、'
 					name: songObj.name
 					song: JSON.stringify songObj
 
-				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj);
+				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj)
 
 				_bakPlayerUpdateUI.apply this, arguments
 			return
-		, H.scriptName, playerHooks
+		, H.scriptName, playerHooks, H.config.bInternational
 		return
 	return
 
@@ -100,20 +103,20 @@ hookPlayerFm: ->
 
 
 		unsafeExec (scriptName, hook) ->
-			_bakPlaySong = nm.m.fO::[hook];
+			_bakPlaySong = nm.m.fO::[hook]
 			nm.m.fO::[hook] = (songObj) ->
-				eveSongObj = 
+				eveSongObj =
 					artist: songObj.artists.map((artist) -> artist.name).join '、'
 					name: songObj.name
 					song: JSON.stringify songObj
 
-				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj);
+				document.dispatchEvent new CustomEvent(scriptName, detail: eveSongObj)
 
 				_bakPlaySong.apply this, arguments
 			return
 		, H.scriptName, hook
 		return
-	
+
 
 onBody: ->
 	@_doRemoval()
@@ -174,7 +177,7 @@ dfsHash: ( () ->
 	(dfsid) ->
 		key = [ 51, 103, 111, 56, 38, 36, 56, 42, 51, 42, 51, 104, 48, 107, 40, 50, 41, 50 ]
 		fids = strToKeyCodes(dfsid).map (fid, i) -> (fid ^ key[i % key.length]) & 0xFF
-		
+
 		CryptoJS
 			.MD5(CryptoJS.lib.ByteArray(fids))
 			.toString(CryptoJS.enc.Base64)
@@ -183,8 +186,8 @@ dfsHash: ( () ->
 )()
 
 getUri: (song) ->
-	dsfId = (song.hMusic || song.mMusic || song.lMusic).dfsId;
+	dsfId = (song.hMusic || song.mMusic || song.lMusic).dfsId
 
 	# 服务器 1 ~ 4; 但是貌似 1 ~ 2 的最稳定
 	randServer = Math.floor(Math.random() * 2) + 1
-	return "http://m#{randServer}.music.126.net/#{@dfsHash(dsfId)}/#{dsfId}.mp3";
+	return "http://m#{randServer}.music.126.net/#{@dfsHash(dsfId)}/#{dsfId}.mp3"
