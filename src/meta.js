@@ -55,4 +55,7 @@
 // @exclude http://.google.tld/*
 // @exclude http://*.gmail.com/*
 // @exclude http://*.google.tld/*
+
+// 不在 https 頁面執行
+// @exclude https://*
 // ==/UserScript==

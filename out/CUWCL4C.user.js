@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.462
+// @version        3.0.463
 
 // 全局匹配
 // @include *
@@ -55,6 +55,9 @@
 // @exclude http://.google.tld/*
 // @exclude http://*.gmail.com/*
 // @exclude http://*.google.tld/*
+
+// 不在 https 頁面執行
+// @exclude https://*
 // ==/UserScript==
 
 
