@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.463
+// @version        3.0.464
 
 // 全局匹配
 // @include *
@@ -1383,7 +1383,7 @@ H.extract(function () { /*
 			H.waitUntil('nm.x.' + CR2, function () {
 				unsafeExec(function (bIsFrame, CR1, CR2) {
 					var _CR1 = nej.e[CR1];
-					nej.e[CR1] = function () {
+					nej.e[CR1] = function (z, name) {
 						if (name == 'copyright' || name == 'resCopyright') {
 							return 1;
 						}
