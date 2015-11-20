@@ -42,10 +42,11 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.464
+// @version        3.0.465
 
 // 全局匹配
-// @include *
+// @include http://*
+// @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // 扔掉百度的广告框架页面
 // @exclude http://pos.baidu.com/*
@@ -56,8 +57,6 @@
 // @exclude http://*.gmail.com/*
 // @exclude http://*.google.tld/*
 
-// 不在 https 頁面執行
-// @exclude https://*
 // ==/UserScript==
 
 
