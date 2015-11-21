@@ -400,7 +400,7 @@ MODULE
 			Object.keys(q).forEach(function (key) {
 				if (params[key]) {
 					$dlHolder.append($('<a>').attr({
-						href: params[key],
+						href: H.uri(params[key]),
 						title: H.sprintf('下载 %s 的 %s Mv', params.trackName, q[key])
 					}).prop('download', true).text(q[key]));
 					$dlHolder.append(' | ');
