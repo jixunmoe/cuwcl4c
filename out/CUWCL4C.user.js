@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.470
+// @version        3.0.471
 
 // 全局匹配
 // @include http://*
@@ -1667,6 +1667,60 @@ H.extract(function () { /*
 				hidefocus="true" title="添加到播放列表"></a>
 			*/}).replace(/%id/g, rid));
 		}
+
+		var $playMv = $('.u-icn-87');
+		if ($playMv.length) {
+			$playMv = $playMv.parent();
+
+			this.getMvId($_GET.id, function (mvid) {
+				$playMv.replaceWith($('<a>').attr({
+					href: '/mv?id=' + mvid,
+					title: '播放mv'
+				}).html('<i class="icn u-icn u-icn-2" />'));
+			});
+		}
+	},
+
+	getMvId: function (songId, cb) {
+		var _cache;
+		try {
+			_cache = JSON.parse(localStorage.mv_cahce);
+		} catch (e) {
+			_cache = {};
+		}
+
+		if (songId in _cache) {
+			cb(_cache[songId]);
+			return ;
+		}
+
+		var _crsf = unsafeWindow.NEJ_CONF.p_csrf.param;
+		var _token = document.cookie.match(new RegExp(unsafeWindow.NEJ_CONF.p_csrf.cookie + '=(\\w+)'))[1];
+
+		var reqObj = {
+			id: $_GET.id,
+			ids: [$_GET.id]
+		};
+		reqObj[_crsf] = _token;
+
+		var encryptedData = unsafeWindow.asrsea(JSON.stringify(reqObj), "010001","00e0b509f6259df8642dbc35662901477df22677ec152b5ff68ace615bb7b725152b3ab17a876aea8a5aa76d2e417629ec4ee341f56135fccf695280104e0312ecbda92557c93870114af6c9d05c4f7f0c3685b7a46bee255932575cce10b424d813cfe4875d3e82047b97ddef52741d546b8e289dc6935b3ece0462db0a22b8e7", "0CoJUm6Qyw8W8jud");
+		var postData = {
+			params: encryptedData.encText,
+			encSecKey: encryptedData.encSecKey
+		};
+		var _url = H.sprintf('/weapi/song/detail/?%s=%s', _crsf, _token);
+		$.ajax({
+			url: _url,
+			method: 'POST',
+			data: postData,
+			dataType: 'json'
+		}).done(function (data) {
+			if (data.code == 200) {
+				var mvid = _cache[songId] = data.songs[0].mvid;
+				localStorage.mv_cahce = JSON.stringify(_cache);
+				cb(mvid);
+			}
+		});
 	},
 
 	parseMv: function () {
