@@ -68,7 +68,7 @@ var H = {
 	},
 
 	beginWith: function (str, what) {
-		return str.indexOf (what) ==  0;
+		return str.indexOf (what) === 0;
 	},
 
 	contains: function (str, what) {
@@ -352,6 +352,7 @@ H.merge (H, {
 	base64Decode: function (str) {
 		return CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(str));
 	},
+	
 	getFlashVars: function (ele) {
 		// jQuery element fix.
 		if (!ele) return {};

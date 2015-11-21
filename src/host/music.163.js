@@ -328,13 +328,74 @@ MODULE
 		}
 	},
 
+	parseMv: function () {
+		var $flashBox = $('#flash_box');
+		if ($flashBox.length) {
+			var html = $flashBox.html();
+			var params = H.parseQueryString(html.match(/flashvars="([\s\S]+?)"/)[1].replace(/&amp;/g, '&'));
+
+			var q = {
+				hurl: '高清',
+				murl: '标清',
+				lurl: '渣画质'
+			};
+
+			var $dlHolder = $('<p>').css({
+				textAlign: 'right'
+			}).text('MV 下载: ').insertAfter($flashBox);
+			Object.keys(q).forEach(function (key) {
+				if (params[key]) {
+					$dlHolder.append($('<a>').attr({
+						href: params[key],
+						title: H.sprintf('下载 %s 的 %s Mv', params.trackName, q[key])
+					}).prop('download', true).text(q[key]));
+					$dlHolder.append(' | ');
+				}
+			});
+			$dlHolder.append(H.sprintf ('提供: %s %s ', H.scriptName, H.version));
+
+			if (H.config.bInternational) {
+				$flashBox.html(html.replace(/restrict=true/g, 'restrict='));
+
+				// 自动关闭弹出的提示框
+				unsafeExec(function () {
+					var t = setInterval(function () {
+						var el = document.getElementsByClassName('zcls')[0];
+						if (el) {
+							el.dispatchEvent(new Event('mousedown'));
+							clearInterval(t);
+						}
+					}, 100);
+				});
+			}
+		}
+	},
+
+	onBodyFrame: function () {
+		switch(location.pathname) {
+			case '/mv':
+				this.parseMv();
+				break;
+
+			case '/outchain/player':
+				this.hookPlayerOutchain();
+				break;
+
+			case '/song':
+				// TODO: Song DL button?
+				if (H.config.bInternational)
+					this.tryEnableMusic();
+				break;
+		}
+	},
+
 	onBody: function() {
 		var self = this;
 		this._doRemoval();
 
 		// 不在框架執行
-		if (H.isFrame && location.pathname != '/outchain/player') {
-			this.tryEnableMusic();
+		if (H.isFrame) {
+			this.onBodyFrame();
 			return;
 		}
 
@@ -391,10 +452,7 @@ MODULE
 			case '/demo/fm':
 				this.hookPlayerFm();
 				break;
-			case '/outchain/player':
-				this.hookPlayerOutchain();
-				break;
-				
+
 			default:
 				H.waitUntil(function() {
 					return $('.listhdc > .addall').length;
