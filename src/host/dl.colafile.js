@@ -1,7 +1,7 @@
 {
 	id: 'dl.colafile',
 	name: '可乐盘',
-	host: 'colayun.com',
+	host: ['colayun.com', 'colafile.com'],
 	hide: [
 		'.table_right', '#down_link3', '.tui', '.ad1 > .ad1 > *:not(.downbox)',
 
@@ -18,7 +18,7 @@
 		var file_id = location.pathname.match(/\d+/)[0];
 
 		$.ajax({
-			url: '/ajax.php?action=downaddress&file_id=' + file_id,
+			url: '//' + location.hostname + '/ajax.php?action=downaddress&file_id=' + file_id,
 			headers: {
 				'X-Forwarded-For': this.genValidIp()
 			},

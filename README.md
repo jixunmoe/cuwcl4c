@@ -35,7 +35,7 @@
 - 9盘 - `[www.9pan.net]`
 - 百度盘免下载管家 - `[yun.baidu.com, pan.baidu.com]`
 - 暴雪盘 - `[bx0635.com]`
-- 可乐盘 - `[colayun.com]`
+- 可乐盘 - `[colayun.com, colafile.com]`
 - 城通网盘系列 - `[ 400gb.com, ctdisk.com, pipipan.com, bego.cc, ctfile.com, t00y.com ]`
 - 大连生活网 - `[dlkoo.com]`
 - 好盘 - `[howfile.com]`
