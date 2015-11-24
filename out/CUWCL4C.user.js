@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.473
+// @version        3.0.474
 
 // 全局匹配
 // @include http://*
@@ -1741,7 +1741,7 @@ H.extract(function () { /*
 			Object.keys(q).forEach(function (key) {
 				if (params[key]) {
 					$dlHolder.append($('<a>').attr({
-						href: H.uri(params[key]),
+						href: H.uri(params[key], H.sprintf('%s[%sMV].mp4', params.trackName, q[key])),
 						title: H.sprintf('下载 %s 的 %s Mv', params.trackName, q[key])
 					}).prop('download', true).text(q[key]));
 					$dlHolder.append(' | ');
