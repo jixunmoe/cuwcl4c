@@ -3,7 +3,7 @@
 	name: 'DJ 爷爷网',
 	host: 'www.djye.com',
 	noSubHost: true,
-	path: '/Player/',
+	path: '/player/',
 	css : <% ~com.djye.dl.css %>,
 
 	toMp3: function (song) {
@@ -12,9 +12,10 @@
 
 	onStart: function () {
 		this.linkHolder = $('<p id="jx_dl_btn">');
-		this.linkM4A = $('<a>').appendTo (this.linkHolder).text ('试听音质');
+		this.linkHolder.append('下载: ')
+		this.linkM4A = $('<a>').appendTo (this.linkHolder).text ('试听');
 		this.linkHolder.append (' | ');
-		this.linkMP3 = $('<a>').appendTo (this.linkHolder).text ('MP3')
+		this.linkMP3 = $('<a>').appendTo (this.linkHolder).text ('mp3')
 			.attr ('title', '请注意: 该链接可能因为服务器配置更新导致无法下载');
 
 		H.jPlayerPatcher (function (songObj) {
@@ -28,7 +29,7 @@
 
 	onBody: function () {
 		this.linkHolder
-			.appendTo ($('.playerMain-03'))
-			.prev().css('padding-left', 25);
+			.appendTo ($('.bf_ckc'))
+			.css('padding-right', '1em');
 	}
 }

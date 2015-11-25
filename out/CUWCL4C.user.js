@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.474
+// @version        3.0.475
 
 // 全局匹配
 // @include http://*
@@ -2655,26 +2655,32 @@ http://music.baidu.com/data/user/collect?*
 		H.waitUntil ('$.post', function () {
 			console.info ('执行 VIP 破解 (play.php 页面无效) ..');
 			unsafeExec (function (scriptHome, scriptName) {
+				function rndNumber () {
+					return ~~(99999 * Math.random());
+				}
+
 				console.info (scriptHome);
 				var _post = $.post;
 				$.post = function (addr, cb) {
 					if (addr == '/ajax.php?ajax=userinfo') {
-						return _post.call (window.$, addr, function (s) {
+						return _post.call ($, addr, function (s) {
 							if (s == '')
 								s = [1, scriptName, 0, scriptHome, 0, 0,
-									99999999, 99999999, 0, 0, 2, '尊贵的 ' + scriptName + ' 用户', '9年'].join('*wrf*');
+									rndNumber(), rndNumber(), 0, 0, 2,
+									'尊贵的 ' + scriptName + ' 用户', '9年'
+								].join('*wrf*');
 
 							cb (s);
 						});
 					}
-					return _post.apply (window.$, arguments);
+					return _post.apply ($, arguments);
 				};
 
 				return function () {};
 			}, H.scriptHome, H.scriptName);
 		});
 
-		// 播放器劫持
+		// 播放器劫持 [怀疑失效?]
 		H.waitUntil ('jwplayer.api', function () {
 			unsafeExec (function () {
 				var _sp = window.jwplayer.api.selectPlayer;
@@ -2685,10 +2691,11 @@ http://music.baidu.com/data/user/collect?*
 						console.info ('setup', options);
 						var _opl = options.events.onPlaylistItem;
 						options.events.onPlaylistItem = function (eventPlaylistChange) {
-							document.dispatchEvent ( new CustomEvent (H.scriptName, {detail: JSON.stringify (mPlayer.getPlaylistItem ())}) );
+							document.dispatchEvent ( new CustomEvent (H.scriptName, {
+								detail: JSON.stringify (mPlayer.getPlaylistItem ())
+							}) );
 							return _opl.apply (this, arguments);
 						};
-
 						return _setup.apply (mPlayer, arguments);
 					};
 					return mPlayer;
@@ -2745,16 +2752,31 @@ H.extract(function () { /*
 
 	onStart: function () {
 		this.dlHolder = $('<div id="jx_dl_wrapper">');
-		this.dlLink   = $('<a>').text('下载').appendTo (this.dlHolder);
+		this.dlHolder.append('下载: ');
+		this.dlHq     = $('<a>').text('高清').appendTo (this.dlHolder).prop('download', true);
+		this.dlHolder.append(' | ');
+		this.dlLink   = $('<a>').text('试听').appendTo (this.dlHolder).prop('download', true);
 
 		H.jPlayerPatcher (function (songObj) {
 			var songAddr  = songObj.mp3 || songObj.m4a;
 			var songTitle = songObj.title || $('#playTitle .jp-title').text().replace(/.+：/, '');
 			
-			this.dlLink
-				.attr ('href', H.uri(songAddr, songTitle + songAddr.slice(-4)) )
-				.attr ('title', '下载: ' + songTitle);
+			this.dlLink.attr({
+				href: H.uri(songAddr, songTitle + songAddr.slice(-4)),
+				title: '试听音质: ' + songTitle
+			});
+
+			this.dlHq.attr({
+				href: H.uri(this.upgradeHQ(songAddr), songTitle + '.mp3'),
+				title: '高清音质: ' + songTitle
+			});
 		}.bind (this));
+	},
+
+	upgradeHQ: function (url) {
+		return url
+		         .replace(unsafeWindow.s_str, 'http://do.djkk.com/mp3')
+		         .replace(/...$/, 'mp3')
 	},
 
 	onBody: function () {
@@ -2767,7 +2789,7 @@ H.extract(function () { /*
 	name: 'DJ 爷爷网',
 	host: 'www.djye.com',
 	noSubHost: true,
-	path: '/Player/',
+	path: '/player/',
 	css : /* Resource: com.djye.dl.css */
 H.extract(function () { /*
 #jx_dl_btn {
@@ -2791,9 +2813,10 @@ H.extract(function () { /*
 
 	onStart: function () {
 		this.linkHolder = $('<p id="jx_dl_btn">');
-		this.linkM4A = $('<a>').appendTo (this.linkHolder).text ('试听音质');
+		this.linkHolder.append('下载: ')
+		this.linkM4A = $('<a>').appendTo (this.linkHolder).text ('试听');
 		this.linkHolder.append (' | ');
-		this.linkMP3 = $('<a>').appendTo (this.linkHolder).text ('MP3')
+		this.linkMP3 = $('<a>').appendTo (this.linkHolder).text ('mp3')
 			.attr ('title', '请注意: 该链接可能因为服务器配置更新导致无法下载');
 
 		H.jPlayerPatcher (function (songObj) {
@@ -2807,8 +2830,8 @@ H.extract(function () { /*
 
 	onBody: function () {
 		this.linkHolder
-			.appendTo ($('.playerMain-03'))
-			.prev().css('padding-left', 25);
+			.appendTo ($('.bf_ckc'))
+			.css('padding-right', '1em');
 	}
 },
 /* Compiled from music.duole.js */

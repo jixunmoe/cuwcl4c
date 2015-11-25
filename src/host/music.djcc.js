@@ -11,26 +11,32 @@
 		H.waitUntil ('$.post', function () {
 			console.info ('执行 VIP 破解 (play.php 页面无效) ..');
 			unsafeExec (function (scriptHome, scriptName) {
+				function rndNumber () {
+					return ~~(99999 * Math.random());
+				}
+
 				console.info (scriptHome);
 				var _post = $.post;
 				$.post = function (addr, cb) {
 					if (addr == '/ajax.php?ajax=userinfo') {
-						return _post.call (window.$, addr, function (s) {
+						return _post.call ($, addr, function (s) {
 							if (s == '')
 								s = [1, scriptName, 0, scriptHome, 0, 0,
-									99999999, 99999999, 0, 0, 2, '尊贵的 ' + scriptName + ' 用户', '9年'].join('*wrf*');
+									rndNumber(), rndNumber(), 0, 0, 2,
+									'尊贵的 ' + scriptName + ' 用户', '9年'
+								].join('*wrf*');
 
 							cb (s);
 						});
 					}
-					return _post.apply (window.$, arguments);
+					return _post.apply ($, arguments);
 				};
 
 				return function () {};
 			}, H.scriptHome, H.scriptName);
 		});
 
-		// 播放器劫持
+		// 播放器劫持 [怀疑失效?]
 		H.waitUntil ('jwplayer.api', function () {
 			unsafeExec (function () {
 				var _sp = window.jwplayer.api.selectPlayer;
@@ -41,10 +47,11 @@
 						console.info ('setup', options);
 						var _opl = options.events.onPlaylistItem;
 						options.events.onPlaylistItem = function (eventPlaylistChange) {
-							document.dispatchEvent ( new CustomEvent (H.scriptName, {detail: JSON.stringify (mPlayer.getPlaylistItem ())}) );
+							document.dispatchEvent ( new CustomEvent (H.scriptName, {
+								detail: JSON.stringify (mPlayer.getPlaylistItem ())
+							}) );
 							return _opl.apply (this, arguments);
 						};
-
 						return _setup.apply (mPlayer, arguments);
 					};
 					return mPlayer;
