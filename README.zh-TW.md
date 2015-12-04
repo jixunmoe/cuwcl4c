@@ -25,7 +25,7 @@
 
 ![批量下載歌曲](https://jixunmoe.github.io/cuwcl4c/res/batchDownloadSong.png)
 
-> 目前僅支援 `网易云音乐`，並且需要啟用 Aria2 下載工具。
+> 目前僅支援 `网易云音乐`，並且需要啟用 Aria2 下載工具 (黃易改版 暫時不可用)。
 
 ## 自帶規則 (簡體)
 - 脚本配置页面 - `[localhost, jixunmoe.github.io]`

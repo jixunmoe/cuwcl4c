@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.483
+// @version        3.0.484
 
 // 全局匹配
 // @include http://*
@@ -1492,6 +1492,19 @@ H.extract(function () { /*
 				 * @return {Object}      流量模拟
 				 */
 				function songs_to_data (songs) {
+					var songObj = songs[0];
+					var eveSongObj = {
+						artist: songObj.artists.map(function(artist) {
+							return artist.name;
+						}).join('、'),
+						name: songObj.name,
+						song: JSON.stringify(songObj)
+					};
+
+					document.dispatchEvent(new CustomEvent(scriptName, {
+						detail: eveSongObj
+					}));
+
 					return {
 						code: 200,
 						data: songs.map(function (song) {
@@ -1569,12 +1582,14 @@ H.extract(function () { /*
 				nej.j[hookName] = ajaxPatch;
 
 				// 强制刷新播放器
-				var _next = nm.w.uv.kW;
-				nm.w.uv.kW = function () {
+				var _next = nm.w.uv.prototype.kW;
+				var player;
+				nm.w.uv.prototype.kW = function () {
+					nm.w.uv.prototype.kW = _next;
 					this.bNx(this.bOB(0), "ui");
+					player = this;
 				};
 				document.querySelector('.nxt').click();
-				nm.w.uv.kW = _next;
 			}, H.scriptName, hookName, H.config.bInternational);
 
 		});
@@ -1938,7 +1953,9 @@ H.extract(function () { /*
 
 				return str;
 			}
-		});
+		}).hide();
+
+		// 暂时禁用批量下载功能。
 
 		if (H.config.dUriType === 2/* URI_USE_ARIA */) {
 			H.captureAria(this.linkDownload);

@@ -25,7 +25,7 @@
 
 ![批量下载歌曲](https://jixunmoe.github.io/cuwcl4c/res/batchDownloadSong.png)
 
-> 目前仅限`网易云音乐`，需要启用 Aria2 下载方式
+> 目前仅限`网易云音乐`，需要启用 Aria2 下载方式 (黄易改版 暂时不可用)
 
 ## 自带规则
 - <% #genSites.js %>
