@@ -28,6 +28,7 @@
 		}.bind (this));
 	},
 
+	// Source: 52pojie
 	upgradeHQ: function (url) {
 		return url
 		         .replace(unsafeWindow.s_str, 'http://do.djkk.com/mp3')

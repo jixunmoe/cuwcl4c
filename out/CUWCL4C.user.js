@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.475
+// @version        3.0.483
 
 // 全局匹配
 // @include http://*
@@ -1434,50 +1434,149 @@ H.extract(function () { /*
 	hookPlayer: function () {
 		var self = this;
 
-		// 尋找播放器代碼
-		H.waitUntil('nm.m.f', function() {
-			var playerHooks, protoName, ref;
-			ref = unsafeWindow.nm.m.f;
+		// 从播放器 Hook 改为远端 Hook
+		// 因为现在每次播放都会请求一次网络
+		H.waitUntil('nej.j', function () {
+			var hookName = self.searchFunction(unsafeWindow.nej.j, 'nej.j', '.replace("api","weapi');
 
-			for (var baseName in ref) {
-				protoName = self.searchFunction(ref[baseName].prototype,
-					"nm.m.f." + baseName + ".prototype", '<em>00:00</em>');
+			unsafeExec(function(scriptName, hookName, bInternational) {
+				var QUEUE_KEY = "track-queue-cache";
 
-				if (protoName) {
-					playerHooks = [baseName, protoName];
-					break;
+				// 建立缓存
+				var _cache = {};
+
+				/**
+				 * 重载缓存，防止用户开启两个标签页导致曲目缓存不同步。
+				 * @return {[type]} [description]
+				 */
+				function reloadCache () {
+					try {
+						_cache = JSON.parse(localStorage[QUEUE_KEY]);
+					} catch (err) {
+						localStorage[QUEUE_KEY] = '{}';
+					}
 				}
-			}
 
-			if (!playerHooks)
-				return;
+				/**
+				 * 储存缓存至 localStorage
+				 * @return {[type]} [description]
+				 */
+				function saveCache () {
+					localStorage[QUEUE_KEY] = JSON.stringify(_cache);
+				}
 
-			unsafeExec(function(scriptName, playerHooks, bInternational) {
-				var clsFunc = playerHooks[0], method = playerHooks[1];
-				var _bakPlayerUpdateUI;
-				_bakPlayerUpdateUI = nm.m.f[clsFunc].prototype[method];
+				var _need_reload = true;
+				window.addEventListener('storage', function (e) {
+					if (e.key == QUEUE_KEY) {
+						_need_reload = true;
+					}
+				}, false);
 
-				nm.m.f[clsFunc].prototype[method] = function(songObj) {
-					// 國際用戶自動把 m* 換成 p*
-					if (bInternational)
-						songObj.mp3Url = songObj.mp3Url.replace('http://m', 'http://p');
+				function checkAndReload () {
+					if (_need_reload)
+						reloadCache();
+				}
 
-					var eveSongObj = {
-						artist: songObj.artists.map(function(artist) {
-							return artist.name;
-						}).join('、'),
-						name: songObj.name,
-						song: JSON.stringify(songObj)
+				/**
+				 * 克隆一份对象
+				 * @param  {Object} obj 对象
+				 * @return {Object}     克隆后的对象
+				 */
+				function rebuild_object (obj) {
+					return JSON.parse(JSON.stringify(obj));
+				}
+
+				/**
+				 * 将曲目全部转换为黄易播放器能识别的格式。
+				 * @param  {Array} songs 曲目列表
+				 * @return {Object}      流量模拟
+				 */
+				function songs_to_data (songs) {
+					return {
+						code: 200,
+						data: songs.map(function (song) {
+							var song_obj = rebuild_object(song);
+							if (bInternational) {
+								// TODO: 让用户更换黄易 CDN 地址
+								song_obj.mp3Url = song_obj.mp3Url.replace('http://', 'http://203.130.59.9/');
+							}
+							song_obj.url = song_obj.mp3Url;
+							song_obj.expi = 1e13;
+							return song_obj;
+						})
 					};
+				}
 
-					document.dispatchEvent(new CustomEvent(scriptName, {
-						detail: eveSongObj
-					}));
+				var ajax = nej.j[hookName];
+				function ajaxPatch (url, params) {
 
-					return _bakPlayerUpdateUI.apply(this, arguments);
+					if (url == '/api/song/enhance/player/url') {
+						url = '/api/song/detail/';
+
+						if (params.query.br)
+							delete params.query.br;
+
+						// 检查缓存, 减少流量
+						var _ids = JSON.parse(params.query.ids);
+						var _req_ids = [];
+						checkAndReload();
+						_ids = _ids.map(function (id) {
+							if (id in _cache) {
+								return _cache[id];
+							}
+
+							_req_ids.push(id);
+							return id;
+						});
+
+						if (_req_ids.length === 0) {
+							// 直接返回我们的缓存数据
+							setTimeout(params.onload, 1, songs_to_data(_ids));
+							return ;
+						}
+
+						// 缺少数据, 请求服务器
+						params.query.ids = JSON.stringify(_req_ids);
+
+						// 把 onload 缓存我们的函数，方便缓存。
+						var _onload = params.onload;
+						params.onload = function (data) {
+							// 首先重新加载缓存, 防止冲突
+							checkAndReload();
+
+							// 拼接数据至缓存
+							data.songs.forEach(function (song) {
+								var i = _ids.indexOf(song.id);
+
+								if (i == -1) { debugger; // i 不得小于 0 !
+									throw new Error('取得索引失败。');
+								}
+
+								_ids[i] = song;
+								_cache[song.id] = song;
+							});
+
+							// 储存
+							saveCache();
+
+							setTimeout(_onload, 1, songs_to_data(_ids));
+						};
+					}
+
+					return ajax(url, params);
+				}
+
+				nej.j[hookName] = ajaxPatch;
+
+				// 强制刷新播放器
+				var _next = nm.w.uv.kW;
+				nm.w.uv.kW = function () {
+					this.bNx(this.bOB(0), "ui");
 				};
-				
-			}, H.scriptName, playerHooks, H.config.bInternational);
+				document.querySelector('.nxt').click();
+				nm.w.uv.kW = _next;
+			}, H.scriptName, hookName, H.config.bInternational);
+
 		});
 	},
 
@@ -1681,25 +1780,12 @@ H.extract(function () { /*
 		}
 	},
 
-	getMvId: function (songId, cb) {
-		var _cache;
-		try {
-			_cache = JSON.parse(localStorage.mv_cahce);
-		} catch (e) {
-			_cache = {};
-		}
-
-		if (songId in _cache) {
-			cb(_cache[songId]);
-			return ;
-		}
-
+	fetchSong: function (ids, cb) {
 		var _crsf = unsafeWindow.NEJ_CONF.p_csrf.param;
 		var _token = document.cookie.match(new RegExp(unsafeWindow.NEJ_CONF.p_csrf.cookie + '=(\\w+)'))[1];
 
 		var reqObj = {
-			id: $_GET.id,
-			ids: [$_GET.id]
+			ids: ids
 		};
 		reqObj[_crsf] = _token;
 
@@ -1714,7 +1800,23 @@ H.extract(function () { /*
 			method: 'POST',
 			data: postData,
 			dataType: 'json'
-		}).done(function (data) {
+		}).done(cb);
+	},
+
+	getMvId: function (songId, cb) {
+		var _cache;
+		try {
+			_cache = JSON.parse(localStorage.mv_cahce);
+		} catch (e) {
+			_cache = {};
+		}
+
+		if (songId in _cache) {
+			cb(_cache[songId]);
+			return ;
+		}
+
+		this.fetchSong([$_GET.id], function (data) {
 			if (data.code == 200) {
 				var mvid = _cache[songId] = data.songs[0].mvid;
 				localStorage.mv_cahce = JSON.stringify(_cache);
@@ -1787,6 +1889,7 @@ H.extract(function () { /*
 	onBody: function() {
 		var self = this;
 		this._doRemoval();
+        unsafeWindow.GAbroad = false;
 
 		// 不在框架執行
 		if (H.isFrame) {
@@ -2773,6 +2876,7 @@ H.extract(function () { /*
 		}.bind (this));
 	},
 
+	// Source: 52pojie
 	upgradeHQ: function (url) {
 		return url
 		         .replace(unsafeWindow.s_str, 'http://do.djkk.com/mp3')
