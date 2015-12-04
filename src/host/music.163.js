@@ -203,11 +203,13 @@ MODULE
 
 						if (_req_ids.length === 0) {
 							// 直接返回我们的缓存数据
+							console.info('[%s][INFO] Load from cache: ', scriptName, params.query.ids);
 							setTimeout(params.onload, 1, songs_to_data(_ids));
 							return ;
 						}
 
 						// 缺少数据, 请求服务器
+						console.info('[%s][INFO] Request from server: ', scriptName, _req_ids);
 						params.query.ids = JSON.stringify(_req_ids);
 
 						// 把 onload 缓存我们的函数，方便缓存。
@@ -245,7 +247,8 @@ MODULE
 				var player;
 				nm.w.uv.prototype.kW = function () {
 					nm.w.uv.prototype.kW = _next;
-					this.bNx(this.bOB(0), "ui");
+					this.bNx(this.bOB(-1), "ui");
+					this.bNx(this.bOB(1), "ui");
 					player = this;
 				};
 				document.querySelector('.nxt').click();
