@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>删除重复的行 - Jixun</title>
+
+<style>
+
+main {
+	width: 80%;
+	margin: auto;
+	padding: 3em 0;
+}
+
+textarea {
+	width: 100%;
+	min-height: 20em;
+	border-radius: .5em;
+}
+
+</style>
+
+</head>
+<body>
+	<main>
+		<textarea id="text"></textarea>
+
+		<p style="text-align: right"><button id="remove">Remove Duplicate</button></p>
+	</main>
+
+<script>
+
+(function ($) {
+	var $text = $('text');
+	$('remove').onclick = reomve_duplicate;
+
+	function reomve_duplicate () {
+		$text.value = unique($text.value.split('\n')).join('\n');
+	}
+
+	function unique (list) {
+		return list.filter(function (e, i) {
+			return !e || e[0] == '#' || i === list.indexOf(e);
+		});
+	}
+})(document.getElementById.bind(document));
+
+</script>
+
+</body>
+</html>

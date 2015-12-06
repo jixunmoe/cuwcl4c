@@ -1,0 +1,14 @@
+{
+  "name": "163-utils",
+  "version": "1.0.0",
+  "description": "utils",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jixun Moe",
+  "license": "MIT",
+  "dependencies": {
+    "random-useragent": "^0.2.1"
+  }
+}

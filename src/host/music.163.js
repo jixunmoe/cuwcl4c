@@ -277,11 +277,14 @@ MODULE
 				nej.j[hookName] = ajaxPatch;
 
 				// 强制刷新播放器
+				// 用于解析下载 / 海外处理。
 				var _next = nm.w.uv.prototype.kW;
 				nm.w.uv.prototype.kW = function () {
 					nm.w.uv.prototype.kW = _next;
 					var self = this;
 
+					// 之前的方法好像并不能刷新..
+					// 于是就这样了 :D
 					var index = this.bHO;
 					self.bNx(self.bOB(+1), "ui");
 					setTimeout(function () {
