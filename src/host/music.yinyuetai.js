@@ -12,7 +12,7 @@
 				marginLeft: '1.5em'
 			}).appendTo ($('.vchart, .pl_title').first());
 
-			this.fetch(location.pathname.match(/\d+/));
+			this.fetch(location.pathname.match(/\d+$/)[0]);
 		} else {
 			H.waitUntil (function () {
 				return $('.J_video_info').length;

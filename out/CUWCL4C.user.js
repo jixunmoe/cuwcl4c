@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.492
+// @version        3.0.493
 
 // 全局匹配
 // @include http://*
@@ -3608,7 +3608,7 @@ H.extract(function () { /*
 				marginLeft: '1.5em'
 			}).appendTo ($('.vchart, .pl_title').first());
 
-			this.fetch(location.pathname.match(/\d+/));
+			this.fetch(location.pathname.match(/\d+$/)[0]);
 		} else {
 			H.waitUntil (function () {
 				return $('.J_video_info').length;
