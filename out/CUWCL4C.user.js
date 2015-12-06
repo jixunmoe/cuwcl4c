@@ -22,8 +22,9 @@
 // @copyright      2014+, Yulei, Mod by Jixun.
 ////               Based on [Crack Url Wait Code Login] By Yulei
 
-// 骑牛的会请求不存在的 jquery.map 文件，改用官网的
-// @require        https://code.jquery.com/jquery-2.1.4.min.js
+// 避免 Source Map 文件找不到的错误
+// @require        https://cdn.bootcss.com/jquery/2.1.4/jquery.js
+// @require        https://cdn.bootcss.com/underscore.js/1.8.3/underscore.js
 
 /// CryptoJS 相关库
 // @require        https://cdn.bootcss.com/crypto-js/3.1.2/components/core-min.js
@@ -42,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.486
+// @version        3.0.491
 
 // 全局匹配
 // @include http://*
@@ -717,6 +718,28 @@ H.merge (H, {
 
 	fixStyleOrder: function (elStyle) {
 		$('head').append (elStyle);
+	},
+
+	// Fisher-Yates Shuffle by community wiki(?)
+	// http://stackoverflow.com/a/6274398
+	shuffle: function (array) {
+		var counter = array.length, temp, index;
+
+		// While there are elements in the array
+		while (counter > 0) {
+			// Pick a random index
+			index = Math.floor(Math.random() * counter);
+
+			// Decrease counter by 1
+			counter--;
+
+			// And swap the last element with it
+			temp = array[counter];
+			array[counter] = array[index];
+			array[index] = temp;
+		}
+
+		return array;
 	}
 });
 
@@ -1353,21 +1376,46 @@ H.extract(function () { /*
 }
 */}),
 	onStart: function () {
+		if (H.config.bInternational)
+			this.generateCdn();
+
 		this.regPlayer();
 
-		// 优先使用 HTML5 播放器
-		// 如果没有再考虑 Flash 支援
-		
 		unsafeExec(function () {
+			// 优先使用 HTML5 播放器
+			// 如果没有再考虑 Flash 支援
+			
+			// 感觉并没有什么卵用了?
 			var fakePlatForm = navigator.platform + "--Fake-mac";
 			Object.defineProperty(navigator, "platform", {
 				get: function(){ return fakePlatForm; },
 				set: function(){}
 			});
 
+
 			// 順便, 解鎖全球限制
 			window.GRestrictive = false;
 		});
+	},
+
+	generateCdn: function () {
+		var cdns = [];
+		var cdnList = {
+			// 山东电信
+			'14.215.9': [16, 43],
+
+			// 北京电信
+			'203.130.59': [6, 12]
+		};
+
+		for (var subnet in cdnList) {
+			var ip_range = cdnList[subnet];
+			for (var x = ip_range[0]; x <= ip_range[1]; x++) {
+				cdns.push(subnet + '.' + x);
+			}
+		}
+
+		this.cdn_ip = H.shuffle(cdns);
 	},
 
 	/**
@@ -1439,7 +1487,7 @@ H.extract(function () { /*
 		H.waitUntil('nej.j', function () {
 			var hookName = self.searchFunction(unsafeWindow.nej.j, 'nej.j', '.replace("api","weapi');
 
-			unsafeExec(function(scriptName, hookName, bInternational) {
+			unsafeExec(function(scriptName, hookName, bInternational, cdn_ip) {
 				var QUEUE_KEY = "track-queue-cache";
 
 				// 建立缓存
@@ -1455,6 +1503,15 @@ H.extract(function () { /*
 					} catch (err) {
 						localStorage[QUEUE_KEY] = '{}';
 					}
+				}
+
+				/**
+				 * 抽取一个随机 CDN 服务器
+				 * @return {[type]} [description]
+				 */
+				function randomCDN () {
+					var ip = cdn_ip[~~(Math.random() * cdn_ip.length)];
+					return 'http://' + ip + '/';
 				}
 
 				/**
@@ -1510,8 +1567,8 @@ H.extract(function () { /*
 						data: songs.map(function (song) {
 							var song_obj = rebuild_object(song);
 							if (bInternational) {
-								// TODO: 让用户更换黄易 CDN 地址
-								song_obj.mp3Url = song_obj.mp3Url.replace('http://', 'http://203.130.59.9/');
+								song_obj.mp3Url = song_obj.mp3Url.replace('//m', '//p');
+								// song_obj.mp3Url = song_obj.mp3Url.replace('http://', randomCDN());
 							}
 							song_obj.url = song_obj.mp3Url;
 							song_obj.expi = 1e13;
@@ -1585,16 +1642,18 @@ H.extract(function () { /*
 
 				// 强制刷新播放器
 				var _next = nm.w.uv.prototype.kW;
-				var player;
 				nm.w.uv.prototype.kW = function () {
 					nm.w.uv.prototype.kW = _next;
-					var index = this.bHO;		// 储存当前播放列表的索引
-					this.bHO = this.bOB(+1);	// 改掉索引
-					this.bNx(index, "ui");		// 强行请求索引更新，触发重载
-					player = this;
+					var self = this;
+
+					var index = this.bHO;
+					self.bNx(self.bOB(+1), "ui");
+					setTimeout(function () {
+						self.bNx(index, "ui");
+					}, 10);
 				};
 				document.querySelector('.nxt').click();
-			}, H.scriptName, hookName, H.config.bInternational);
+			}, H.scriptName, hookName, H.config.bInternational, self.cdn_ip);
 
 		});
 	},
@@ -1623,7 +1682,7 @@ H.extract(function () { /*
 			if (!fnPlayAtIndex)
 				return ;
 
-			unsafeExec(function(scriptName, fnPlayAtIndex, bInternational, cssTitle, cssSubtitle) {
+			unsafeExec(function(scriptName, fnPlayAtIndex, bInternational, cdn_ip, cssTitle, cssSubtitle) {
 				function insertAfter(newNode, ref) {
 					ref.parentNode.insertBefore(newNode, ref.nextSibling);
 				}
@@ -1641,6 +1700,15 @@ H.extract(function () { /*
 
 				var m = _bakPlayerUpdateUI.toString().match(/=this.(\w+)\[/);
 				if (!m) return ;
+
+				/**
+				 * 抽取一个随机 CDN 服务器
+				 * @return {[type]} [description]
+				 */
+				function randomCDN () {
+					var ip = cdn_ip[~~(Math.random() * cdn_ip.length)];
+					return 'http://' + ip + '/';
+				}
 
 				var tracks = m[1];
 				nm.m.Dm.prototype[fnPlayAtIndex] = function(songIndex) {
@@ -1661,7 +1729,8 @@ H.extract(function () { /*
 					// 國際用戶轉換地址
 					if (bInternational) {
 						// TODO: 让用户更换黄易 CDN 地址
-						track.mp3Url = track.mp3Url.replace('http://', 'http://203.130.59.9/');
+						// track.mp3Url = track.mp3Url.replace('http://', randomCDN());
+						track.mp3Url = track.mp3Url.replace('//m', '//p');
 					}
 
 					var eveSongObj = {
@@ -1679,7 +1748,7 @@ H.extract(function () { /*
 					return _bakPlayerUpdateUI.apply(this, arguments);
 				};
 				
-			}, H.scriptName, fnPlayAtIndex, H.config.bInternational, H.extract(function () {/*
+			}, H.scriptName, fnPlayAtIndex, H.config.bInternational, self.cdn_ip, H.extract(function () {/*
 				padding-top: .2em;
 				overflow: hidden;
 				white-space: nowrap;

@@ -22,8 +22,9 @@
 // @copyright      2014+, Yulei, Mod by Jixun.
 ////               Based on [Crack Url Wait Code Login] By Yulei
 
-// 骑牛的会请求不存在的 jquery.map 文件，改用官网的
-// @require        https://code.jquery.com/jquery-2.1.4.min.js
+// 避免 Source Map 文件找不到的错误
+// @require        https://cdn.bootcss.com/jquery/2.1.4/jquery.js
+// @require        https://cdn.bootcss.com/underscore.js/1.8.3/underscore.js
 
 /// CryptoJS 相关库
 // @require        https://cdn.bootcss.com/crypto-js/3.1.2/components/core-min.js
