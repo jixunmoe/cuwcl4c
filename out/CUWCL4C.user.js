@@ -42,7 +42,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.485
+// @version        3.0.486
 
 // 全局匹配
 // @include http://*
@@ -1588,8 +1588,9 @@ H.extract(function () { /*
 				var player;
 				nm.w.uv.prototype.kW = function () {
 					nm.w.uv.prototype.kW = _next;
-					this.bNx(this.bOB(-1), "ui");
-					this.bNx(this.bOB(1), "ui");
+					var index = this.bHO;		// 储存当前播放列表的索引
+					this.bHO = this.bOB(+1);	// 改掉索引
+					this.bNx(index, "ui");		// 强行请求索引更新，触发重载
 					player = this;
 				};
 				document.querySelector('.nxt').click();
@@ -1658,8 +1659,10 @@ H.extract(function () { /*
 					subTitle.title = track.name;
 
 					// 國際用戶轉換地址
-					if (bInternational)
-						track.mp3Url = track.mp3Url.replace('http://m', 'http://p');
+					if (bInternational) {
+						// TODO: 让用户更换黄易 CDN 地址
+						track.mp3Url = track.mp3Url.replace('http://', 'http://203.130.59.9/');
+					}
 
 					var eveSongObj = {
 						artist: track.artists.map(function(artist) {
