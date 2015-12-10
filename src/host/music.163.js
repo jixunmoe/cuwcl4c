@@ -62,10 +62,11 @@ MODULE
 		H.waitUntil('nm.x', function () {
 			var CR1 = self.searchFunction(unsafeWindow.nej.e, 'nej.e', '.dataset;if');
 			var CR2 = self.searchFunction(unsafeWindow.nm.x, 'nm.x',  '.copyrightId==');
+			var CR3 = self.searchFunction(unsafeWindow.nm.x, 'nm.x',  '.privilege;if');
 
 			// CR2 位置的內容在 CR1 函數后加載
 			H.waitUntil('nm.x.' + CR2, function () {
-				unsafeExec(function (bIsFrame, CR1, CR2) {
+				unsafeExec(function (bIsFrame, CR1, CR2, CR3) {
 					var _CR1 = nej.e[CR1];
 					nej.e[CR1] = function (z, name) {
 						if (name == 'copyright' || name == 'resCopyright') {
@@ -79,8 +80,14 @@ MODULE
 						return false;
 					};
 
-
-				}, H.isFrame, CR1, CR2);
+					nm.x[CR3]= function () {
+						var songDetail = arguments[0];
+						songDetail.status = 0;
+						songDetail.privilege.pl = 320000;
+						songDetail.privilege.status = 0;
+						return 0;
+					};
+				}, H.isFrame, CR1, CR2, CR3);
 			}, 7000, 500);
 		});
 	},
@@ -478,35 +485,6 @@ MODULE
 						.replace(/\+/g, "-");
 	},
 
-	tryEnableMusic: function () {
-		var $disablePlayBtn = $('.u-btni-play-dis');
-		if ($disablePlayBtn.length) {
-			var rid = $disablePlayBtn.parent().data('rid');
-			
-			$disablePlayBtn.replaceWith(H.extract(function(){/*
-				<a data-res-action="play" data-res-id="%id" data-res-type="18"
-				href="javascript:;" class="u-btn2 u-btn2-2 u-btni-addply f-fl" hidefocus="true"
-				title="播放"><i><em class="ply"></em>播放</i></a>
-
-				<a data-res-action="addto" data-res-id="%id"
-				data-res-type="18" href="javascript:;" class="u-btni u-btni-add"
-				hidefocus="true" title="添加到播放列表"></a>
-			*/}).replace(/%id/g, rid));
-		}
-
-		var $playMv = $('.u-icn-87');
-		if ($playMv.length) {
-			$playMv = $playMv.parent();
-
-			this.getMvId($_GET.id, function (mvid) {
-				$playMv.replaceWith($('<a>').attr({
-					href: '/mv?id=' + mvid,
-					title: '播放mv'
-				}).html('<i class="icn u-icn u-icn-2" />'));
-			});
-		}
-	},
-
 	fetchSong: function (ids, cb) {
 		var _crsf = unsafeWindow.NEJ_CONF.p_csrf.param;
 		var _token = document.cookie.match(new RegExp(unsafeWindow.NEJ_CONF.p_csrf.cookie + '=(\\w+)'))[1];
@@ -595,6 +573,54 @@ MODULE
 		}
 	},
 
+    enableSongPlayButton: function () {
+        var enablePlayButtonOnSongPage = function() {
+          // Try to find a normal button. If it could be found, do nothing.
+          var playButton = document.getElementsByClassName('u-btni-addply');
+            if (playButton.length == 1) {
+                window.clearInterval(enablePlayButtonInterval);
+                return;
+            }
+
+            // Otherwise it should be a disabled button.
+            playButton = document.getElementsByClassName('u-btni-play-dis');
+            if (playButton.length == 1) {
+                window.clearInterval(enablePlayButtonInterval);
+                var songId = document.location.href.replace('http://music.163.com/song?id=', '');
+                playButton[0].outerHTML = '<a data-res-action="play" data-res-id="#SONGID#" data-res-type="18" href="javascript:;" class="u-btn2 u-btn2-2 u-btni-addply f-fl" hidefocus="true" title="播放"><i><em class="ply"></em>播放</i></a><a data-res-action="addto" data-res-id="#SONGID#" data-res-type="18" href="javascript:;" class="u-btni u-btni-add" hidefocus="true" title="添加到播放列表"></a>'.replace(/#SONGID#/g, songId);
+            }
+        };
+        var enablePlayButtonInterval = window.setInterval(enablePlayButtonOnSongPage, 1000);
+    },
+
+    enableAlbumPlayButton: function () {
+        var enablePlayButtonOnAlbumPage = function() {
+            // Find out disabled songs.
+            var disabledSongsInAlbum = document.getElementsByClassName('js-dis');
+            if (disabledSongsInAlbum.length === 0){
+                window.clearInterval(enablePlayButtonInterval);
+            }
+            for (var i = 0; i < disabledSongsInAlbum.length; ){
+                disabledSongsInAlbum[i].className = disabledSongsInAlbum[i].className.replace('js-dis', '');
+            }
+        };
+        var enablePlayButtonInterval = window.setInterval(enablePlayButtonOnAlbumPage, 1000);
+    },
+
+    enablePlaylistPlayButton: function () {
+        var enablePlayButtonOnPlaylistPage = function() {
+            // Find out disabled songs.
+            var disabledSongsInPlaylist = document.getElementsByClassName('js-dis');
+            if (disabledSongsInPlaylist.length === 0){
+                window.clearInterval(enablePlayButtonInterval);
+            }
+            for (var i = 0; i < disabledSongsInPlaylist.length; ){
+                disabledSongsInPlaylist[i].className = disabledSongsInPlaylist[i].className.replace('js-dis', '');
+            }
+        };
+        var enablePlayButtonInterval = window.setInterval(enablePlayButtonOnPlaylistPage, 1000);
+    },
+
 	onBodyFrame: function () {
 		switch(location.pathname) {
 			case '/mv':
@@ -606,9 +632,15 @@ MODULE
 				break;
 
 			case '/song':
-				// TODO: Song DL button?
-				if (H.config.bInternational)
-					this.tryEnableMusic();
+				this.enableSongPlayButton();
+				break;
+
+			case '/album':
+				this.enableAlbumPlayButton();
+				break;
+
+			case '/playlist':
+				this.enablePlaylistPlayButton();
 				break;
 		}
 	},
