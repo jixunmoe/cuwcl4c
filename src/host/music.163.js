@@ -286,10 +286,8 @@ MODULE
 					// 之前的方法好像并不能刷新..
 					// 于是就这样了 :D
 					var index = this.bHO;
-					self.bNx(self.bOB(+1), "ui");
-					setTimeout(function () {
-						self.bNx(index, "ui");
-					}, 10);
+					this.bHO = self.bOB(+1);
+					self.bNx(index, "ui");
 				};
 				document.querySelector('.nxt').click();
 			}, H.scriptName, hookName, H.config.bInternational, self.cdn_ip);
