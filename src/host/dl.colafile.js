@@ -1,7 +1,7 @@
 {
 	id: 'dl.colafile',
 	name: '可乐盘',
-	host: ['colayun.com', 'colafile.com'],
+	host: ['colayun.com', 'colafile.com', 'coladrive.com'],
 	hide: [
 		'.table_right', '#down_link3', '.tui', '.ad1 > .ad1 > *:not(.downbox)',
 
