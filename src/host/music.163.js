@@ -35,13 +35,30 @@ MODULE
 	},
 
 	generateCdn: function () {
+		// TODO:
+		// + 用户提供 CDN 列表
+		// + 用户指定使用的 IP 缓存节点
 		var cdns = [];
 		var cdnList = {
 			// 山东电信
 			'14.215.9': [16, 43],
 
 			// 北京电信
-			'203.130.59': [6, 12]
+			'203.130.59': [6, 12],
+
+			// 湖北电信
+			'219.138.27': [
+				16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30,
+				31, 32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45,
+				46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+				61, 63, 64, 65, 66, 67
+			],
+			
+			// 广东联通
+			'163.177.171': [
+				13, 14, 16, 17, 18, 19, 20, 21, 22, 28, 29, 31, 32, 33,
+				34, 35, 37, 175, 206
+			]
 		};
 
 		for (var subnet in cdnList) {
@@ -138,7 +155,6 @@ MODULE
 
 				/**
 				 * 重载缓存，防止用户开启两个标签页导致曲目缓存不同步。
-				 * @return {[type]} [description]
 				 */
 				function reloadCache () {
 					try {
@@ -150,7 +166,7 @@ MODULE
 
 				/**
 				 * 抽取一个随机 CDN 服务器
-				 * @return {[type]} [description]
+				 * @return {String} 抽取到的地址前缀
 				 */
 				function randomCDN () {
 					var ip = cdn_ip[~~(Math.random() * cdn_ip.length)];
@@ -159,7 +175,6 @@ MODULE
 
 				/**
 				 * 储存缓存至 localStorage
-				 * @return {[type]} [description]
 				 */
 				function saveCache () {
 					localStorage[QUEUE_KEY] = JSON.stringify(_cache);
@@ -210,8 +225,7 @@ MODULE
 						data: songs.map(function (song) {
 							var song_obj = rebuild_object(song);
 							if (bInternational) {
-								song_obj.mp3Url = song_obj.mp3Url.replace('//m', '//p');
-								// song_obj.mp3Url = song_obj.mp3Url.replace('http://', randomCDN());
+								song_obj.mp3Url = song_obj.mp3Url.replace('http://', randomCDN());
 							}
 							song_obj.url = song_obj.mp3Url;
 							song_obj.expi = 1e13;
@@ -347,7 +361,7 @@ MODULE
 
 				/**
 				 * 抽取一个随机 CDN 服务器
-				 * @return {[type]} [description]
+				 * @return {String} 抽取到的地址前缀
 				 */
 				function randomCDN () {
 					var ip = cdn_ip[~~(Math.random() * cdn_ip.length)];
@@ -372,9 +386,7 @@ MODULE
 
 					// 國際用戶轉換地址
 					if (bInternational) {
-						// TODO: 让用户更换黄易 CDN 地址
-						// track.mp3Url = track.mp3Url.replace('http://', randomCDN());
-						track.mp3Url = track.mp3Url.replace('//m', '//p');
+						track.mp3Url = track.mp3Url.replace('http://', randomCDN());
 					}
 
 					var eveSongObj = {

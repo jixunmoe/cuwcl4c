@@ -44,5 +44,9 @@
 			.val('cproIframeu12581302|httpubmcmmbaidustaticcomcpromediasmallpng');
 
 		H.log ('城通就绪.');
+	},
+	
+	onBody: function () {
+		$('#modal_captcha').addClass('in').show();
 	}
 }
