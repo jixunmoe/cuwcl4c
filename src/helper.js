@@ -281,6 +281,7 @@ H.config = H.merge ({
 // 2014.11.30: 不显示日志
 if (!H.config.bDiaplayLog || H.isFrame) {
 	// 屏蔽日志函数
+	H.noLog = true;
 	['log', 'info'].map(function (fooName) {
 		H['_' + fooName.slice(0, 3)] = H[fooName] = H.nop;
 	});

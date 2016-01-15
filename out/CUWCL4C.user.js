@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.497
+// @version        3.0.503
 
 // 全局匹配
 // @include http://*
@@ -345,6 +345,7 @@ H.config = H.merge ({
 // 2014.11.30: 不显示日志
 if (!H.config.bDiaplayLog || H.isFrame) {
 	// 屏蔽日志函数
+	H.noLog = true;
 	['log', 'info'].map(function (fooName) {
 		H['_' + fooName.slice(0, 3)] = H[fooName] = H.nop;
 	});
@@ -1354,16 +1355,22 @@ H.extract(function () { /*
 }
 
 -- 底部单曲下载
-.m-playbar .oper .jx_dl {
+.m-playbar .oper .jx_btn {
 	text-indent: 0;
 	font-size: 1.5em;
 	margin: 13px 2px 0 0;
 	float: left;
 	color: #ccc;
 	text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em #aaa;
+	line-height: 1.6em;
+	font-size: 1.2em;
 }
 
-.jx_dl:hover {
+.m-playbar .oper .jx_dl::before {
+	padding-right: .25em;
+}
+
+.jx_btn:hover {
 	color: white;
 }
 
@@ -1406,6 +1413,8 @@ H.extract(function () { /*
 		// TODO:
 		// + 用户提供 CDN 列表
 		// + 用户指定使用的 IP 缓存节点
+		H.log('%c海外模式启动', 'font-size:10em;color:#fff;text-shadow:0 1px 0#ccc,0 2px 0 #c9c9c9,0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15)');
+
 		var cdns = [];
 		var cdnList = {
 			// 山东电信
@@ -1415,24 +1424,28 @@ H.extract(function () { /*
 			'203.130.59': [6, 12],
 
 			// 湖北电信
-			'219.138.27': [
-				16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30,
-				31, 32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 43, 44, 45,
-				46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
-				61, 63, 64, 65, 66, 67
-			],
+			'219.138.27': [16, 67],
 			
 			// 广东联通
-			'163.177.171': [
+			'163.177.171': [false, 
 				13, 14, 16, 17, 18, 19, 20, 21, 22, 28, 29, 31, 32, 33,
 				34, 35, 37, 175, 206
 			]
 		};
 
+		function add_cdn (x) {
+			cdns.push(subnet + '.' + x);
+		}
+
 		for (var subnet in cdnList) {
 			var ip_range = cdnList[subnet];
-			for (var x = ip_range[0]; x <= ip_range[1]; x++) {
-				cdns.push(subnet + '.' + x);
+			if (ip_range[0] === false) {
+				ip_range.shift();
+				ip_range.forEach(add_cdn);
+			} else {
+				for (var x = ip_range[0]; x <= ip_range[1]; x++) {
+					add_cdn(x);
+				}
 			}
 		}
 
@@ -1482,7 +1495,13 @@ H.extract(function () { /*
 			var fn = base[baseName];
 			if (fn && typeof fn === 'function') {
 				if (fn.toString().indexOf(key) !== -1) {
-					H.info('Search %s, found: %s.%s', key, name, baseName);
+					if (!H.noLog) {
+						console.table([{
+							'Keyword': key,
+							'Found': name + '.' + baseName
+						}]);
+					}
+
 					return baseName;
 				}
 			}
@@ -1507,6 +1526,28 @@ H.extract(function () { /*
 		});
 	},
 
+	randomCDN: function () {
+		var ip = this.cdn_ip.shift();
+		this.cdn_ip.push(ip);
+		return ip;
+	},
+
+	updateCDN: function (cdn) {
+		if (!cdn) cdn = this.randomCDN();
+
+		if (this.changeCDN)
+			this.changeCDN.attr('title', '更换 CDN [当前: ' + cdn + '] => 切歌后生效');
+
+		// 通知所有标签页更换 CDN
+		this.ws_cdn_media = cdn;
+		localStorage.ws_cdn_media = cdn;
+		GM_setValue('_ws_cdn_media', cdn);
+
+		document.dispatchEvent(new CustomEvent(H.scriptName + '-cdn', {
+			detail: cdn
+		}));
+	},
+
 	hookPlayer: function () {
 		var self = this;
 
@@ -1514,6 +1555,19 @@ H.extract(function () { /*
 		// 因为现在每次播放都会请求一次网络
 		H.waitUntil('nej.j', function () {
 			var hookName = self.searchFunction(unsafeWindow.nej.j, 'nej.j', '.replace("api","weapi');
+
+			// 提取保存的 CDN
+			var changeCDN = $('<a>').addClass('jx_btn jx_cdn').insertAfter(self.linkDownload).text('换');
+			self.changeCDN = changeCDN;
+			changeCDN.click(function () {
+				self.updateCDN();
+			});
+
+			var currentCDN = GM_getValue('_ws_cdn_media', self.randomCDN());
+			if (!H.contains(self.cdn_ip, currentCDN)) {
+				currentCDN = self.randomCDN();
+			}
+			self.updateCDN(currentCDN);
 
 			unsafeExec(function(scriptName, hookName, bInternational, cdn_ip) {
 				var QUEUE_KEY = "track-queue-cache";
@@ -1533,27 +1587,29 @@ H.extract(function () { /*
 				}
 
 				/**
-				 * 抽取一个随机 CDN 服务器
-				 * @return {String} 抽取到的地址前缀
-				 */
-				function randomCDN () {
-					var ip = cdn_ip[~~(Math.random() * cdn_ip.length)];
-					return 'http://' + ip + '/';
-				}
-
-				/**
 				 * 储存缓存至 localStorage
 				 */
 				function saveCache () {
 					localStorage[QUEUE_KEY] = JSON.stringify(_cache);
 				}
 
+				// 监听缓存、CDN 同步事件
 				var _need_reload = true;
 				window.addEventListener('storage', function (e) {
-					if (e.key == QUEUE_KEY) {
-						_need_reload = true;
+					switch (e.key) {
+						case QUEUE_KEY:
+							_need_reload = true;
+							break;
+
+						case 'ws_cdn_media':
+							cdn_ip = e.newValue;
+							break;
 					}
 				}, false);
+
+				document.addEventListener(scriptName + '-cdn', function(e) {
+					cdn_ip = e.detail;
+				});
 
 				function checkAndReload () {
 					if (_need_reload)
@@ -1593,7 +1649,7 @@ H.extract(function () { /*
 						data: songs.map(function (song) {
 							var song_obj = rebuild_object(song);
 							if (bInternational) {
-								song_obj.mp3Url = song_obj.mp3Url.replace('http://', randomCDN());
+								song_obj.mp3Url = song_obj.mp3Url.replace('http://', 'http://' + cdn_ip + '/');
 							}
 							song_obj.url = song_obj.mp3Url;
 							song_obj.expi = 1e13;
@@ -1679,8 +1735,7 @@ H.extract(function () { /*
 					self.bNx(index, "ui");
 				};
 				document.querySelector('.nxt').click();
-			}, H.scriptName, hookName, H.config.bInternational, self.cdn_ip);
-
+			}, H.scriptName, hookName, H.config.bInternational, currentCDN);
 		});
 	},
 
@@ -1828,8 +1883,13 @@ H.extract(function () { /*
 		var dsfId = (song.hMusic || song.mMusic || song.lMusic).dfsId;
 		var randServer = Math.floor(Math.random() * 2) + 1;
 
-		var country = H.config.bInternational ? 'p' : 'm';
-		return "http://" + country + randServer + ".music.126.net/" + (this.dfsHash(dsfId)) + "/" + dsfId + ".mp3";
+
+		var cdnPrefix = '';
+		if (H.config.bInternational) {
+			cdnPrefix = this.this.ws_cdn_media + '/';
+		}
+
+		return "http://" + cdnPrefix + 'm' + randServer + ".music.126.net/" + (this.dfsHash(dsfId)) + "/" + dsfId + ".mp3";
 	},
 
 	/**
@@ -2036,11 +2096,11 @@ H.extract(function () { /*
 			return;
 		}
 
-		this.linkDownload = $('<a>').addClass(H.defaultDlIcon).appendTo($('.m-playbar .oper')).attr({
+		this.linkDownload = $('<a>').appendTo($('.m-playbar .oper')).attr({
 			title: '播放音乐, 即刻解析'
 		}).click(function(e) {
 			e.stopPropagation();
-		});
+		}).addClass(H.defaultDlIcon).addClass('jx_btn');
 
 		this.linkDownloadAll = $('<a>').addClass(H.defaultDlIcon).addClass('addall').text('全部下载').attr({
 			title: '下载列表里的所有歌曲'
@@ -3909,6 +3969,7 @@ H.rule = {
 			H.log ('应用 [%s] 的样式表…', site.name || '无名');
 
 			var styleBlock = H.injectStyle ();
+			H.styleBlock = styleBlock;
 
 			if (typeof site.hide == 'string')
 				H.forceHide.call  (styleBlock, site.hide);

@@ -96,6 +96,7 @@ H.rule = {
 			H.log ('应用 [%s] 的样式表…', site.name || '无名');
 
 			var styleBlock = H.injectStyle ();
+			H.styleBlock = styleBlock;
 
 			if (typeof site.hide == 'string')
 				H.forceHide.call  (styleBlock, site.hide);

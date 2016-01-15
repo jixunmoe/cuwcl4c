@@ -15,16 +15,22 @@
 }
 
 -- 底部单曲下载
-.m-playbar .oper .jx_dl {
+.m-playbar .oper .jx_btn {
 	text-indent: 0;
 	font-size: 1.5em;
 	margin: 13px 2px 0 0;
 	float: left;
 	color: #ccc;
 	text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em #aaa;
+	line-height: 1.6em;
+	font-size: 1.2em;
 }
 
-.jx_dl:hover {
+.m-playbar .oper .jx_dl::before {
+	padding-right: .25em;
+}
+
+.jx_btn:hover {
 	color: white;
 }
 
