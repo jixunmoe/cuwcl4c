@@ -511,7 +511,7 @@ MODULE
 
 		var cdnPrefix = '';
 		if (H.config.bInternational) {
-			cdnPrefix = this.this.ws_cdn_media + '/';
+			cdnPrefix = this.ws_cdn_media + '/';
 		}
 
 		return "http://" + cdnPrefix + 'm' + randServer + ".music.126.net/" + (this.dfsHash(dsfId)) + "/" + dsfId + ".mp3";
