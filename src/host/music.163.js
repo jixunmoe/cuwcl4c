@@ -181,18 +181,21 @@ MODULE
 		H.waitUntil('nej.j', function () {
 			var hookName = self.searchFunction(unsafeWindow.nej.j, 'nej.j', '.replace("api","weapi');
 
-			// 提取保存的 CDN
-			var changeCDN = $('<a>').addClass('jx_btn jx_cdn').insertAfter(self.linkDownload).text('换');
-			self.changeCDN = changeCDN;
-			changeCDN.click(function () {
-				self.updateCDN();
-			});
+			if (H.config.bInternational) {
+				// 提取保存的 CDN
+				var changeCDN = $('<a>').addClass('jx_btn jx_cdn').insertAfter(self.linkDownload).text('换');
+				self.changeCDN = changeCDN;
+				changeCDN.click(function () {
+					self.updateCDN();
+				});
 
-			var currentCDN = GM_getValue('_ws_cdn_media', self.randomCDN());
-			if (!H.contains(self.cdn_ip, currentCDN)) {
-				currentCDN = self.randomCDN();
+				var currentCDN = GM_getValue('_ws_cdn_media', self.randomCDN());
+				if (!H.contains(self.cdn_ip, currentCDN)) {
+					currentCDN = self.randomCDN();
+				}
+				self.updateCDN(currentCDN);
 			}
-			self.updateCDN(currentCDN);
+
 
 			unsafeExec(function(scriptName, hookName, bInternational, cdn_ip) {
 				var QUEUE_KEY = "track-queue-cache";
