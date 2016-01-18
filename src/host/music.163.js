@@ -661,20 +661,6 @@ MODULE
         var enablePlayButtonInterval = window.setInterval(enablePlayButtonOnSongPage, 1000);
     },
 
-    enableAlbumPlayButton: function () {
-        var enablePlayButtonOnAlbumPage = function() {
-            // Find out disabled songs.
-            var disabledSongsInAlbum = document.getElementsByClassName('js-dis');
-            if (disabledSongsInAlbum.length === 0){
-                window.clearInterval(enablePlayButtonInterval);
-            }
-            for (var i = 0; i < disabledSongsInAlbum.length; ){
-                disabledSongsInAlbum[i].className = disabledSongsInAlbum[i].className.replace('js-dis', '');
-            }
-        };
-        var enablePlayButtonInterval = window.setInterval(enablePlayButtonOnAlbumPage, 1000);
-    },
-
     enablePlaylistPlayButton: function () {
         var enablePlayButtonOnPlaylistPage = function() {
             // Find out disabled songs.
@@ -704,9 +690,7 @@ MODULE
 				break;
 
 			case 'album':
-				this.enableAlbumPlayButton();
-				break;
-
+			case 'artist':
 			case 'playlist':
 				this.enablePlaylistPlayButton();
 				break;
