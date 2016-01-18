@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.507
+// @version        3.0.511
 
 // 全局匹配
 // @include http://*
@@ -1461,6 +1461,7 @@ H.extract(function () { /*
 			var CR1 = self.searchFunction(unsafeWindow.nej.e, 'nej.e', '.dataset;if');
 			var CR2 = self.searchFunction(unsafeWindow.nm.x, 'nm.x',  '.copyrightId==');
 			var CR3 = self.searchFunction(unsafeWindow.nm.x, 'nm.x',  '.privilege;if');
+			self.flushLogTable();
 
 			// CR2 位置的內容在 CR1 函數后加載
 			H.waitUntil('nm.x.' + CR2, function () {
@@ -1490,16 +1491,31 @@ H.extract(function () { /*
 		});
 	},
 
+	addLogItem: function (logItem) {
+		if (!this.logItems)
+			this.logItems = [];
+
+		this.logItems.push(logItem);
+	},
+
+	flushLogTable: function () {
+		var logItems = this.logItems;
+		this.logItems = [];
+
+		if (!H.noLog && logItems.length > 0)
+			console.table(logItems);
+	},
+
 	searchFunction: function(base, name, key) {
 		for (var baseName in base) {
 			var fn = base[baseName];
 			if (fn && typeof fn === 'function') {
 				if (fn.toString().indexOf(key) !== -1) {
 					if (!H.noLog) {
-						console.table([{
+						this.addLogItem({
 							'Keyword': key,
 							'Found': name + '.' + baseName
-						}]);
+						});
 					}
 
 					return baseName;
@@ -1555,6 +1571,7 @@ H.extract(function () { /*
 		// 因为现在每次播放都会请求一次网络
 		H.waitUntil('nej.j', function () {
 			var hookName = self.searchFunction(unsafeWindow.nej.j, 'nej.j', '.replace("api","weapi');
+			self.flushLogTable();
 
 			if (H.config.bInternational) {
 				// 提取保存的 CDN
@@ -1762,6 +1779,7 @@ H.extract(function () { /*
 			// 尋找注入函數
 			var fnPlayAtIndex = self.searchFunction(unsafeWindow.nm.m.Dm.prototype,
 				'nm.m.Dm.prototype', '.mp3Url);');
+			self.flushLogTable();
 
 			if (!fnPlayAtIndex)
 				return ;
@@ -1852,6 +1870,7 @@ H.extract(function () { /*
 		H.waitUntil('nm.m.fO', function() {
 			var hook = self.searchFunction(
 				unsafeWindow.nm.m.fO.prototype, 'nm.x', '.mp3Url,true');
+			self.flushLogTable();
 
 			self.linkDownload = $('<a>')
 				.prependTo('.opts.f-cb>.f-fr')
@@ -1928,27 +1947,37 @@ H.extract(function () { /*
 						.replace(/\+/g, "-");
 	},
 
-	fetchSong: function (ids, cb) {
+	enc_ajax: function (url, reqObj, cb) {
 		var _crsf = unsafeWindow.NEJ_CONF.p_csrf.param;
 		var _token = document.cookie.match(new RegExp(unsafeWindow.NEJ_CONF.p_csrf.cookie + '=(\\w+)'))[1];
-
-		var reqObj = {
-			ids: ids
-		};
 		reqObj[_crsf] = _token;
+
+		// 构建 url
+		url += url.indexOf('?') === -1 ? '?' : '&';
+		url += _crsf + '=' + _token;
 
 		var encryptedData = unsafeWindow.asrsea(JSON.stringify(reqObj), "010001","00e0b509f6259df8642dbc35662901477df22677ec152b5ff68ace615bb7b725152b3ab17a876aea8a5aa76d2e417629ec4ee341f56135fccf695280104e0312ecbda92557c93870114af6c9d05c4f7f0c3685b7a46bee255932575cce10b424d813cfe4875d3e82047b97ddef52741d546b8e289dc6935b3ece0462db0a22b8e7", "0CoJUm6Qyw8W8jud");
 		var postData = {
 			params: encryptedData.encText,
 			encSecKey: encryptedData.encSecKey
 		};
-		var _url = H.sprintf('/weapi/song/detail/?%s=%s', _crsf, _token);
-		$.ajax({
-			url: _url,
+
+		var ajax = $.ajax({
+			url: url,
 			method: 'POST',
 			data: postData,
 			dataType: 'json'
-		}).done(cb);
+		});
+
+		if (cb) ajax.done(cb);
+
+		return ajax;
+	},
+
+	fetchSong: function (ids, cb) {
+		return this.enc_ajax('/weapi/song/detail/', {
+			ids: ids
+		}, cb);
 	},
 
 	getMvId: function (songId, cb) {
@@ -1990,10 +2019,14 @@ H.extract(function () { /*
 			}).text('MV 下载: ').insertAfter($flashBox);
 			Object.keys(q).forEach(function (key) {
 				if (params[key]) {
-					$dlHolder.append($('<a>').attr({
+					var $dl = $('<a>').attr({
 						href: H.uri(params[key], H.sprintf('%s[%sMV].mp4', params.trackName, q[key])),
 						title: H.sprintf('下载 %s 的 %s Mv', params.trackName, q[key])
-					}).prop('download', true).text(q[key]));
+					}).prop('download', true).text(q[key]);
+
+					// 修正 163 自己的跳转.
+					H.captureAria($dl);
+					$dlHolder.append($dl);
 					$dlHolder.append(' | ');
 				}
 			});
@@ -2052,21 +2085,22 @@ H.extract(function () { /*
 
 	onBodyFrame: function () {
 		switch(location.pathname.split('/')[1]) {
-			case 'mv':
+			case 'mv': 			// MV
 				this.parseMv();
 				break;
 
-			case 'outchain':
+			case 'outchain': 	// 外链
 				this.hookPlayerOutchain();
 				break;
 
-			case 'song':
+			case 'song': 		// 单曲
 				this.enableSongPlayButton();
 				break;
 
-			case 'album':
-			case 'artist':
-			case 'playlist':
+			case 'album': 		// 专辑
+			case 'artist': 		// 艺术家
+			case 'playlist': 	// 播放列表
+			case 'discover': 	// 首页
 				this.enablePlaylistPlayButton();
 				break;
 		}
@@ -2146,6 +2180,24 @@ H.extract(function () { /*
 					self.linkDownloadAll.insertBefore($('.m-playbar .listhdc .addall')).after($('<a>').addClass('line jx_dl_line'));
 				}, true, 500);
 				this.hookPlayer();
+		}
+
+		setTimeout(this.auto_sign.bind(this), 3000);
+	},
+
+	auto_sign: function () {
+		var d = new Date();
+		var date_str = d.getFullYear() + '/' + d.getMonth() + '/' + d.getDay();
+		if (localStorage.__SIGN_DATE != date_str) {
+			localStorage.__SIGN_DATE = date_str;
+
+			this.enc_ajax('/api/point/dailyTask?type=1', {  }, function (r) {
+				if (r.code == 200) {
+					H.info('签到成功: 获得 %c%d%c 点积分.', 'color:blue', r.point, 'color:initial');
+				} else {
+					H.info('签到失败 (%c%d%c): %s', 'color:blue', r.code, 'color:initial', r.msg);
+				}
+			});
 		}
 	}
 }),
