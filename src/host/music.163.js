@@ -654,7 +654,7 @@ MODULE
             playButton = document.getElementsByClassName('u-btni-play-dis');
             if (playButton.length == 1) {
                 window.clearInterval(enablePlayButtonInterval);
-                var songId = document.location.href.replace('http://music.163.com/song?id=', '');
+                var songId = $('#content-operation').data('rid');
                 playButton[0].outerHTML = '<a data-res-action="play" data-res-id="#SONGID#" data-res-type="18" href="javascript:;" class="u-btn2 u-btn2-2 u-btni-addply f-fl" hidefocus="true" title="播放"><i><em class="ply"></em>播放</i></a><a data-res-action="addto" data-res-id="#SONGID#" data-res-type="18" href="javascript:;" class="u-btni u-btni-add" hidefocus="true" title="添加到播放列表"></a>'.replace(/#SONGID#/g, songId);
             }
         };
@@ -690,24 +690,24 @@ MODULE
     },
 
 	onBodyFrame: function () {
-		switch(location.pathname) {
-			case '/mv':
+		switch(location.pathname.split('/')[1]) {
+			case 'mv':
 				this.parseMv();
 				break;
 
-			case '/outchain/player':
+			case 'outchain':
 				this.hookPlayerOutchain();
 				break;
 
-			case '/song':
+			case 'song':
 				this.enableSongPlayButton();
 				break;
 
-			case '/album':
+			case 'album':
 				this.enableAlbumPlayButton();
 				break;
 
-			case '/playlist':
+			case 'playlist':
 				this.enablePlaylistPlayButton();
 				break;
 		}
