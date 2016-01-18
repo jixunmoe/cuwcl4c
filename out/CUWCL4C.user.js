@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.512
+// @version        3.0.513
 
 // 全局匹配
 // @include http://*
@@ -2180,7 +2180,10 @@ H.extract(function () { /*
 				this.hookPlayer();
 		}
 
-		setTimeout(this.auto_sign.bind(this), 3000);
+		// 控制台执行: localStorage._PLEASE_AUTO_SIGN = 1
+		// 即可启用自动签到功能 :D
+		if(localStorage._PLEASE_AUTO_SIGN)
+			setTimeout(this.auto_sign.bind(this), 3000);
 	},
 
 	auto_sign: function () {
