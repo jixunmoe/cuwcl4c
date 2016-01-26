@@ -105,8 +105,12 @@ MODULE
 					nm.x[CR3]= function () {
 						var songDetail = arguments[0];
 						songDetail.status = 0;
-						songDetail.privilege.pl = 320000;
-						songDetail.privilege.status = 0;
+
+						if (songDetail.privilege) {
+							songDetail.privilege.pl = 320000;
+							songDetail.privilege.status = 0;
+						}
+						
 						return 0;
 					};
 				}, H.isFrame, CR1, CR2, CR3);
