@@ -213,6 +213,9 @@ MODULE
 					currentCDN = self.randomCDN();
 				}
 				self.updateCDN(currentCDN);
+
+				// 暂时隐藏
+				self.linkDownload.hide();
 			}
 
 
@@ -296,7 +299,7 @@ MODULE
 						data: songs.map(function (song) {
 							var song_obj = rebuild_object(song);
 							if (bInternational) {
-								song_obj.mp3Url = song_obj.mp3Url.replace('http://', 'http://' + cdn_ip + '/');
+								song_obj.mp3Url = song_obj.mp3Url.replace('http://m', 'http://p');
 							}
 							song_obj.url = song_obj.mp3Url;
 							song_obj.expi = 1e13;
@@ -306,7 +309,7 @@ MODULE
 				}
 
 				var ajax = nej.j[hookName];
-				function ajaxPatch (url, params) {
+				function ajaxPatchMainland (url, params) {
 
 					if (url == '/api/song/enhance/player/url') {
 						url = '/api/song/detail/';
@@ -366,14 +369,13 @@ MODULE
 					return ajax(url, params);
 				}
 
-				nej.j[hookName] = ajaxPatch;
-
 				// 强制刷新播放器
 				// 用于解析下载 / 海外处理。
 				var _next = nm.w.uv.prototype.kW;
+				var playerInstance;
 				nm.w.uv.prototype.kW = function () {
 					nm.w.uv.prototype.kW = _next;
-					var self = this;
+					var self = playerInstance = this;
 
 					// 之前的方法好像并不能刷新..
 					// 于是就这样了 :D
@@ -382,6 +384,47 @@ MODULE
 					self.bNx(index, "ui");
 				};
 				document.querySelector('.nxt').click();
+
+				var br_list = [128000, 96000, 192000, 320000];
+				function ajaxPatchInternational (url, params, try_br) {
+					if (url == '/api/song/enhance/player/url') {
+						var self = this;
+						// HQ parse.
+						// TODO: re-send request for hd dl.
+						var _onload = params.onload;
+						params.onload = function (data) {
+							if (data.data[0].url) {
+								var fixed_url = data.data[0].url = data.data[0].url.replace('http://', 'http://' + cdn_ip);
+							} else {
+								// 解析不到音乐: 自动下一首
+								console.warn('[%s] 载入音乐数据失败, 准备中..', scriptName);
+
+								if (!try_br) {
+									try_br = parseInt(params.query.br);
+								}
+
+								var i = br_list.indexOf(try_br) + 1;
+								if (i < br_list.length) {
+									console.info ('[%s] 尝试码率 %dkbps', scriptName, br_list[i] / 1000);
+									params.onload = _onload;
+									ajaxPatchInternational(url, params, br_list[i]);
+								} else {
+									console.info ('[%s] 放弃, 跳至下一首', scriptName);
+									_next.call(playerInstance);
+								}
+
+							}
+
+							return _onload(data);
+						};
+					}
+
+					return ajax(url, params);
+
+				}
+
+				nej.j[hookName] = (!localStorage.__OUT_BREAK && bInternational) ? ajaxPatchInternational : ajaxPatchMainland;
+
 			}, H.scriptName, hookName, H.config.bInternational, currentCDN);
 		});
 	},
@@ -457,7 +500,11 @@ MODULE
 
 					// 國際用戶轉換地址
 					if (bInternational) {
-						track.mp3Url = track.mp3Url.replace('http://', randomCDN());
+						if (localStorage.__OUT_BREAK) {
+							track.mp3Url = track.mp3Url.replace('http://m', 'http://p');
+						} else {
+							track.mp3Url = track.mp3Url.replace('http://', 'http://' + randomCDN());
+						}
 					}
 
 					var eveSongObj = {
@@ -534,11 +581,13 @@ MODULE
 
 
 		var cdnPrefix = '';
+		var cdnServer = 'm';
 		if (H.config.bInternational) {
 			cdnPrefix = this.ws_cdn_media + '/';
+			cdnServer = 'p';
 		}
 
-		return "http://" + cdnPrefix + 'm' + randServer + ".music.126.net/" + (this.dfsHash(dsfId)) + "/" + dsfId + ".mp3";
+		return "http://" + cdnPrefix + cdnServer + randServer + ".music.126.net/" + (this.dfsHash(dsfId)) + "/" + dsfId + ".mp3";
 	},
 
 	/**
@@ -676,39 +725,39 @@ MODULE
 		}
 	},
 
-    enableSongPlayButton: function () {
-        var enablePlayButtonOnSongPage = function() {
-          // Try to find a normal button. If it could be found, do nothing.
-          var playButton = document.getElementsByClassName('u-btni-addply');
-            if (playButton.length == 1) {
-                window.clearInterval(enablePlayButtonInterval);
-                return;
-            }
+	enableSongPlayButton: function () {
+		var enablePlayButtonOnSongPage = function() {
+		  // Try to find a normal button. If it could be found, do nothing.
+		  var playButton = document.getElementsByClassName('u-btni-addply');
+			if (playButton.length == 1) {
+				window.clearInterval(enablePlayButtonInterval);
+				return;
+			}
 
-            // Otherwise it should be a disabled button.
-            playButton = document.getElementsByClassName('u-btni-play-dis');
-            if (playButton.length == 1) {
-                window.clearInterval(enablePlayButtonInterval);
-                var songId = $('#content-operation').data('rid');
-                playButton[0].outerHTML = '<a data-res-action="play" data-res-id="#SONGID#" data-res-type="18" href="javascript:;" class="u-btn2 u-btn2-2 u-btni-addply f-fl" hidefocus="true" title="播放"><i><em class="ply"></em>播放</i></a><a data-res-action="addto" data-res-id="#SONGID#" data-res-type="18" href="javascript:;" class="u-btni u-btni-add" hidefocus="true" title="添加到播放列表"></a>'.replace(/#SONGID#/g, songId);
-            }
-        };
-        var enablePlayButtonInterval = window.setInterval(enablePlayButtonOnSongPage, 1000);
-    },
+			// Otherwise it should be a disabled button.
+			playButton = document.getElementsByClassName('u-btni-play-dis');
+			if (playButton.length == 1) {
+				window.clearInterval(enablePlayButtonInterval);
+				var songId = $('#content-operation').data('rid');
+				playButton[0].outerHTML = '<a data-res-action="play" data-res-id="#SONGID#" data-res-type="18" href="javascript:;" class="u-btn2 u-btn2-2 u-btni-addply f-fl" hidefocus="true" title="播放"><i><em class="ply"></em>播放</i></a><a data-res-action="addto" data-res-id="#SONGID#" data-res-type="18" href="javascript:;" class="u-btni u-btni-add" hidefocus="true" title="添加到播放列表"></a>'.replace(/#SONGID#/g, songId);
+			}
+		};
+		var enablePlayButtonInterval = window.setInterval(enablePlayButtonOnSongPage, 1000);
+	},
 
-    enablePlaylistPlayButton: function () {
-        var enablePlayButtonOnPlaylistPage = function() {
-            // Find out disabled songs.
-            var disabledSongsInPlaylist = document.getElementsByClassName('js-dis');
-            if (disabledSongsInPlaylist.length === 0){
-                window.clearInterval(enablePlayButtonInterval);
-            }
-            for (var i = 0; i < disabledSongsInPlaylist.length; ){
-                disabledSongsInPlaylist[i].className = disabledSongsInPlaylist[i].className.replace('js-dis', '');
-            }
-        };
-        var enablePlayButtonInterval = window.setInterval(enablePlayButtonOnPlaylistPage, 1000);
-    },
+	enablePlaylistPlayButton: function () {
+		var enablePlayButtonOnPlaylistPage = function() {
+			// Find out disabled songs.
+			var disabledSongsInPlaylist = document.getElementsByClassName('js-dis');
+			if (disabledSongsInPlaylist.length === 0){
+				window.clearInterval(enablePlayButtonInterval);
+			}
+			for (var i = 0; i < disabledSongsInPlaylist.length; ){
+				disabledSongsInPlaylist[i].className = disabledSongsInPlaylist[i].className.replace('js-dis', '');
+			}
+		};
+		var enablePlayButtonInterval = window.setInterval(enablePlayButtonOnPlaylistPage, 1000);
+	},
 
 	onBodyFrame: function () {
 		switch(location.pathname.split('/')[1]) {
@@ -736,7 +785,7 @@ MODULE
 	onBody: function() {
 		var self = this;
 		this._doRemoval();
-        unsafeWindow.GAbroad = false;
+		unsafeWindow.GAbroad = false;
 
 		// 不在框架執行
 		if (H.isFrame) {
