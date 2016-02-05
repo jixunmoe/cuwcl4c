@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.517
+// @version        3.0.518
 
 // 全局匹配
 // @include http://*
@@ -1575,7 +1575,7 @@ H.extract(function () { /*
 			var hookName = self.searchFunction(unsafeWindow.nej.j, 'nej.j', '.replace("api","weapi');
 			self.flushLogTable();
 
-			if (H.config.bInternational) {
+			if (H.config.bInternational && !H.config.bProxyInstalled) {
 				// 提取保存的 CDN
 				var changeCDN = $('<a>').addClass('jx_btn jx_cdn').insertAfter(self.linkDownload).text('换');
 				self.changeCDN = changeCDN;
@@ -1594,7 +1594,7 @@ H.extract(function () { /*
 			}
 
 
-			unsafeExec(function(scriptName, hookName, bInternational, cdn_ip) {
+			unsafeExec(function(scriptName, hookName, bInternational, cdn_ip, bProxyInstalled) {
 				var QUEUE_KEY = "track-queue-cache";
 
 				// 建立缓存
@@ -1673,7 +1673,7 @@ H.extract(function () { /*
 						code: 200,
 						data: songs.map(function (song) {
 							var song_obj = rebuild_object(song);
-							if (bInternational) {
+							if (bInternational && !bProxyInstalled) {
 								song_obj.mp3Url = song_obj.mp3Url.replace('http://m', 'http://p');
 							}
 							song_obj.url = song_obj.mp3Url;
@@ -1798,9 +1798,9 @@ H.extract(function () { /*
 
 				}
 
-				nej.j[hookName] = (!localStorage.__OUT_BREAK && bInternational) ? ajaxPatchInternational : ajaxPatchMainland;
+				nej.j[hookName] = (!bProxyInstalled && bInternational) ? ajaxPatchInternational : ajaxPatchMainland;
 
-			}, H.scriptName, hookName, H.config.bInternational, currentCDN);
+			}, H.scriptName, hookName, H.config.bInternational, currentCDN, H.config.bProxyInstalled);
 		});
 	},
 
@@ -1957,7 +1957,7 @@ H.extract(function () { /*
 
 		var cdnPrefix = '';
 		var cdnServer = 'm';
-		if (H.config.bInternational) {
+		if (H.config.bInternational && !H.config.bProxyInstalled) {
 			cdnPrefix = this.ws_cdn_media + '/';
 			cdnServer = 'p';
 		}
