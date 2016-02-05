@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.518
+// @version        3.0.519
 
 // 全局匹配
 // @include http://*
@@ -1769,7 +1769,7 @@ H.extract(function () { /*
 						var _onload = params.onload;
 						params.onload = function (data) {
 							if (data.data[0].url) {
-								var fixed_url = data.data[0].url = data.data[0].url.replace('http://', 'http://' + cdn_ip);
+								var fixed_url = data.data[0].url = data.data[0].url.replace('http://', 'http://' + cdn_ip + '/');
 							} else {
 								// 解析不到音乐: 自动下一首
 								console.warn('[%s] 载入音乐数据失败, 准备中..', scriptName);
@@ -1878,7 +1878,7 @@ H.extract(function () { /*
 						if (localStorage.__OUT_BREAK) {
 							track.mp3Url = track.mp3Url.replace('http://m', 'http://p');
 						} else {
-							track.mp3Url = track.mp3Url.replace('http://', 'http://' + randomCDN());
+							track.mp3Url = track.mp3Url.replace('http://', 'http://' + randomCDN() + '/');
 						}
 					}
 
