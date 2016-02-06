@@ -17,11 +17,16 @@
 		<div class="ui list">
 			<div class="item" v-for="song in songs">
 				<div class="header">{{ song.fileName }}
-					<small>/ {{ song.fileSize | size }} / {{ song.bitRate / 1000 }} kbps / {{ song.extName | uppercase }}</small>
+					<small>/ {{ song.fileSize | size }} / {{ song.bitRate / 1000 }} kbps / {{ song.extName | uppercase }}
+						(<a @click="rm($index)">x</a>)</small>
 				</div>
 				<a href="{{ song.url }}" target="_blank" class="dl-url">{{ song.url }}</a>
 			</div>
 		</div>
+
+		<button @click="clear" class="ui red button">
+			清空
+		</button>
 	</main>
 </body>
 </html>

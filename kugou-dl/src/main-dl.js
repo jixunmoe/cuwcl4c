@@ -17,6 +17,14 @@ $(function () {
 				} else {
 					$.error('Undefined action: ' + data.action);
 				}
+			},
+
+			clear: function () {
+				this.songs = [];
+			},
+
+			rm: function (index) {
+				this.songs.splice(index, 1);
 			}
 		}
 	});
