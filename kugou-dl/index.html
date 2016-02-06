@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>酷狗网页解析服务</title>
+	<link rel="stylesheet" type="text/css" href="./lib/Semantic-UI/semantic.min.css">
+
+	<script src="./lib/jquery-2.2.0.min.js"></script>
+	<script src="./lib/vue.min.js"></script>
+	<script src="./lib/Semantic-UI/semantic.min.js"></script>
+	<script src="./src/common.js"></script>
+	<script src="./src/main.js"></script>
+</head>
+<body>
+	<main id="app">
+		<table class="ui compact celled definition table">
+			<thead>
+				<tr>
+					<th></th>
+					<th>歌曲名</th>
+					<th>音质选择</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="song in songs">
+					<td class="collapsing">
+						<div class="ui fitted slider checkbox">
+							<input type="checkbox" v-model="song._dl" checked="checked"> <label></label>
+						</div>
+					</td>
+
+					<td>{{ song.name }}</td>
+					<td>
+						<select name="song-{{song.id}}" class="ui dropdown quality-selector" v-model="song._h">
+							<option v-for="q in song.relate_goods" value="{{ q.hash }}" selected="selected">
+								{{ q.info.bitrate | quality }} -
+								{{ q.info.filesize | size }} / {{ q.info.bitrate }} kbps / {{ q.info.extname | uppercase }}
+							</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<button @click="download" class="ui primary button">
+			下载
+		</button>
+
+		<button @click="cancel" class="ui button">
+			关闭
+		</button>
+	</main>
+</body>
+</html>

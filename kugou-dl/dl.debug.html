@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>酷狗网页解析服务 - 下载分流页面</title>
+	<link rel="stylesheet" type="text/css" href="./lib/Semantic-UI/semantic.css">
+
+	<script src="./lib/jquery-2.2.0.js"></script>
+	<script src="./lib/vue.js"></script>
+	<script src="./lib/Semantic-UI/semantic.js"></script>
+	<script src="./src/common.js"></script>
+	<script src="./src/main-dl.js"></script>
+</head>
+<body>
+	<main id="app">
+		<div class="ui list">
+			<div class="item" v-for="song in songs">
+				<div class="header">{{ song.fileName }}
+					<small>/ {{ song.fileSize | size }} / {{ song.bitRate / 1000 }} kbps / {{ song.extName | uppercase }}</small>
+				</div>
+				<a href="{{ song.url }}">{{ song.url }}</a>
+			</div>
+		</div>
+
+		<pre>{{ songs | json }}</pre>
+	</main>
+</body>
+</html>
