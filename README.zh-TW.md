@@ -61,6 +61,7 @@
 - DJ 爷爷网 - `[www.djye.com]`
 - 多乐音乐 - `[www.duole.com]`
 - 邻居的耳朵 - `[ear.duomi.com]`
+- 酷狗音乐下载解析 - `[web.kugou.com, kugou.com, www.kugou.com]`
 - 噢音乐下载解析 - `[oyinyue.com]`
 - QQ 音乐、电台海外访问限制解除 - `[y.qq.com, fm.qq.com]`
 - QQ 音乐下载解析 - `[y.qq.com, soso.music.qq.com]`

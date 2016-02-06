@@ -43,7 +43,7 @@ var parseScript = function (s) {
 		return ret
 			.join('\n')
 			// 刪除行首的「//-//」符號
-			.replace(/^(\s+)\/\/-\/\/\s*/m, '$1');
+			.replace(/^(\s+)\/\/-\/\/\s*/mg, '$1');
 	});
 };
 
