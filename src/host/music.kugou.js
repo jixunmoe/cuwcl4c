@@ -127,7 +127,7 @@ MODULE
 		}
 
 		function handle_dl (song) {
-			var fileName = song.fileName + '.' + song.extName;
+			var file = song.fileName + '.' + song.extName;
 			var url = song.url;
 
 			post('add', song);

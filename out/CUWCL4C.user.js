@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.526
+// @version        3.0.527
 
 // 全局匹配
 // @include http://*
@@ -3486,7 +3486,7 @@ H.extract(function () { /*
 		}
 
 		function handle_dl (song) {
-			var fileName = song.fileName + '.' + song.extName;
+			var file = song.fileName + '.' + song.extName;
 			var url = song.url;
 
 			post('add', song);
