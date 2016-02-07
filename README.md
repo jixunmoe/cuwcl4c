@@ -59,6 +59,7 @@
 - DJCC 舞曲 - `[www.djcc.com]`
 - DJ 嗨嗨 - `[www.djkk.com]`
 - DJ 爷爷网 - `[www.djye.com]`
+- 豆瓣音乐下载解析 - `[music.douban.com]`
 - 多乐音乐 - `[www.duole.com]`
 - 邻居的耳朵 - `[ear.duomi.com]`
 - 酷狗音乐下载解析 - `[web.kugou.com, kugou.com, www.kugou.com]`

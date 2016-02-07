@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.528
+// @version        3.0.532
 
 // 全局匹配
 // @include http://*
@@ -225,6 +225,10 @@ var H = {
 		
 		$(el || document).click(function (e) {
 			var linkEl = e.target;
+			var $el = $(e.target);
+			if (!$el.is('a')) {
+				linkEl = $el.parents('a')[0];
+			}
 
 			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
 				e.stopPropagation ();
@@ -1391,8 +1395,9 @@ H.extract(function () { /*
 		if (H.config.bInternational)
 			this.generateCdn();
 
-		if (localStorage.__HIDE_BANNER)
+		if (localStorage.__HIDE_BANNER) {
 			H.forceHide('#index-banner');
+		}
 
 		this.regPlayer();
 
@@ -2238,9 +2243,17 @@ H.extract(function () { /*
 		}
 
 		// 控制台执行: localStorage._PLEASE_AUTO_SIGN = 1
-		// 即可启用自动签到功能 :D
+		// 即可启用自动签到功能 (不会计算时差) :D
 		if(localStorage._PLEASE_AUTO_SIGN)
 			setTimeout(this.auto_sign.bind(this), 3000);
+
+		// 控制台执行: localStorage.__HIDE_BANNER = 1
+		// 即可移除首页横幅与客户端入口链接 :D
+		if (localStorage.__HIDE_BANNER) {
+			var $lst = $('.m-nav > .lst');
+			$lst.prev().addClass('lst');
+			$lst.remove();
+		}
 	},
 
 	auto_sign: function () {
@@ -3236,6 +3249,71 @@ H.extract(function () { /*
 			.css('padding-right', '1em');
 	}
 },
+/* Compiled from music.douban.js */
+/**
+ * 豆瓣音乐下载解析 By Jixun
+ */
+({
+	id: 'music.douban',
+	name: '豆瓣音乐下载解析',
+	host: 'music.douban.com',
+	noSubHost: true,
+	noFrame: false,
+	dl_icon: true,
+	css: /* Resource: com.douban.music.css */
+H.extract(function () { /*
+.container .mod1 {
+	width: 525px;
+}
+
+.container .mod2 {
+	width: 83px;
+}
+
+*/}),
+
+	onBody: function () {
+		var $btnDownload = $('<a>').attr('id', 'btn-download');
+		$('<i>').addClass('jx_dl jx_btn').appendTo($btnDownload);
+		H.captureAria($btnDownload);
+
+		function inject_dl_icon () {
+			$btnDownload.prependTo('.container .mod2');
+		}
+
+		function handle_url (song) {
+			var url = H.uri(song.get('url'), song.get('title') + " [" + song.get('artist_name') + "].mp3");
+			$btnDownload.attr('href', url);
+		}
+
+		exportFunction(handle_url, unsafeWindow, {
+			defineAs: "dl_jixun"
+		});
+
+		exportFunction(inject_dl_icon, unsafeWindow, {
+			defineAs: "init_jixun"
+		});
+
+		unsafeExec(function () {
+			require(['player/app', 'player/models/song', 'player/views/playinfo'], function (App, Song, PlayInfo) {
+				setTimeout(init_jixun, 25);
+
+				var sp = Song.prototype.startPlaying;
+				Song.prototype.startPlaying = function () {
+					dl_jixun(this);
+					return sp.apply(this, arguments);
+				};
+
+				var pir = PlayInfo.prototype.render;
+				PlayInfo.prototype.render = function () {
+					var r = pir.apply(this, arguments);
+					init_jixun();
+					return r;
+				};
+			});
+		});
+	}
+}),
 /* Compiled from music.duole.js */
 {
 	id: 'music.duole',

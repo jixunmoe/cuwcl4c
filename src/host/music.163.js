@@ -15,8 +15,9 @@ MODULE
 		if (H.config.bInternational)
 			this.generateCdn();
 
-		if (localStorage.__HIDE_BANNER)
+		if (localStorage.__HIDE_BANNER) {
 			H.forceHide('#index-banner');
+		}
 
 		this.regPlayer();
 
@@ -862,9 +863,17 @@ MODULE
 		}
 
 		// 控制台执行: localStorage._PLEASE_AUTO_SIGN = 1
-		// 即可启用自动签到功能 :D
+		// 即可启用自动签到功能 (不会计算时差) :D
 		if(localStorage._PLEASE_AUTO_SIGN)
 			setTimeout(this.auto_sign.bind(this), 3000);
+
+		// 控制台执行: localStorage.__HIDE_BANNER = 1
+		// 即可移除首页横幅与客户端入口链接 :D
+		if (localStorage.__HIDE_BANNER) {
+			var $lst = $('.m-nav > .lst');
+			$lst.prev().addClass('lst');
+			$lst.remove();
+		}
 	},
 
 	auto_sign: function () {

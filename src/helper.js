@@ -161,6 +161,10 @@ var H = {
 		
 		$(el || document).click(function (e) {
 			var linkEl = e.target;
+			var $el = $(e.target);
+			if (!$el.is('a')) {
+				linkEl = $el.parents('a')[0];
+			}
 
 			if (linkEl && linkEl.tagName == 'A' && H.beginWith(linkEl.href, 'aria2://|')) {
 				e.stopPropagation ();
