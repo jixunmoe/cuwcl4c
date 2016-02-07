@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.527
+// @version        3.0.528
 
 // 全局匹配
 // @include http://*
@@ -680,8 +680,9 @@ H.merge (H, {
 
 	// 插入样式表
 	injectStyle: function () {
-		var styleBlock = (this && this.tagName == 'STYLE') ? this : createElement('style');
+		var styleBlock = (this && this.tagName == 'STYLE') ? this : (H.styleBlock || createElement('style'));
 		styleBlock.textContent += [].join.call(arguments, '\n');
+		H.styleBlock = styleBlock;
 		document.head.appendChild(styleBlock);
 		return styleBlock;
 	},
@@ -1389,6 +1390,9 @@ H.extract(function () { /*
 	onStart: function () {
 		if (H.config.bInternational)
 			this.generateCdn();
+
+		if (localStorage.__HIDE_BANNER)
+			H.forceHide('#index-banner');
 
 		this.regPlayer();
 

@@ -616,8 +616,9 @@ H.merge (H, {
 
 	// 插入样式表
 	injectStyle: function () {
-		var styleBlock = (this && this.tagName == 'STYLE') ? this : createElement('style');
+		var styleBlock = (this && this.tagName == 'STYLE') ? this : (H.styleBlock || createElement('style'));
 		styleBlock.textContent += [].join.call(arguments, '\n');
+		H.styleBlock = styleBlock;
 		document.head.appendChild(styleBlock);
 		return styleBlock;
 	},

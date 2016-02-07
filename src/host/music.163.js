@@ -15,6 +15,9 @@ MODULE
 		if (H.config.bInternational)
 			this.generateCdn();
 
+		if (localStorage.__HIDE_BANNER)
+			H.forceHide('#index-banner');
+
 		this.regPlayer();
 
 		unsafeExec(function () {
