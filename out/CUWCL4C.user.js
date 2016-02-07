@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.532
+// @version        3.0.533
 
 // 全局匹配
 // @include http://*
@@ -57,6 +57,14 @@
 // @exclude http://.google.tld/*
 // @exclude http://*.gmail.com/*
 // @exclude http://*.google.tld/*
+
+// GM_xmlHttpRequest 远端服务器列表
+// @connect http://down.lepan.cc/*
+// @connect http://music.baidu.com/*
+// @connect http://yinyueyun.baidu.com/*
+// @connect http://media.store.kugou.com/*
+// @connect http://trackercdn.kugou.com/*
+// @connect http://www.yinyuetai.com/*
 
 // ==/UserScript==
 
