@@ -32,7 +32,7 @@
 					<td>{{ song.name }}</td>
 					<td>
 						<select name="song-{{song.id}}" class="ui dropdown quality-selector" v-model="song._h">
-							<option v-for="q in song.relate_goods" value="{{ q.hash }}" selected="selected">
+							<option v-for="q in song.relate_goods | orderBy 'info.bitrate'" value="{{ q.hash }}" selected="selected">
 								{{ q.info.bitrate | quality }} -
 								{{ q.info.filesize | size }} / {{ q.info.bitrate }} kbps / {{ q.info.extname | uppercase }}
 							</option>

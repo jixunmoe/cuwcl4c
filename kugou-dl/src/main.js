@@ -14,7 +14,7 @@ $(function () {
 	var dlBox = new Vue({
 		el: '#app',
 		data: {
-			songs: []
+			songs: [{relate_goods:[{info:{filesize:1,bitrate:3}},{info:{filesize:1,bitrate:999}},{info:{filesize:1,bitrate:3}}]}]
 		},
 
 		methods: {
