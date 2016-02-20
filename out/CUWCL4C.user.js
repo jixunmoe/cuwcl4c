@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.533
+// @version        3.0.534
 
 // 全局匹配
 // @include http://*
@@ -3675,10 +3675,16 @@ H.extract(function () { /*
 	}
 },
 /* Compiled from music.qq.iplimit.js */
-{
+({
 	id: 'music.qq.iplimit',
 	name: 'QQ 音乐、电台海外访问限制解除',
-	host: ['y.qq.com', 'fm.qq.com'],
+	host: ['y.qq.com', 'i.y.qq.com', 'fm.qq.com'],
+	onStart: function () {
+		// MV 页面解锁
+		if (document.cookie.indexOf('ip_limit=1') == -1) {
+			document.cookie = 'ip_limit = 1; expires=' + (new Date('2099/01/01')).toGMTString() + "; domain=.qq.com;";
+		}
+	},
 	onBody: function () {
 		H.info ('等候海外访问限制模组加载…');
 		H.waitUntil ('MUSIC.widget.main.IP_limit.isLimit', function () {
@@ -3689,7 +3695,7 @@ H.extract(function () { /*
 			}, unsafeWindow.MUSIC.widget.main.IP_limit, '.MUSIC.widget.main.IP_limit');
 		});
 	}
-},
+}),
 /* Compiled from music.qq.y.js */
 {
 	id: 'music.qq.y',

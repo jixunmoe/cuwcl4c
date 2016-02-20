@@ -66,7 +66,7 @@
 - 邻居的耳朵 - `[ear.duomi.com]`
 - 酷狗音乐下载解析 - `[web.kugou.com, kugou.com, www.kugou.com]`
 - 噢音乐下载解析 - `[oyinyue.com]`
-- QQ 音乐、电台海外访问限制解除 - `[y.qq.com, fm.qq.com]`
+- QQ 音乐、电台海外访问限制解除 - `[y.qq.com, i.y.qq.com, fm.qq.com]`
 - QQ 音乐下载解析 - `[y.qq.com, soso.music.qq.com]`
 - SongTaste 下载解析 - `[songtaste.com]`
 - 虾米音乐 - `[www.xiami.com]`
