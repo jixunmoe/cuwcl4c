@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.534
+// @version        3.0.536
 
 // 全局匹配
 // @include http://*
@@ -1400,6 +1400,8 @@ H.extract(function () { /*
 }
 */}),
 	onStart: function () {
+		this.bProxyLocal = H.config.bInternational && H.config.bProxyInstalled;
+
 		if (H.config.bInternational)
 			this.generateCdn();
 
@@ -1767,13 +1769,13 @@ H.extract(function () { /*
 				var playerInstance;
 				nm.w.uv.prototype.kW = function () {
 					nm.w.uv.prototype.kW = _next;
-					var self = playerInstance = this;
+					playerInstance = this;
 
 					// 之前的方法好像并不能刷新..
 					// 于是就这样了 :D
 					var index = this.bHO;
-					this.bHO = self.bOB(+1);
-					self.bNx(index, "ui");
+					this.bHO = playerInstance.bOB(+1);
+					playerInstance.bNx(index, "ui");
 				};
 				document.querySelector('.nxt').click();
 
@@ -1974,9 +1976,13 @@ H.extract(function () { /*
 
 		var cdnPrefix = '';
 		var cdnServer = 'm';
-		if (H.config.bInternational && !H.config.bProxyInstalled) {
-			cdnPrefix = this.ws_cdn_media + '/';
-			cdnServer = 'p';
+		if (H.config.bInternational) {
+			if (H.config.bProxyInstalled) {
+				cdnPrefix = '127.0.0.1:4003/';
+			} else {
+				cdnPrefix = this.ws_cdn_media + '/';
+				cdnServer = 'p';
+			}
 		}
 
 		return "http://" + cdnPrefix + cdnServer + randServer + ".music.126.net/" + (this.dfsHash(dsfId)) + "/" + dsfId + ".mp3";
