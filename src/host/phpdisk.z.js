@@ -5,6 +5,7 @@
 	//       并隐藏 down_box2, 显示 down_box
 	
 	host: [
+		'wpan.cc', 'ypan.cc',
 		'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 
 		'77pan.cc', 'vvpan.com', 'fmdisk.com', 'bx0635.com',
 		'10pan.cc'

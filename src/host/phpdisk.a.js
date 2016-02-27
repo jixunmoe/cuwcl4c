@@ -5,7 +5,6 @@
 	
 	host: [
 		'79pan.com', '03xg.com',
-		'wpan.cc', 'ypan.cc',
 		
 		'7mv.cc', 'pan.52zz.org', '258pan.com', 'huimeiku.com'
 	],
