@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.536
+// @version        3.0.537
 
 // 全局匹配
 // @include http://*
@@ -4209,7 +4209,6 @@ H.extract(function () { /*
 	
 	host: [
 		'79pan.com', '03xg.com',
-		'wpan.cc', 'ypan.cc',
 		
 		'7mv.cc', 'pan.52zz.org', '258pan.com', 'huimeiku.com'
 	],
@@ -4252,6 +4251,7 @@ H.extract(function () { /*
 	//       并隐藏 down_box2, 显示 down_box
 	
 	host: [
+		'wpan.cc', 'ypan.cc',
 		'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 
 		'77pan.cc', 'vvpan.com', 'fmdisk.com', 'bx0635.com',
 		'10pan.cc'
