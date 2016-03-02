@@ -45,18 +45,9 @@
 // @namespace      http://jixun.org/
 // @version        3.0.<% #build.js %>
 
-// 全局匹配
-// @include http://*
+// 尝试使用脚本生成匹配规则
+<% #genIncludeRules.js %>
 // @include https://jixunmoe.github.io/cuwcl4c/config/
-
-// 扔掉百度的广告框架页面
-// @exclude http://pos.baidu.com/*
-
-// 扔掉谷歌
-// @exclude http://gmail.com/*
-// @exclude http://.google.tld/*
-// @exclude http://*.gmail.com/*
-// @exclude http://*.google.tld/*
 
 // GM_xmlHttpRequest 远端服务器列表
 // @connect http://down.lepan.cc/*
