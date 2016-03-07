@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.543
+// @version        3.0.544
 
 // 尝试使用脚本生成匹配规则
 
@@ -1756,16 +1756,8 @@ H.extract(function () { /*
 						case QUEUE_KEY:
 							_need_reload = true;
 							break;
-
-						case 'ws_cdn_media':
-							cdn_ip = e.newValue;
-							break;
 					}
 				}, false);
-
-				document.addEventListener(scriptName + '-cdn', function(e) {
-					cdn_ip = e.detail;
-				});
 
 				function checkAndReload () {
 					if (_need_reload)
@@ -1788,6 +1780,7 @@ H.extract(function () { /*
 				 */
 				function songs_to_data (songs) {
 					var songObj = songs[0];
+
 					var eveSongObj = {
 						artist: songObj.artists.map(function(artist) {
 							return artist.name;
@@ -1804,8 +1797,8 @@ H.extract(function () { /*
 						code: 200,
 						data: songs.map(function (song) {
 							var song_obj = rebuild_object(song);
-							if (bInternational && !bProxyInstalled) {
-								song_obj.mp3Url = song_obj.mp3Url.replace('http://m', 'http://p');
+							if (bInternational) {
+								song_obj.mp3Url = song_obj.mp3Url.replace('http://', 'http://127.0.0.1:4003/');
 							}
 							song_obj.url = song_obj.mp3Url;
 							song_obj.expi = 1e13;
@@ -1900,7 +1893,8 @@ H.extract(function () { /*
 						var _onload = params.onload;
 						params.onload = function (data) {
 							if (data.data[0].url) {
-								var fixed_url = data.data[0].url = data.data[0].url.replace('http://', 'http://' + cdn_ip + '/');
+								// m10 域名的音乐文件可以通过前置 cdn ip 绕过.
+								data.data[0].url = data.data[0].url.replace('http://', 'http://' + cdn_ip + '/');
 							} else {
 								// 解析不到音乐: 自动下一首
 								console.warn('[%s] 载入音乐数据失败, 准备中..', scriptName);
@@ -1926,7 +1920,6 @@ H.extract(function () { /*
 					}
 
 					return ajax(url, params);
-
 				}
 
 				nej.j[hookName] = (!bProxyInstalled && bInternational) ? ajaxPatchInternational : ajaxPatchMainland;
@@ -1960,7 +1953,7 @@ H.extract(function () { /*
 			if (!fnPlayAtIndex)
 				return ;
 
-			unsafeExec(function(scriptName, fnPlayAtIndex, bInternational, cdn_ip, cssTitle, cssSubtitle) {
+			unsafeExec(function(scriptName, fnPlayAtIndex, bInternational, bProxyInstalled, cdn_ip, cssTitle, cssSubtitle) {
 				function insertAfter(newNode, ref) {
 					ref.parentNode.insertBefore(newNode, ref.nextSibling);
 				}
@@ -1978,15 +1971,6 @@ H.extract(function () { /*
 
 				var m = _bakPlayerUpdateUI.toString().match(/=this.(\w+)\[/);
 				if (!m) return ;
-
-				/**
-				 * 抽取一个随机 CDN 服务器
-				 * @return {String} 抽取到的地址前缀
-				 */
-				function randomCDN () {
-					var ip = cdn_ip[~~(Math.random() * cdn_ip.length)];
-					return 'http://' + ip + '/';
-				}
 
 				var tracks = m[1];
 				nm.m.Dm.prototype[fnPlayAtIndex] = function(songIndex) {
@@ -2006,10 +1990,10 @@ H.extract(function () { /*
 
 					// 國際用戶轉換地址
 					if (bInternational) {
-						if (localStorage.__OUT_BREAK) {
-							track.mp3Url = track.mp3Url.replace('http://m', 'http://p');
+						if (bProxyInstalled) {
+							track.mp3Url = track.mp3Url.replace('http://', 'http://127.0.0.1:4003/');
 						} else {
-							track.mp3Url = track.mp3Url.replace('http://', 'http://' + randomCDN() + '/');
+							track.mp3Url = track.mp3Url.replace('http://', 'http://' + cdn_ip + '/');
 						}
 					}
 
@@ -2028,7 +2012,7 @@ H.extract(function () { /*
 					return _bakPlayerUpdateUI.apply(this, arguments);
 				};
 				
-			}, H.scriptName, fnPlayAtIndex, H.config.bInternational, self.cdn_ip, H.extract(function () {/*
+			}, H.scriptName, fnPlayAtIndex, H.config.bInternational, H.config.bProxyInstalled, self.cdn_ip, H.extract(function () {/*
 				padding-top: .2em;
 				overflow: hidden;
 				white-space: nowrap;
