@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.544
+// @version        3.0.546
 
 // 尝试使用脚本生成匹配规则
 
@@ -1511,6 +1511,7 @@ H.extract(function () { /*
 	left: 385px;
 }
 */}),
+	__MP3_BLANK: 'https://jixunmoe.github.io/cuwcl4c/blank.mp3',
 	onStart: function () {
 		this.bProxyLocal = H.config.bInternational && H.config.bProxyInstalled;
 
@@ -1725,7 +1726,7 @@ H.extract(function () { /*
 			}
 
 
-			unsafeExec(function(scriptName, hookName, bInternational, cdn_ip, bProxyInstalled) {
+			unsafeExec(function(scriptName, hookName, bInternational, cdn_ip, bProxyInstalled, __MP3_BLANK) {
 				var QUEUE_KEY = "track-queue-cache";
 
 				// 建立缓存
@@ -1797,10 +1798,15 @@ H.extract(function () { /*
 						code: 200,
 						data: songs.map(function (song) {
 							var song_obj = rebuild_object(song);
-							if (bInternational) {
-								song_obj.mp3Url = song_obj.mp3Url.replace('http://', 'http://127.0.0.1:4003/');
+							if (song_obj.mp3Url) {
+								if (bInternational) {
+									song_obj.mp3Url = song_obj.mp3Url.replace('http://', 'http://127.0.0.1:4003/');
+								}
+								song_obj.url = song_obj.mp3Url;
+							} else {
+								console.info('Music not available: %s, playback blank file.', song.id);
+								song_obj.url = __MP3_BLANK;
 							}
-							song_obj.url = song_obj.mp3Url;
 							song_obj.expi = 1e13;
 							return song_obj;
 						})
@@ -1924,7 +1930,7 @@ H.extract(function () { /*
 
 				nej.j[hookName] = (!bProxyInstalled && bInternational) ? ajaxPatchInternational : ajaxPatchMainland;
 
-			}, H.scriptName, hookName, H.config.bInternational, currentCDN, H.config.bProxyInstalled);
+			}, H.scriptName, hookName, H.config.bInternational, currentCDN, H.config.bProxyInstalled, self.__MP3_BLANK);
 		});
 	},
 
@@ -2066,7 +2072,8 @@ H.extract(function () { /*
 
 	// 服务器 1 ~ 8; 但是貌似 1 ~ 2 的最稳定
 	getUri: function(song) {
-		var dsfId = (song.hMusic || song.mMusic || song.lMusic).dfsId;
+		var dsfId = (song.hMusic || song.mMusic || song.lMusic || this).dfsId;
+		if (!dsfId) return this.__MP3_BLANK;
 		var randServer = Math.floor(Math.random() * 2) + 1;
 
 
