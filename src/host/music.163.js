@@ -376,19 +376,13 @@ MODULE
 
 				// 强制刷新播放器
 				// 用于解析下载 / 海外处理。
-				var _next = nm.w.uv.prototype.kW;
-				var playerInstance;
-				nm.w.uv.prototype.kW = function () {
-					nm.w.uv.prototype.kW = _next;
-					playerInstance = this;
-
-					// 之前的方法好像并不能刷新..
-					// 于是就这样了 :D
-					var index = this.bHO;
-					this.bHO = playerInstance.bOB(+1);
-					playerInstance.bNx(index, "ui");
-				};
-				document.querySelector('.nxt').click();
+				function nextSong () {
+					document.querySelector('.nxt').click();
+				}
+				nextSong();
+				setTimeout(function () {
+					document.querySelector('.prv').click();
+				}, 300);
 
 				var br_list = [128000, 96000, 192000, 320000];
 				function ajaxPatchInternational (url, params, try_br) {
@@ -416,7 +410,7 @@ MODULE
 									ajaxPatchInternational(url, params, br_list[i]);
 								} else {
 									console.info ('[%s] 放弃, 跳至下一首', scriptName);
-									_next.call(playerInstance);
+									nextSong();
 								}
 
 							}
