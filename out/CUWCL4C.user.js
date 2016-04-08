@@ -39,11 +39,11 @@
 // @require        https://greasyfork.org/scripts/2599/code/gm2-port-v104.js
 
 /// Aria2 RPC
-// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build-9.js
+// @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build-10.js
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.548
+// @version        3.0.549
 
 // 尝试使用脚本生成匹配规则
 
