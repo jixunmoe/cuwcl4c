@@ -201,6 +201,12 @@ MODULE
 	hookPlayer: function () {
 		var self = this;
 
+		exportFunction(function (obj) {
+			return self.getUri(obj);
+		}, unsafeWindow, {
+			defineAs: '__jx_getSongUrl'
+		});
+
 		// 从播放器 Hook 改为远端 Hook
 		// 因为现在每次播放都会请求一次网络
 		H.waitUntil('nej.j', function () {
@@ -283,7 +289,7 @@ MODULE
 					var songObj = songs[0];
 
 					var eveSongObj = {
-						artist: songObj.artists.map(function(artist) {
+						artist: (songObj.artists || songObj.ar).map(function(artist) {
 							return artist.name;
 						}).join('、'),
 						name: songObj.name,
@@ -304,8 +310,7 @@ MODULE
 								}
 								song_obj.url = song_obj.mp3Url;
 							} else {
-								console.info('Music not available: %s, playback blank file.', song.id);
-								song_obj.url = __MP3_BLANK;
+								song_obj.url = __jx_getSongUrl(song_obj);
 							}
 							song_obj.expi = 1e13;
 							return song_obj;
@@ -317,7 +322,7 @@ MODULE
 				function ajaxPatchMainland (url, params) {
 
 					if (url == '/api/song/enhance/player/url') {
-						url = '/api/song/detail/';
+						url = '/api/v3/song/detail';
 
 						if (params.query.br)
 							delete params.query.br;
@@ -338,13 +343,22 @@ MODULE
 						if (_req_ids.length === 0) {
 							// 直接返回我们的缓存数据
 							console.info('[%s][INFO] Load from cache: ', scriptName, params.query.ids);
-							setTimeout(params.onload, 1, songs_to_data(_ids));
+							setTimeout(function (){
+								params.onload.apply(this, arguments);
+							}, 1, songs_to_data(_ids));
 							return ;
 						}
 
 						// 缺少数据, 请求服务器
 						console.info('[%s][INFO] Request from server: ', scriptName, _req_ids);
-						params.query.ids = JSON.stringify(_req_ids);
+
+						// v3 api
+                        var data = _req_ids.map(function (id) {
+                            return { id: id };
+                        });
+                        var data_str = JSON.stringify(data);
+                        data.c = data_str;
+						params.query = data;
 
 						// 把 onload 缓存我们的函数，方便缓存。
 						var _onload = params.onload;
@@ -498,7 +512,7 @@ MODULE
 					}
 
 					var eveSongObj = {
-						artist: track.artists.map(function(artist) {
+						artist: (track.artists || track.ar).map(function(artist) {
 							return artist.name;
 						}).join('、'),
 						name: track.name,
@@ -533,7 +547,7 @@ MODULE
 		var self = this;
 		H.waitUntil('nm.m.fO', function() {
 			var hook = self.searchFunction(
-				unsafeWindow.nm.m.fO.prototype, 'nm.x', '.mp3Url,true');
+				unsafeWindow.nm.m.fO.prototype, 'nm.m.fO::', '.mp3Url,true');
 			self.flushLogTable();
 
 			self.linkDownload = $('<a>')
@@ -547,7 +561,7 @@ MODULE
 
 				nm.m.fO.prototype[hook] = function(songObj) {
 					var eveSongObj = {
-						artist: songObj.artists.map(function(artist) {
+						artist: (songObj.artists || songObj.ar).map(function(artist) {
 							return artist.name;
 						}).join('、'),
 						name: songObj.name,
@@ -566,8 +580,13 @@ MODULE
 
 	// 服务器 1 ~ 8; 但是貌似 1 ~ 2 的最稳定
 	getUri: function(song) {
-		var dsfId = (song.hMusic || song.mMusic || song.lMusic || this).dfsId;
-		if (!dsfId) return this.__MP3_BLANK;
+		var dsfId;
+		var q = (song.h || song.hMusic || song.m || song.mMusic || song.l || song.lMusic || song.a || song.aMusic);
+		if (q) dsfId = q.fid || q.dsfId;
+		if (!dsfId) {
+			console.info('歌曲 %s[%d] 已下架，无法获取音乐地址!', song.name, song.id);
+			return this.__MP3_BLANK;
+		}
 		var randServer = Math.floor(Math.random() * 2) + 1;
 
 
@@ -808,7 +827,7 @@ MODULE
 			var pads = ~~Math.log10(tracks.length);
 
 			tracks.forEach(function (track, i) {
-				var artists = track.artists.map(getName).join('、');
+				var artists = (track.artists || track.ar).map(getName).join('、');
 
 				var param = H.buildAriaParam({
 					out: padZero(i) + ". " + track.name + " [" + artists + "].mp3"
