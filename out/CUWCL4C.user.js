@@ -43,13 +43,14 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.554
+// @version        3.0.555
 
 // 尝试使用脚本生成匹配规则
 
 // @include http://d.119g.com/*
 // @include http://123564.com/*
 // @include http://m.123564.com/*
+// @include http://www.5xfile.com/*
 // @include http://7958.com/*
 // @include http://*.7958.com/*
 // @include http://qjwm.com/*
@@ -944,6 +945,36 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 }
 ,
+/* Compiled from dl.5xfile.js */
+/**
+ * 5xfile.com
+ *   五星网盘 (?)
+ */
+({
+	id: 'dl.5xfile',
+	name: '五星网盘',
+	host: ['www.5xfile.com'],
+	noSubHost: true,
+
+	hide: [
+		'.fb_r', 'iframe', '[id^="__"]', '#addr_box'
+	],
+
+	onStart: function () {
+		unsafeOverwriteFunctionSafeProxy ({
+			open: tFunc
+		});
+		H.phpDiskAutoRedir ();
+	},
+
+	onBody: function () {
+		var file = location.pathname.match(/\d+/);
+		unsafeExec(function (fid) {
+			if (typeof load_down_addr1 == 'function')
+				load_down_addr1(fid);
+		}, file[0]);
+	}
+}),
 /* Compiled from dl.7958.js */
 {
 	id: 'dl.7958',

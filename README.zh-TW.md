@@ -33,6 +33,7 @@
 - 脚本配置页面 - `[localhost, jixunmoe.github.io]`
 - 119g 网盘 - `[d.119g.com]`
 - 123564 网盘 - `[123564.com, m.123564.com]`
+- 五星网盘 - `[www.5xfile.com]`
 - 千军万马网盘系列 - `[7958.com, qjwm.com]`
 - 9盘 - `[www.9pan.net]`
 - 百度盘免下载管家 - `[yun.baidu.com, pan.baidu.com]`
