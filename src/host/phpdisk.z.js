@@ -8,7 +8,7 @@
 		'wpan.cc', 'ypan.cc',
 		'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 
 		'77pan.cc', 'vvpan.com', 'fmdisk.com', 'bx0635.com',
-		'10pan.cc'
+		'10pan.cc', '1pan.cc', '123wzwp.com'
 	],
 	hide: [
 		// azpan, gxdisk

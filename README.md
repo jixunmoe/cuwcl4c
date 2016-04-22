@@ -73,7 +73,7 @@
 - 虾米音乐 - `[www.xiami.com]`
 - 音悦台下载解析 - `[yinyuetai.com]`
 - 通用 phpDisk.a 网盘规则 - `[ 79pan.com, 03xg.com, 7mv.cc, pan.52zz.org, 258pan.com, huimeiku.com ]`
-- 通用 phpDisk.z 网盘规则 - `[ wpan.cc, ypan.cc, azpan.com, gxdisk.com, 2kuai.com, 1wp.me, 77pan.cc, vvpan.com, fmdisk.com, bx0635.com, 10pan.cc ]`
+- 通用 phpDisk.z 网盘规则 - `[ wpan.cc, ypan.cc, azpan.com, gxdisk.com, 2kuai.com, 1wp.me, 77pan.cc, vvpan.com, fmdisk.com, bx0635.com, 10pan.cc, 1pan.cc, 123wzwp.com ]`
 
 测试于 Chrome & Firefox 32 (GreasyMonkey 2.2)
 

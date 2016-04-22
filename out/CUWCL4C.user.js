@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.555
+// @version        3.0.556
 
 // 尝试使用脚本生成匹配规则
 
@@ -169,6 +169,10 @@
 // @include http://*.bx0635.com/*
 // @include http://10pan.cc/*
 // @include http://*.10pan.cc/*
+// @include http://1pan.cc/*
+// @include http://*.1pan.cc/*
+// @include http://123wzwp.com/*
+// @include http://*.123wzwp.com/*
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
@@ -4482,7 +4486,7 @@ H.extract(function () { /*
 		'wpan.cc', 'ypan.cc',
 		'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 
 		'77pan.cc', 'vvpan.com', 'fmdisk.com', 'bx0635.com',
-		'10pan.cc'
+		'10pan.cc', '1pan.cc', '123wzwp.com'
 	],
 	hide: [
 		// azpan, gxdisk
