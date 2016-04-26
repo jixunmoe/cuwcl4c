@@ -6,14 +6,15 @@
 	path: '/down/downfile.asp',
 
 	onStart: function () {
-		document.write = null;
-
-		Object.defineProperty(unsafeWindow, 'navigator', {
-			set: function () {},
-			get: function () {
-				return null;
-			}
-		});
+		document.write = (function () {}).bind(null);
+		
+        var _cel = document.createElement.bind(document);
+        this.createElement = _cel;
+		document.createElement = (function (tag) {
+			if (tag.toLowerCase() == 'script')
+				tag = 'div';
+			return _cel(tag);
+		}).bind(null);
 	},
 
 	onBody: function () {
@@ -37,7 +38,7 @@
 			btnDl.value = '开始下载';
 			btnDl.disabled = false;
 
-			var fakeBtn = document.createElement('input');
+			var fakeBtn = this.createElement('input');
 			fakeBtn.id = 'btsubmit';
 			$(fakeBtn).hide().appendTo('body');
 		}
