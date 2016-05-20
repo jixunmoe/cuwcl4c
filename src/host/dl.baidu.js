@@ -6,10 +6,8 @@
 	onBody: function () {
 		H.waitUntil ('require', function () {
 			unsafeExec (function () {
-				var service = require ('common:widget/commonService/commonService.js');
-				service.getWidgets ('common:widget/downloadManager/service/downloadCommonUtil.js', function (util) {
-					util.isPlatformWindows = function () { return false; };
-				});
+				var service = require('disk-system:widget/plugin/download/util/downloadCommonUtil.js');
+				service.isPlatformWindows = function () { return false; };
 			});
 		});
 	}

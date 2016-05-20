@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.560
+// @version        3.0.561
 
 // 尝试使用脚本生成匹配规则
 
@@ -1022,10 +1022,8 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	onBody: function () {
 		H.waitUntil ('require', function () {
 			unsafeExec (function () {
-				var service = require ('common:widget/commonService/commonService.js');
-				service.getWidgets ('common:widget/downloadManager/service/downloadCommonUtil.js', function (util) {
-					util.isPlatformWindows = function () { return false; };
-				});
+				var service = require('disk-system:widget/plugin/download/util/downloadCommonUtil.js');
+				service.isPlatformWindows = function () { return false; };
 			});
 		});
 	}
