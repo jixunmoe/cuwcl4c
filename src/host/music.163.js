@@ -65,7 +65,6 @@ MODULE
 			"219.138.21.71", 
 			"49.79.232.58", 
 			"122.228.24.30", 
-			"122.228.24.39", 
 			"182.106.194.85", 
 			"218.59.186.98", 
 			"61.158.133.21", 
@@ -252,6 +251,7 @@ MODULE
 
 			unsafeExec(function(scriptName, hookName, hookQueueUpdate, bInternational, cdn_ip, bProxyInstalled, __MP3_BLANK) {
 				var QUEUE_KEY = "track-queue-cache";
+				var CDN_KEY   = '_ws_cdn_media';
 
 				// 建立缓存
 				var _cache = {};
@@ -281,8 +281,16 @@ MODULE
 						case QUEUE_KEY:
 							_need_reload = true;
 							break;
+
+						case CDN_KEY:
+							cdn_ip = localStorage[CDN_KEY];
+							break;
 					}
 				}, false);
+
+				document.addEventListener(scriptName + '-cdn', function(e) {
+					cdn_ip = e.detail;
+				});
 
 				function checkAndReload () {
 					if (_need_reload)
@@ -530,6 +538,18 @@ MODULE
 				return ;
 
 			unsafeExec(function(scriptName, fnPlayAtIndex, bInternational, bProxyInstalled, cdn_ip, cssTitle, cssSubtitle) {
+				var CDN_KEY = '_ws_cdn_media';
+				window.addEventListener('storage', function (e) {
+					switch (e.key) {
+						case CDN_KEY:
+							cdn_ip = localStorage[CDN_KEY];
+							break;
+					}
+				}, false);
+				document.addEventListener(scriptName + '-cdn', function(e) {
+					cdn_ip = e.detail;
+				});
+
 				function insertAfter(newNode, ref) {
 					ref.parentNode.insertBefore(newNode, ref.nextSibling);
 				}
