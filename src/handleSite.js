@@ -29,6 +29,10 @@ H.rule = {
 	},
 	
 	check: function (site, eve) {
+		// 子模块, 无域名绑定
+		if (!site.host)
+			return ;
+
 		for (var i = 5; i--; ) {
 			if (typeof eve == 'string') {
 				eve = site[eve];

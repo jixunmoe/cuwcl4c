@@ -8,6 +8,10 @@ fs.readdirSync (modDir).forEach (function (m) {
 	var fn = m.match(/(.+)\./)[1];
 	if (!moduleDisabled(fn) && (m.slice(-3) === '.js' || m.slice(-7) === '.coffee')) {
 		var file = fs.readFileSync (modDir + m).toString ();
+
+		if (/\bTYPE_SUB_MODULE\b/.test(file))
+			return ;
+
 		var name = file.match (/name\s*:\s*'([^']+)/);
 		name = name ? name[1] : m.slice(-3);
 		var hosts = file.match (/host\s*:\s*(\[[\s\S]+?\]|'[^']+)/)[1]

@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.564
+// @version        3.0.570
 
 // 尝试使用脚本生成匹配规则
 
@@ -180,12 +180,13 @@
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
-// @connect http://down.lepan.cc/*
-// @connect http://music.baidu.com/*
-// @connect http://yinyueyun.baidu.com/*
-// @connect http://media.store.kugou.com/*
-// @connect http://trackercdn.kugou.com/*
-// @connect http://www.yinyuetai.com/*
+// @connect down.lepan.cc
+// @connect music.baidu.com
+// @connect yinyueyun.baidu.com
+// @connect media.store.kugou.com
+// @connect trackercdn.kugou.com
+// @connect yinyuetai.com
+// @connect itwusun.com
 
 // ==/UserScript==
 
@@ -922,6 +923,112 @@ H.log ('脚本版本 [ %s ] , 如果发现脚本问题请提交到 [ %s ] 谢谢
 	}
 }
 ,
+/* Compiled from api.music.spy.js */
+/**
+ * 第三方 - "音乐间谍" 解析接口
+ * TYPE_SUB_MODULE
+ */
+({
+	id: 'api.music.spy',
+
+	storageKey: '_MUSIC_SPY',
+	reloadCache: true,
+
+	// 初始化监听事件
+	init: function () {
+		var self = this;
+
+		window.addEventListener('storage', function (e) {
+			switch (e.key) {
+				case self.storageKey:
+					self.reloadCache = true;
+					break;
+			}
+		}, false);
+
+		document.addEventListener(H.scriptName + '-NE-SPY', function (e) {
+			var data = JSON.parse(e.detail);
+			var id = data.id;
+			self.getNetEase(id, unsafeWindow[data.callback]);
+		});
+	},
+
+	// 进行缓存重载
+	doReloadCache: function () {
+		try {
+			this.cache = JSON.parse(localStorage[this.storageKey]);
+		} catch (ex) {
+			this.cache = {};
+		}
+
+		this.reloadCache = false;
+	},
+
+	// 读入缓存
+	cacheRead: function (songId) {
+		if (this.reloadCache)
+			this.doReloadCache();
+
+		if (!this.cache.hasOwnProperty(songId))
+			return null;
+
+		return this.cache[songId];
+	},
+
+	// 储存缓存
+	cacheSave: function () {
+		localStorage[this.storageKey] = JSON.stringify(this.cache);
+	},
+
+	// 公开接口: 获取黄易的音乐地址
+	// 优先读取缓存, 防止被查杀
+	getNetEase: function (songId, callback) {
+		var self = this;
+
+		var cacheSong = this.cacheRead(songId);
+		if (cacheSong) {
+			callback(cacheSong.url);
+			return ;
+		}
+
+		GM_xmlhttpRequest({
+			method: "GET",
+			url: 'http://itwusun.com/search/wy/' + songId + '?p=1&f=json&sign=itwusun',
+			onload: function(response) {
+				// 解析数据
+				var data = JSON.parse(response.responseText);
+				if (data.length === 0) {
+					callback(null);
+					return ;
+				}
+
+				// 现在尝试读取歌曲数据
+				var song = data.filter(function (song) {
+					return song.Type == "wy" && song.SongId == songId;
+				}).pop();
+
+				// 没有找到
+				if (!song) {
+					callback(null);
+					return ;
+				}
+
+				// 优先获取高清音质
+				var url = song.SqUrl || song.HqUrl || song.LqUrl;
+
+				// 储存
+				var songObj = {
+					time: Date.now(),
+					url: url,
+				};
+
+				self.cache[songId] = songObj;
+				self.cacheSave();
+				callback(url);
+			}
+		});
+	}
+}),
 /* Compiled from dl.119g.js */
 {
 	id: 'dl.119g',
@@ -1583,6 +1690,10 @@ H.extract(function () { /*
 */}),
 	__MP3_BLANK: 'https://jixunmoe.github.io/cuwcl4c/blank.mp3',
 	onStart: function () {
+		if (H.config.bUseThridOnFail) {
+			H.rule.get('api.music.spy').init();
+		}
+
 		this.bProxyLocal = H.config.bInternational && H.config.bProxyInstalled;
 
 		if (H.config.bInternational)
@@ -1829,7 +1940,11 @@ H.extract(function () { /*
 			}
 
 
-			unsafeExec(function(scriptName, hookName, hookQueueUpdate, bInternational, cdn_ip, bProxyInstalled, __MP3_BLANK) {
+			unsafeExec(function(
+				scriptName, hookName, hookQueueUpdate, bInternational,
+				cdn_ip, bProxyInstalled, __MP3_BLANK,
+				bUseThridOnFail
+			) {
 				var QUEUE_KEY = "track-queue-cache";
 				var CDN_KEY   = '_ws_cdn_media';
 
@@ -2017,7 +2132,10 @@ H.extract(function () { /*
 
 				var songInfo = {};
 				var br_list = [128000, 96000, 192000, 320000];
+
 				function ajaxPatchInternational (url, params, try_br) {
+					var _nonce = songInfo._nonce;
+
 					if (-1 !== url.indexOf('log/')) {
 						setTimeout(function () {
 							params.onload({ code: 200 });
@@ -2036,34 +2154,21 @@ H.extract(function () { /*
 						var _onload = params.onload;
 						params.onload = function (data) {
 							if (data.data[0].url) {
-								// m10 域名的音乐文件可以通过前置 cdn ip 绕过.
-								var song_url = data.data[0].url.replace('http://', 'http://' + cdn_ip + '/');
-
-								// 构建下载信息
-								var _info = rebuild_object(songInfo);
-								var eveSongObj = generateScriptProtocol(_info);
-								eveSongObj.song_url = song_url;
-								document.dispatchEvent(new CustomEvent(scriptName, {
-									detail: eveSongObj
-								}));
-
-								data.data[0].url = song_url;
+								onParseSuccess(data.data[0].url, data.data[0]);
+								return ;
 							} else {
-								// 解析不到音乐: 自动下一首
-								console.warn('[%s] 载入音乐数据失败, 准备中..', scriptName);
-
-								if (!try_br) {
-									try_br = parseInt(params.query.br);
-								}
-
-								var i = br_list.indexOf(try_br) + 1;
-								if (i < br_list.length) {
-									console.info ('[%s] 尝试码率 %dkbps', scriptName, br_list[i] / 1000);
-									params.onload = _onload;
-									ajaxPatchInternational(url, params, br_list[i]);
+								// 解析不到音乐, 并且不在重试阶段:
+								// 尝试使用第三方搜歌
+								if (bUseThridOnFail && !try_br) {
+									document.dispatchEvent(new CustomEvent(scriptName + '-NE-SPY', {
+										detail: JSON.stringify({
+											id: JSON.parse(params.query.ids)[0],
+											callback: generateCallback(onRecvSpyData)
+										})
+									}));
 								} else {
-									console.info ('[%s] 放弃, 跳至下一首', scriptName);
-									nextSong();
+									// 解析不到音乐: 自动下一首
+									failTryNext();
 								}
 
 								return ;
@@ -2075,6 +2180,81 @@ H.extract(function () { /*
 					}
 
 					return ajax(url, params);
+
+					function generateCallback (cb) {
+						var name = '_cb_' + Math.random().toString().slice(3) + '_' + Date.now();
+						window[name] = function () {
+							var r = cb.apply(this, arguments);
+							delete window[name];
+							return r;
+						};
+						return name;
+					}
+
+					function onParseSuccess (url, songObj) {
+						// 已经是别的歌曲在解析中了!
+						if (_nonce != songInfo._nonce) return ;
+
+						// m10 域名的音乐文件可以通过前置 cdn ip 绕过.
+						var song_url = url.replace('http://', 'http://' + cdn_ip + '/');
+
+						// 构建下载信息
+						var _info = rebuild_object(songInfo);
+						var eveSongObj = generateScriptProtocol(_info);
+						eveSongObj.song_url = song_url;
+						document.dispatchEvent(new CustomEvent(scriptName, {
+							detail: eveSongObj
+						}));
+
+						if (songObj) songObj.url = song_url;
+
+						return _onload({
+							data: [{
+								id: songInfo.id,
+								url: url,
+								br: 192000,
+								size: 0,
+								md5: null,
+								code: 200,
+								expi: 1200,
+								type: 'mp3',
+								gain: 0,
+								fee: 0,
+								uf: null,
+								payed: 0,
+								canExtend: false
+							}],
+							code: 200
+						});
+					}
+
+					function failTryNext () {
+						console.warn('[%s] 载入音乐数据失败, 准备中..', scriptName);
+
+						if (!try_br) {
+							try_br = parseInt(params.query.br);
+						}
+
+						var i = br_list.indexOf(try_br) + 1;
+						if (i < br_list.length) {
+							console.info ('[%s] 尝试码率 %dkbps', scriptName, br_list[i] / 1000);
+							params.onload = _onload;
+							ajaxPatchInternational(url, params, br_list[i]);
+						} else {
+							console.info ('[%s] 放弃, 跳至下一首', scriptName);
+							nextSong();
+						}
+					}
+
+					function onRecvSpyData (url) {
+						if (!url) {
+							console.info('通过第三方获取音乐地址失败, 歌曲不可用.');
+							failTryNext();
+							return ;
+						}
+
+						onParseSuccess(url);
+					}
 				}
 
 				var pureInternational = bInternational && !bProxyInstalled;
@@ -2083,12 +2263,17 @@ H.extract(function () { /*
 					var _queueUpdate = nm.w.pP.prototype[hookQueueUpdate];
 					nm.w.pP.prototype[hookQueueUpdate] = function () {
 						var r = _queueUpdate.apply(this, arguments);
-						songInfo = r;
+						songInfo = rebuild_object(r);
+						songInfo._nonce = Math.random();
 						return r;
 					};
 				}
 
-			}, H.scriptName, hookName, hookQueueUpdate, H.config.bInternational, currentCDN, H.config.bProxyInstalled, self.__MP3_BLANK);
+			},
+				H.scriptName, hookName, hookQueueUpdate, H.config.bInternational, 
+				currentCDN, H.config.bProxyInstalled, self.__MP3_BLANK,
+				H.config.bUseThridOnFail
+			);
 		});
 	},
 
@@ -4595,6 +4780,10 @@ H.rule = {
 	},
 	
 	check: function (site, eve) {
+		// 子模块, 无域名绑定
+		if (!site.host)
+			return ;
+
 		for (var i = 5; i--; ) {
 			if (typeof eve == 'string') {
 				eve = site[eve];

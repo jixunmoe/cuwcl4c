@@ -50,11 +50,12 @@
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
-// @connect http://down.lepan.cc/*
-// @connect http://music.baidu.com/*
-// @connect http://yinyueyun.baidu.com/*
-// @connect http://media.store.kugou.com/*
-// @connect http://trackercdn.kugou.com/*
-// @connect http://www.yinyuetai.com/*
+// @connect down.lepan.cc
+// @connect music.baidu.com
+// @connect yinyueyun.baidu.com
+// @connect media.store.kugou.com
+// @connect trackercdn.kugou.com
+// @connect yinyuetai.com
+// @connect itwusun.com
 
 // ==/UserScript==
