@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.571
+// @version        3.0.572
 
 // 尝试使用脚本生成匹配规则
 
@@ -2196,7 +2196,11 @@ H.extract(function () { /*
 						if (_nonce != songInfo._nonce) return ;
 
 						// m10 域名的音乐文件可以通过前置 cdn ip 绕过.
-						var song_url = url.replace('http://', 'http://' + cdn_ip + '/');
+						var song_url = url;
+						if (/m\d+\.music\.126\.net/.test(song_url)) {
+							song_url = song_url.replace('http://', 'http://' + cdn_ip + '/');
+						}
+
 
 						// 构建下载信息
 						var _info = rebuild_object(songInfo);
@@ -2354,7 +2358,12 @@ H.extract(function () { /*
 						if (bProxyInstalled) {
 							track.mp3Url = track.mp3Url.replace('http://', 'http://127.0.0.1:4003/');
 						} else {
-							track.mp3Url = track.mp3Url.replace('http://', 'http://' + cdn_ip + '/');
+
+							var song_url = track.mp3Url;
+							if (/m\d+\.music\.126\.net/.test(song_url)) {
+								song_url = song_url.replace('http://', 'http://' + cdn_ip + '/');
+							}
+							track.mp3Url = song_url;
 						}
 					}
 
