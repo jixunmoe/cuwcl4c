@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.572
+// @version        3.0.573
 
 // 尝试使用脚本生成匹配规则
 
@@ -2154,8 +2154,7 @@ H.extract(function () { /*
 						var _onload = params.onload;
 						params.onload = function (data) {
 							if (data.data[0].url) {
-								onParseSuccess(data.data[0].url, data.data[0]);
-								return ;
+								onParseSuccess(data.data[0].url);
 							} else {
 								// 解析不到音乐, 并且不在重试阶段:
 								// 尝试使用第三方搜歌
@@ -2170,12 +2169,9 @@ H.extract(function () { /*
 									// 解析不到音乐: 自动下一首
 									failTryNext();
 								}
-
-								return ;
 							}
 
-
-							return _onload(data);
+							return ;
 						};
 					}
 
@@ -2191,7 +2187,7 @@ H.extract(function () { /*
 						return name;
 					}
 
-					function onParseSuccess (url, songObj) {
+					function onParseSuccess (url) {
 						// 已经是别的歌曲在解析中了!
 						if (_nonce != songInfo._nonce) return ;
 
@@ -2215,7 +2211,7 @@ H.extract(function () { /*
 						return _onload({
 							data: [{
 								id: songInfo.id,
-								url: url,
+								url: song_url,
 								br: 192000,
 								size: 0,
 								md5: null,

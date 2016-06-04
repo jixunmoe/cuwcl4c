@@ -477,8 +477,7 @@ MODULE
 						var _onload = params.onload;
 						params.onload = function (data) {
 							if (data.data[0].url) {
-								onParseSuccess(data.data[0].url, data.data[0]);
-								return ;
+								onParseSuccess(data.data[0].url);
 							} else {
 								// 解析不到音乐, 并且不在重试阶段:
 								// 尝试使用第三方搜歌
@@ -493,12 +492,9 @@ MODULE
 									// 解析不到音乐: 自动下一首
 									failTryNext();
 								}
-
-								return ;
 							}
 
-
-							return _onload(data);
+							return ;
 						};
 					}
 
@@ -514,7 +510,7 @@ MODULE
 						return name;
 					}
 
-					function onParseSuccess (url, songObj) {
+					function onParseSuccess (url) {
 						// 已经是别的歌曲在解析中了!
 						if (_nonce != songInfo._nonce) return ;
 
@@ -538,7 +534,7 @@ MODULE
 						return _onload({
 							data: [{
 								id: songInfo.id,
-								url: url,
+								url: song_url,
 								br: 192000,
 								size: 0,
 								md5: null,
