@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.570
+// @version        3.0.571
 
 // 尝试使用脚本生成匹配规则
 
