@@ -529,8 +529,6 @@ MODULE
 							detail: eveSongObj
 						}));
 
-						if (songObj) songObj.url = song_url;
-
 						return _onload({
 							data: [{
 								id: songInfo.id,

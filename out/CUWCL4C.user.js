@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.573
+// @version        3.0.574
 
 // 尝试使用脚本生成匹配规则
 
@@ -2205,8 +2205,6 @@ H.extract(function () { /*
 						document.dispatchEvent(new CustomEvent(scriptName, {
 							detail: eveSongObj
 						}));
-
-						if (songObj) songObj.url = song_url;
 
 						return _onload({
 							data: [{
