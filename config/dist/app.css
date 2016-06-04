@@ -1,3 +1,7 @@
+body {
+	font-family: Lato,'Helvetica Neue',"Microsoft YaHei",sans-serif;
+}
+
 .steps.pointer > .step {
 	cursor: pointer;
 }
@@ -79,4 +83,10 @@ pre:empty {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	user-select: none;
+}
+
+p.note {
+	padding-left: 6em;
+	font-size: small;
+	color: darkgray;
 }
