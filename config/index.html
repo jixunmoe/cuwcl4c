@@ -80,20 +80,29 @@
 					</div>
 				</div>
 
-					<div class="ui horizontal header divider">特殊开关</div>
-					<div class="field">
-						<div class="ui toggle checkbox">
-							<input type="checkbox" v-model="conf.bInternational">
-							<label>海外用户: 尝试修正海外用户无法访问问题，目前提供了云音乐的支援。</label>
-						</div>
+				<div class="ui horizontal header divider">特殊开关</div>
+				<div class="field">
+					<div class="ui toggle checkbox">
+						<input type="checkbox" v-model="conf.bInternational">
+						<label>海外用户: 尝试修正海外用户无法访问问题，目前提供了云音乐的支援。</label>
 					</div>
+				</div>
 
-					<div class="field">
-						<div class="ui toggle checkbox">
-							<input type="checkbox" v-model="conf.bProxyInstalled">
-							<label>海外用户: 我自己代理 <code>m*.music.126.net</code> 流量。</label>
-						</div>
+				<div class="field">
+					<div class="ui toggle checkbox">
+						<input type="checkbox" v-model="conf.bUseThridOnFail">
+						<label>海外用户: 允许在无法正常解析音乐地址时使用第三方服务进行解析。
+						<br> 允许该操作将导致您当前浏览的页面地址、浏览器识别代码、您的 IP 地址等数据被第三方获取。
+						<br> 脚本不会主动提供非必须资料给第三方，开启该选项则代表您了解该操作带来的影响。</label>
 					</div>
+				</div>
+
+				<div class="field">
+					<div class="ui toggle checkbox">
+						<input type="checkbox" v-model="conf.bProxyInstalled">
+						<label>海外用户: 我自己代理 <code>m*.music.126.net</code> 流量。</label>
+					</div>
+				</div>
 
 				<div class="ui horizontal header divider">下载选项</div>
 
