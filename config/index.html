@@ -84,8 +84,13 @@
 				<div class="field">
 					<div class="ui toggle checkbox">
 						<input type="checkbox" v-model="conf.bInternational">
-						<label>尝试修正海外用户无法访问问题，目前提供了云音乐的支援。</label>
+						<label>我是海外用户，而且我听不了歌。</label>
 					</div>
+
+					<p class="note">
+						启用后将重定向部分资源文件的请求。
+						<br> 对于封锁 ip 直连的受限网络，请修改您的 Hosts 文件。
+					</p>
 				</div>
 
 				<div class="field">
