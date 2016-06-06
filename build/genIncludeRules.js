@@ -1,15 +1,16 @@
 // Generate site list for building 
 
-var modDir = __dirname + '/../src/host/';
+var modDir = __dirname + '/../src/site/';
 var fs = require ('fs');
 
 var ret = [''];
 fs.readdirSync (modDir).forEach (function (m) {
 	var fn = m.match(/(.+)\./)[1];
-	if (!moduleDisabled(fn) && (m.slice(-3) === '.js' || m.slice(-7) === '.coffee')) {
-		var file = fs.readFileSync (modDir + m).toString ();
+	if (!moduleDisabled(fn) && m.slice(-3) === '.ts') {
+		var file = fs.readFileSync (modDir + m, 'UTF-8');
 		
-		if (/\bTYPE_SUB_MODULE\b/.test(file))
+		// 检查是否为子模块
+		if (/\bsubModule\s*:\s*true\b/.test(file))
 			return ;
 
 		var hosts = file.match (/host\s*:\s*(\[[\s\S]+?\]|'[^']+)/)[1]
@@ -17,7 +18,7 @@ fs.readdirSync (modDir).forEach (function (m) {
 			.replace(/\s/g, '')
 			.replace (/\/\*[\s\S]+\*\//g, '');
 		
-		var noSubHost = /noSubHost\s*:\s*true/.test(file);
+		var noSubHost = /\bincludeSubHost\s*:\s*false\b/.test(file);
 		
 		if (hosts[0] == '[') {
 			hosts = hosts.slice(1,-1).split(',');
@@ -39,6 +40,5 @@ fs.readdirSync (modDir).forEach (function (m) {
 	}
 });
 
-module.exports = ret.join ('\n// @include ');
+module.exports = '////               [Include Rules]\n' + ret.join('\n// @include ');
 
-// console.info (module.exports);

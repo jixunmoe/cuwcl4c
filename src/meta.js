@@ -43,10 +43,10 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.<% #build.js %>
+// @version        4.0.<% #build.js %>
 
 // 尝试使用脚本生成匹配规则
-<% #genIncludeRules.js %>
+// <% #genIncludeRules.js %>
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
