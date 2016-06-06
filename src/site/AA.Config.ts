@@ -6,7 +6,7 @@ import { SiteRule } from "../SiteRule";
 
 import { } from "../typings/Userscript.d";
 
-var Rule: IConfigPageRule = {
+var rule: IConfigPageRule = {
     bd: null,
     id: 'internal.config',
     name: '脚本配置页面',
@@ -35,8 +35,8 @@ var Rule: IConfigPageRule = {
     },
     
     onBody: () => {
-        Rule.bd = new BatchDownload();
-        Rule.bd.CaptureAria();
+        rule.bd = new BatchDownload();
+        rule.bd.CaptureAria();
     }
 }
 
@@ -45,4 +45,4 @@ interface IConfigPageRule extends SiteRule {
     bd: BatchDownload;
 }
 
-export var Rules: SiteRule[] = [Rule];
+export var Rules: SiteRule[] = [rule];
