@@ -1,11 +1,11 @@
 import { BeginWith, Contains, EndWith } from "../helper/Extension";
 import { RedirectTo } from "../helper/Redirect";
-import { SiteRule } from "../SiteRule";
+import { ISiteRule } from "../SiteRule";
 
 import { } from "../typings/Userscript.d";
 import { } from "../typings/jquery/jquery.d";
 
-var rule: SiteRule = {
+var rule: ISiteRule = {
 	id: 'dl.123564',
 	name: '123564 网盘',
 	host: ['123564.com', 'm.123564.com'],
@@ -42,4 +42,4 @@ var rule: SiteRule = {
     }
 };
 
-export var Rules: SiteRule[] = [rule];
+export var Rules: ISiteRule[] = [rule];

@@ -51,4 +51,8 @@ function readFile (file) {
 	return fs.readFileSync(file, 'UTF-8');
 }
 
-fs.writeFileSync(args.out, parseFile(readFile(args.input)));
+if (args.code) {
+	fs.writeFileSync(args.out, parseFile(args.code));
+} else {
+	fs.writeFileSync(args.out, parseFile(readFile(args.input)));
+}

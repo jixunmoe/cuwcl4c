@@ -43,12 +43,29 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.581
+// @version        4.0.600
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
 
 // @include http://localhost.cuwcl4c/*
+// @include http://jixunmoe.github.io/*
+// @include http://123564.com/*
+// @include http://m.123564.com/*
+// @include http://123564.com/*
+// @include http://m.123564.com/*
+// @include http://yun.baidu.com/*
+// @include http://pan.baidu.com/*
+// @include http://howfile.com/*
+// @include http://*.howfile.com/*
+// @include http://namipan.cc/*
+// @include http://*.namipan.cc/*
+// @include http://webhd.xuite.net/*
+// @include http://sync.hamicloud.net/*
+// @include http://douban.fm/*
+// @include https://douban.fm/*
+// @include http://moe.fm/*
+// @include https://moe.fm/*
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
@@ -92,6 +109,19 @@ define("helper/Script", ["require", "exports"], function (require, exports) {
         Script.Home = "https://greasyfork.org/zh-CN/scripts/2600";
         Script.Config = "https://jixunmoe.github.io/cuwcl4c/config/";
         Script.Feedback = "https://greasyfork.org/forum/post/discussion?Discussion/ScriptID=2600";
+        function ListenEvent(listener) {
+            document.addEventListener(Script.Name, function (e) {
+                var info;
+                if (typeof e.detail == 'string') {
+                    info = JSON.parse(e.detail);
+                }
+                else {
+                    info = e.detail;
+                }
+                listener(info);
+            });
+        }
+        Script.ListenEvent = ListenEvent;
     })(Script = exports.Script || (exports.Script = {}));
 });
 define("helper/Constants", ["require", "exports"], function (require, exports) {
@@ -114,16 +144,7 @@ define("helper/Constants", ["require", "exports"], function (require, exports) {
         }
     }
 });
-define("typings/GM_Aria2RPC", ["require", "exports"], function (require, exports) {
-    "use strict";
-    (function (AriaAuthType) {
-        AriaAuthType[AriaAuthType["NoAuth"] = 0] = "NoAuth";
-        AriaAuthType[AriaAuthType["HttpBasicAuth"] = 1] = "HttpBasicAuth";
-        AriaAuthType[AriaAuthType["SecretAuth"] = 2] = "SecretAuth";
-    })(exports.AriaAuthType || (exports.AriaAuthType = {}));
-    var AriaAuthType = exports.AriaAuthType;
-});
-define("helper/ScriptConfig", ["require", "exports", "helper/Script", "typings/GM_Aria2RPC"], function (require, exports, Script_1, GM_Aria2RPC_1) {
+define("helper/ScriptConfig", ["require", "exports", "helper/Script"], function (require, exports, Script_1) {
     "use strict";
     (function (UriType) {
         UriType[UriType["NormalUrl"] = 0] = "NormalUrl";
@@ -137,7 +158,7 @@ define("helper/ScriptConfig", ["require", "exports", "helper/Script", "typings/G
         bInternational: false,
         bUseCustomRules: false,
         bUseThridOnFail: false,
-        dAria_auth: GM_Aria2RPC_1.AriaAuthType.NoAuth,
+        dAria_auth: Aria2.AUTH.noAuth,
         dAria_port: 6800,
         dUriType: UriType.NormalUrl,
         sAria_dir: "D:\\Download\\",
@@ -302,11 +323,9 @@ define("helper/StyleSheet", ["require", "exports"], function (require, exports) 
     "use strict";
     var StyleSheet = (function () {
         function StyleSheet() {
-        }
-        StyleSheet.prototype.StyleSheet = function () {
             this.style = document.createElement('style');
             this.Apply();
-        };
+        }
         StyleSheet.prototype.Add = function () {
             var styleText = [];
             for (var _i = 0; _i < arguments.length; _i++) {
@@ -358,7 +377,102 @@ define("helper/StyleSheet", ["require", "exports"], function (require, exports) 
     }());
     exports.StyleSheet = StyleSheet;
 });
-define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension", "helper/StyleSheet", "helper/Logger"], function (require, exports, Constants_1, Extension_2, StyleSheet_1, Logger_1) {
+define("helper/Downloader", ["require", "exports", "helper/Script", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Script_3, ScriptConfig_2, Extension_2) {
+    "use strict";
+    var config = ScriptConfig_2.Config;
+    var Downloader = (function () {
+        function Downloader() {
+            this._captured = false;
+            // TODO: ??
+        }
+        Downloader.prototype.GenerateUrlPart = function (url, filename, ref) {
+            return url + "|" + this.GetReferrerUrl(filename) + "|" + this.GetReferrerUrl(ref);
+        };
+        Downloader.prototype.GetReferrerUrl = function (url) {
+            return String(url || location.href).replace(/#.*/, '');
+        };
+        Downloader.prototype.NormaliseFilename = function (filename) {
+            return String(filename).replace(/['"\/\\:|]/g, '_');
+        };
+        Downloader.prototype.GenerateUri = function (url, filename, ref) {
+            switch (config.dUriType) {
+                case ScriptConfig_2.UriType.Custom:
+                    return "cuwcl4c://|1|" + this.GenerateUrlPart(url, filename, ref);
+                case ScriptConfig_2.UriType.Aria:
+                    if (!this._captured)
+                        this.CaptureAria();
+                    return "aria2://|" + this.GenerateUrlPart(url, filename, ref);
+            }
+            return url;
+        };
+        Downloader.prototype.CaptureAria = function (el) {
+            var _this = this;
+            this._captured = true;
+            this.SetupAria(false);
+            if (!el)
+                el = document.body;
+            $(el).click(function (e) {
+                var el = e.target;
+                var $el = $(el);
+                var linkEl = ($el.is('a') ? el : $el.parents('a')[0]);
+                if (linkEl && linkEl.tagName == 'A' && Extension_2.BeginWith(linkEl.href, 'aria2://|')) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    var link = linkEl.href.split('|');
+                    _this.AddToAria(link[1], decodeURIComponent(link[2]), link[3], linkEl.classList.contains('aria-cookie'));
+                }
+            });
+        };
+        Downloader.prototype.AddToAria = function (url, filename, referer, cookie, headers) {
+            AriaRequestEvent;
+            var ariaParam = {
+                out: filename,
+                referer: referer || location.href,
+                dir: config.sAria_dir,
+                'user-agent': navigator.userAgent,
+                header: headers || []
+            };
+            if (cookie === true)
+                cookie = document.cookie;
+            if (cookie)
+                ariaParam.header.push('Cookie: ' + cookie);
+            this.aria.addUri([url], ariaParam, function (r) { }, function (b, r) {
+                var sErrorMsg;
+                if (r.error) {
+                    sErrorMsg = "\u9519\u8BEF\u4EE3\u7801 " + r.error.code + ": " + r.error.message;
+                }
+                else {
+                    sErrorMsg = "与 Aria2 后台通信失败, 服务未开启?";
+                }
+                alert("[" + Script_3.Script.Name + "] \u63D0\u4EA4\u4EFB\u52A1\u53D1\u751F\u9519\u8BEF!\n\n" + sErrorMsg);
+            });
+        };
+        Downloader.prototype.SetupAria = function (forceSetup) {
+            if (forceSetup || !this.aria) {
+                this.aria = new Aria2({
+                    auth: {
+                        type: config.dAria_auth,
+                        user: config.sAria_user,
+                        pass: config.sAria_pass
+                    },
+                    host: config.sAria_host,
+                    port: config.dAria_port
+                });
+            }
+        };
+        Downloader.prototype.AddDownload = function (url, file) {
+            if (config.dUriType == ScriptConfig_2.UriType.Aria) {
+                this.AddToAria(url, file);
+            }
+            else {
+                GM_openInTab(this.GenerateUri(url, file), true);
+            }
+        };
+        return Downloader;
+    }());
+    exports.Downloader = Downloader;
+});
+define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension", "helper/StyleSheet", "helper/Logger"], function (require, exports, Constants_1, Extension_3, StyleSheet_1, Logger_1) {
     "use strict";
     exports.Sites = [];
     function Add(siteRule) {
@@ -379,7 +493,7 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
             return rule(path);
         }
         if (typeof rule === 'string') {
-            return Extension_2.BeginWith(path, rule);
+            return Extension_3.BeginWith(path, rule);
         }
         if (rule instanceof RegExp) {
             return rule.test(path);
@@ -397,12 +511,12 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
         var hosts = site.host.map(function (host) {
             return host.toLowerCase();
         });
-        if (!Extension_2.Contains(hosts, Constants_1.lowerHost)) {
+        if (!Extension_3.Contains(hosts, Constants_1.lowerHost)) {
             if (site.noSubHost)
                 return false;
             var matched = false;
             for (var i = hosts.length; i--;) {
-                if (Extension_2.EndWith(hosts[i], Constants_1.topHostMask)) {
+                if (Extension_3.EndWith(hosts[i], Constants_1.topHostMask)) {
                     matched = true;
                     break;
                 }
@@ -411,7 +525,7 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
                 return false;
         }
         if (site.path) {
-            return this.checkPath(location.pathname, site.path);
+            return CheckPath(location.pathname, site.path);
         }
         return true;
     }
@@ -479,107 +593,13 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
         if (!event)
             return;
         Logger_1.info("\u6267\u884C\u89C4\u5219: " + site.id + " \u4E8E " + site.name + " [\u4E8B\u4EF6: " + eventName + "]");
+        event.call(this);
     }
     exports.Run = Run;
 });
-define("helper/BatchDownload", ["require", "exports", "helper/Script", "helper/ScriptConfig", "helper/Extension", "typings/GM_Aria2RPC"], function (require, exports, Script_3, ScriptConfig_2, Extension_3, GM_Aria2RPC_2) {
+define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/ScriptConfig", "helper/Script", "helper/Downloader"], function (require, exports, Constants_2, ScriptConfig_3, Script_4, Downloader_1) {
     "use strict";
-    var config = ScriptConfig_2.Config;
-    var BatchDownload = (function () {
-        function BatchDownload() {
-            this._captured = false;
-        }
-        BatchDownload.prototype.BatchDownload = function () {
-        };
-        BatchDownload.prototype.GenerateUrlPart = function (url, filename, ref) {
-            return url + "|" + this.GetReferrerUrl(filename) + "|" + this.GetReferrerUrl(ref);
-        };
-        BatchDownload.prototype.GetReferrerUrl = function (url) {
-            return String(url || location.href).replace(/#.*/, '');
-        };
-        BatchDownload.prototype.NormaliseFilename = function (filename) {
-            return String(filename).replace(/['"\/\\:|]/g, '_');
-        };
-        BatchDownload.prototype.GenerateUri = function (url, filename, ref) {
-            switch (config.dUriType) {
-                case ScriptConfig_2.UriType.Custom:
-                    return "cuwcl4c://|1|" + this.GenerateUrlPart(url, filename, ref);
-                case ScriptConfig_2.UriType.Aria:
-                    if (!this._captured)
-                        this.CaptureAria();
-                    return "aria2://|" + this.GenerateUrlPart(url, filename, ref);
-            }
-            return url;
-        };
-        BatchDownload.prototype.CaptureAria = function (el) {
-            var _this = this;
-            this._captured = true;
-            this.SetupAria(false);
-            if (!el)
-                el = document.body;
-            $(el).click(function (e) {
-                var el = e.target;
-                var $el = $(el);
-                var linkEl = ($el.is('a') ? el : $el.parents('a')[0]);
-                if (linkEl && linkEl.tagName == 'A' && Extension_3.BeginWith(linkEl.href, 'aria2://|')) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    var link = linkEl.href.split('|');
-                    _this.AddToAria(link[1], decodeURIComponent(link[2]), link[3], linkEl.classList.contains('aria-cookie'));
-                }
-            });
-        };
-        BatchDownload.prototype.AddToAria = function (url, filename, referer, cookie, headers) {
-            var ariaParam = {
-                out: filename,
-                referer: referer || location.href,
-                dir: config.sAria_dir,
-                'user-agent': navigator.userAgent,
-                header: headers || []
-            };
-            if (cookie === true)
-                cookie = document.cookie;
-            if (cookie)
-                ariaParam.header.push('Cookie: ' + cookie);
-            this.aria.addUri([url], ariaParam, function (r) { }, function (b, r) {
-                var sErrorMsg;
-                if (r.error) {
-                    sErrorMsg = "\u9519\u8BEF\u4EE3\u7801 " + r.error.code + ": " + r.error.message;
-                }
-                else {
-                    sErrorMsg = "与 Aria2 后台通信失败, 服务未开启?";
-                }
-                alert("[" + Script_3.Script.Name + "] \u63D0\u4EA4\u4EFB\u52A1\u53D1\u751F\u9519\u8BEF!\n\n" + sErrorMsg);
-            });
-        };
-        BatchDownload.prototype.SetupAria = function (forceSetup) {
-            if (forceSetup || !this.aria) {
-                this.aria = new GM_Aria2RPC_2.Aria({
-                    auth: {
-                        type: config.dAria_auth,
-                        user: config.sAria_user,
-                        pass: config.sAria_pass
-                    },
-                    host: config.sAria_host,
-                    port: config.dAria_port
-                });
-            }
-        };
-        BatchDownload.prototype.AddDownload = function (url, file) {
-            if (config.dUriType == ScriptConfig_2.UriType.Aria) {
-                this.AddToAria(url, file);
-            }
-            else {
-                GM_openInTab(this.GenerateUri(url, file), true);
-            }
-        };
-        return BatchDownload;
-    }());
-    exports.BatchDownload = BatchDownload;
-});
-define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/ScriptConfig", "helper/Script", "helper/BatchDownload"], function (require, exports, Constants_2, ScriptConfig_3, Script_4, BatchDownload_1) {
-    "use strict";
-    var Rule = {
+    var rule = {
         bd: null,
         id: 'internal.config',
         name: '脚本配置页面',
@@ -604,17 +624,373 @@ define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/Scri
             });
         },
         onBody: function () {
-            Rule.bd = new BatchDownload_1.BatchDownload();
-            Rule.bd.CaptureAria();
+            rule.bd = new Downloader_1.Downloader();
+            rule.bd.CaptureAria();
         }
     };
-    exports.Rules = [Rule];
+    exports.Rules = [rule];
 });
-define("Rules", ["require", "exports", "SiteRule", "site/AA.Config"], function (require, exports, SiteRule_1, AA_Config) {
+define("helper/Wait", ["require", "exports"], function (require, exports) {
     "use strict";
-    AA_Config.Rules.forEach(SiteRule_1.Add);
+    function WaitUntil(check, cb, nTimeout, nInterval) {
+        var _this = this;
+        if (nTimeout === void 0) { nTimeout = 10000; }
+        if (nInterval === void 0) { nInterval = 150; }
+        if ('string' == typeof check) {
+            check = check.split('.');
+        }
+        var isReady;
+        if ($.isArray(check)) {
+            isReady = function () {
+                var r = unsafeWindow;
+                for (var i = 0; i < check.length; i++) {
+                    r = r[check[i]];
+                    if (!r)
+                        return false;
+                }
+                return true;
+            };
+        }
+        else {
+            isReady = function () {
+                try {
+                    return check();
+                }
+                catch (error) {
+                    return false;
+                }
+            };
+        }
+        var timer = setInterval(function () {
+            if (!isReady()) {
+                return;
+            }
+            clearInterval(timer);
+            cb.call(_this);
+        }, nInterval);
+        if (nTimeout !== true) {
+            setTimeout(function () {
+                clearInterval(timer);
+            }, nTimeout);
+        }
+    }
+    exports.WaitUntil = WaitUntil;
 });
-define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_5, Constants_3, ScriptConfig_4, QueryString_1, Logger_2, SiteRule_2) {
+define("helper/Redirect", ["require", "exports", "helper/Wait", "helper/Extension", "helper/Logger"], function (require, exports, Wait_1, Extension_4, Logger_2) {
+    "use strict";
+    /**
+     * 跳转后保留当前页面作为 referrer.
+     */
+    function RedirectTo(url) {
+        Logger_2.info("\u51C6\u5907\u8DF3\u8F6C " + url + "...");
+        var link = $('<a>')
+            .attr('href', url)
+            .text("\u6B63\u5728\u8DF3\u8F6C [" + url + "], \u8BF7\u7A0D\u540E.. ")
+            .prependTo(document.body)
+            .css({ fontSize: 12, color: 'inherit' });
+        link[0].click();
+    }
+    exports.RedirectTo = RedirectTo;
+    /**
+     * phpDisk 通用跳转文件下载页面函数
+     *
+     * 返回 true 代表成功
+     * 否则代表找不到规则。
+     */
+    function phpdiskAutoRedirect(callback) {
+        if (!callback) {
+            callback = document.body ? RedirectTo : function (url) {
+                Wait_1.WaitUntil('document.body', function () {
+                    RedirectTo(url);
+                });
+            };
+        }
+        var rCheckPath = /\/(file)?(file|view)([\/.\-_].*)/;
+        if (rCheckPath.test(location.pathname)) {
+            callback(location.pathname.replace(rCheckPath, '/$1down$3'));
+        }
+        else if (Extension_4.BeginWith(location.pathname, '/viewfile')) {
+            callback(location.pathname.replace('/viewfile', '/download'));
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+    exports.phpdiskAutoRedirect = phpdiskAutoRedirect;
+});
+define("site/dl.123564", ["require", "exports", "helper/Extension", "helper/Redirect"], function (require, exports, Extension_5, Redirect_1) {
+    "use strict";
+    var rule = {
+        id: 'dl.123564',
+        name: '123564 网盘',
+        host: ['123564.com', 'm.123564.com'],
+        includeSubHost: false,
+        subModule: false,
+        hide: '#yzm',
+        show: '#download',
+        css: "\n.ad1, .ad4{\n    height: 999px !important;\n    width:  0px   !important;\n}\n    ",
+        onStart: function () {
+            unsafeWindow.killpanads = 1;
+        },
+        onBody: function () {
+            // 文件第一页
+            var url = $('.caocuo .jubao').next().find('a').attr('href');
+            if (url) {
+                Redirect_1.RedirectTo(url);
+            }
+            else if (Extension_5.Contains(location.pathname, '/downpanel.asp')) {
+                // 第三页 - 最终下载地址展示
+                url = $("div > a[href*='/down.asp']").attr('href');
+                Redirect_1.RedirectTo(url);
+            }
+            else {
+                // 第二页: 填写验证码
+                $('#download > a').click();
+            }
+        }
+    };
+    exports.Rules = [rule];
+});
+define("site/dl.5xfile", ["require", "exports", "helper/Extension", "helper/Redirect"], function (require, exports, Extension_6, Redirect_2) {
+    "use strict";
+    var rule = {
+        id: 'dl.123564',
+        name: '123564 网盘',
+        host: ['123564.com', 'm.123564.com'],
+        includeSubHost: false,
+        subModule: false,
+        hide: '#yzm',
+        show: '#download',
+        css: "\n.ad1, .ad4{\n    height: 999px !important;\n    width:  0px   !important;\n}\n    ",
+        onStart: function () {
+            unsafeWindow.killpanads = 1;
+        },
+        onBody: function () {
+            // 文件第一页
+            var url = $('.caocuo .jubao').next().find('a').attr('href');
+            if (url) {
+                Redirect_2.RedirectTo(url);
+            }
+            else if (Extension_6.Contains(location.pathname, '/downpanel.asp')) {
+                // 第三页 - 最终下载地址展示
+                url = $("div > a[href*='/down.asp']").attr('href');
+                Redirect_2.RedirectTo(url);
+            }
+            else {
+                // 第二页: 填写验证码
+                $('#download > a').click();
+            }
+        }
+    };
+    exports.Rules = [rule];
+});
+define("site/dl.baidu", ["require", "exports", "helper/Wait"], function (require, exports, Wait_2) {
+    "use strict";
+    var rule = {
+        id: 'dl.baidu',
+        name: '百度盘免下载管家',
+        host: ['yun.baidu.com', 'pan.baidu.com'],
+        includeSubHost: false,
+        subModule: false,
+        onStart: function () {
+        },
+        onBody: function () {
+            Wait_2.WaitUntil('require', function () {
+                unsafeExec(function () {
+                    var require = window.require;
+                    var service = require('disk-system:widget/plugin/download/util/downloadCommonUtil.js');
+                    service.isPlatformWindows = function () { return false; };
+                });
+            });
+        }
+    };
+    exports.Rules = [rule];
+});
+define("site/dl.howfile", ["require", "exports"], function (require, exports) {
+    "use strict";
+    var rule = {
+        id: 'dl.howfile',
+        name: '好盘 [howfile.com]',
+        host: 'howfile.com',
+        includeSubHost: true,
+        subModule: false,
+        css: "\n#floatdiv {\n    top: 150px;\n    z-index: 99999;\n    display: block !important;\n}\n    ",
+        onStart: function () {
+        },
+        onBody: function () {
+        }
+    };
+    exports.Rules = [rule];
+});
+define("site/dl.namipan.cc", ["require", "exports"], function (require, exports) {
+    "use strict";
+    var rule = {
+        id: 'dl.namipan',
+        name: '纳米盘.cc [原 87盘 应该]',
+        host: 'namipan.cc',
+        path: ['/file/', '/down.php'],
+        includeSubHost: true,
+        subModule: false,
+        hide: '#box',
+        css: "\nbody, body > .ggao {\n    height: initial;\n}\n    ",
+        onStart: function () {
+        },
+        onBody: function () {
+            // 下载按钮: #downgo
+            var m = location.pathname.match(/\d+/);
+            var dlBtn = $('#downgo');
+            if (dlBtn.length > 0 && m) {
+                var frame = $('<iframe>');
+                var note = $('<p>');
+                note.text('注意: 需要登录才能下载。').css('color', 'red');
+                frame.attr({
+                    src: "/down.php?file_id=" + m[0]
+                }).css({
+                    display: 'table',
+                    border: 0,
+                    borderBottom: '1px solid #ccc',
+                    width: '100%',
+                    height: 70
+                });
+                dlBtn.before(frame);
+                frame.after(note);
+            }
+        }
+    };
+    exports.Rules = [rule];
+});
+define("site/dl.xuite", ["require", "exports"], function (require, exports) {
+    "use strict";
+    var rule = {
+        id: 'dl.hami-cloud',
+        name: 'Hami+ 個人雲',
+        host: ['webhd.xuite.net', 'sync.hamicloud.net'],
+        path: '/_oops/',
+        includeSubHost: false,
+        subModule: false,
+        onStart: function () {
+        },
+        onBody: function () {
+            $('#share-download-func-submit').click();
+            unsafeExec(function () {
+                $(function () {
+                    $('#global').data('time', 9);
+                });
+            });
+        }
+    };
+    exports.Rules = [rule];
+});
+define("site/fm.douban", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader"], function (require, exports, Logger_3, Wait_3, Downloader_2) {
+    "use strict";
+    var rule = {
+        id: 'fm.douban',
+        ssl: true,
+        name: '豆瓣电台下载解析',
+        host: 'douban.fm',
+        includeSubHost: false,
+        subModule: false,
+        css: "\na#jx_douban_dl {\n\tbackground: #9DD6C5;\n\tpadding: 3px 5px;\n\tcolor: #fff\n}\n\na#jx_douban_dl:hover {\n\tmargin-left: 5px;\n\tpadding-left: 10px;\n\tbackground: #BAE2D6;\n}\n\ndiv#jx_douban_dl_wrap {\n\tfloat: right;\n\tmargin-top: -230px;\n\tmargin-right: -32px;\n\tfont-weight: bold;\n\tfont-family: 'Microsoft JHengHei UI', '\u5FAE\u8F6F\u96C5\u9ED1', serif-sans;\n}\n    ",
+        bd: null,
+        onStart: function () {
+            rule.bd = new Downloader_2.Downloader();
+            rule.bd.CaptureAria();
+        },
+        onBody: function () {
+            var linkDownload = $('<a>');
+            linkDownload.css('transition', 'all .2s')
+                .attr('target', '_blank')
+                .attr('id', 'jx_douban_dl')
+                .text('下载');
+            $('<div>')
+                .attr('id', 'jx_douban_dl_wrap')
+                .append(linkDownload)
+                .insertAfter('.player-wrap');
+            Logger_3.info('等待豆瓣电台加载 ..');
+            Wait_3.WaitUntil('extStatusHandler', function () {
+                Logger_3.info('绑定豆瓣电台函数 ..');
+                unsafeOverwriteFunctionSafeProxy({
+                    extStatusHandler: function (jsonSongObj) {
+                        var event = JSON.parse(jsonSongObj);
+                        if ('start' == event.type) {
+                            var song = event.song;
+                            var file = song.title + song.url.slice(-4);
+                            linkDownload
+                                .attr('href', rule.bd.GenerateUri(song.url, file))
+                                .attr('title', "\u4E0B\u8F7D: " + song.title);
+                            Logger_3.info(song.title + " => " + song.url);
+                        }
+                        throw new ErrorUnsafeSuccess();
+                    }
+                });
+                Logger_3.info('函数绑定完毕, Enjoy~');
+            });
+        }
+    };
+    exports.Rules = [rule];
+});
+define("site/fm.moe", ["require", "exports", "helper/Downloader", "helper/Script"], function (require, exports, Downloader_3, Script_5) {
+    "use strict";
+    var rule = {
+        id: 'fm.moe',
+        ssl: true,
+        name: '萌否电台',
+        host: 'moe.fm',
+        includeSubHost: false,
+        subModule: false,
+        css: "\n\na.jixun-dl {\n    width: 26px !important;\n    background-position: -19px -96px !important;\n    transform: rotate(90deg);\n}\n\n    ",
+        bd: null,
+        onStart: function () {
+            rule.bd = new Downloader_3.Downloader();
+            rule.bd.CaptureAria();
+        },
+        onBody: function () {
+            unsafeWindow.is_login = true;
+            var dlLink = $('<a>');
+            dlLink
+                .addClass('player-button left jixun-dl')
+                .insertAfter('div.player-button.button-volume');
+            Script_5.Script.ListenEvent(function (clip) {
+                dlLink
+                    .attr('href', rule.bd.GenerateUri(clip.url, clip.sub_title + ".mp3"))
+                    .attr('title', "\u4E0B\u8F7D: " + clip.sub_title);
+            });
+            unsafeExec(function (scriptName) {
+                function notifyUpdate(clip) {
+                    document.dispatchEvent(new CustomEvent(scriptName, { detail: JSON.stringify(clip) }));
+                }
+                define('plugin/jixun', function (require, exports) {
+                    console.info('[CUWCL4C] 开始注入 ...');
+                    var listen = require('/public/js/fm/page/listen.js');
+                    var player = require('player/player');
+                    var _initPlayer = player.initPlayer;
+                    player.initPlayer = function (clip) {
+                        notifyUpdate(clip);
+                        _initPlayer.apply(this, arguments);
+                    };
+                    console.info('[CUWCL4C] 注入结束 ...');
+                });
+                // 要求载入外挂模组
+                seajs.use('plugin/jixun');
+            }, Script_5.Script.Name);
+        }
+    };
+    exports.Rules = [rule];
+});
+define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i) {
+    "use strict";
+    a.Rules.forEach(SiteRule_1.Add);
+    b.Rules.forEach(SiteRule_1.Add);
+    c.Rules.forEach(SiteRule_1.Add);
+    d.Rules.forEach(SiteRule_1.Add);
+    e.Rules.forEach(SiteRule_1.Add);
+    f.Rules.forEach(SiteRule_1.Add);
+    g.Rules.forEach(SiteRule_1.Add);
+    h.Rules.forEach(SiteRule_1.Add);
+    i.Rules.forEach(SiteRule_1.Add);
+});
+define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_6, Constants_3, ScriptConfig_4, QueryString_1, Logger_4, SiteRule_2) {
     "use strict";
     var $_GET = QueryString_1.Parse(Constants_3.currentUrl);
     if (ScriptConfig_4.Config.bUseCustomRules) {
@@ -626,11 +1002,11 @@ define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants",
             });
         }
         catch (ex) {
-            Logger_2.error("\u89E3\u6790\u81EA\u5B9A\u4E49\u89C4\u5219\u53D1\u751F\u9519\u8BEF: " + ex.message);
+            Logger_4.error("\u89E3\u6790\u81EA\u5B9A\u4E49\u89C4\u5219\u53D1\u751F\u9519\u8BEF: " + ex.message);
         }
     }
-    GM_registerMenuCommand("\u914D\u7F6E " + Script_5.Script.Name, function () {
-        GM_openInTab(Script_5.Script.Config, false);
+    GM_registerMenuCommand("\u914D\u7F6E " + Script_6.Script.Name, function () {
+        GM_openInTab(Script_6.Script.Config, false);
     });
     SiteRule_2.FireEvent('start');
     $(function () {

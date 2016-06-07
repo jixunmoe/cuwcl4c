@@ -24,6 +24,3 @@ g.Rules.forEach(Add);
 
 import * as h from "./site/fm.douban";
 h.Rules.forEach(Add);
-
-import * as i from "./site/fm.moe";
-i.Rules.forEach(Add);

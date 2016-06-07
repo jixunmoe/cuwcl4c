@@ -3,16 +3,16 @@ import { Config, UriType, IScriptConfig } from "./ScriptConfig";
 import { BeginWith } from "./Extension";
 
 import { } from "../typings/Userscript.d";
-import { Aria, AriaOptions, AriaXhrOptions } from "../typings/GM_Aria2RPC";
 import { } from "../typings/jquery/jquery.d";
+import { } from "../typings/GM_Aria2RPC.d";
 
 var config = Config as IScriptConfig;
 
-export class BatchDownload {
+export class Downloader {
     private _captured: boolean = false;
     
-    BatchDownload () {
-        
+    constructor () {
+        // TODO: ??
     }
     
     private GenerateUrlPart(url: string, filename: string, ref?: string): string
@@ -80,6 +80,7 @@ export class BatchDownload {
         cookie?: boolean|string,
         headers?: string[]): void
     {
+        AriaRequestEvent
 		var ariaParam: AriaXhrOptions = {
 			out: filename,
 			referer: referer || location.href,
@@ -108,11 +109,11 @@ ${sErrorMsg}`);
 		});
     } 
     
-    aria: Aria;
+    aria: Aria2;
     private SetupAria(forceSetup: boolean): void
     {
         if (forceSetup || !this.aria) {
-            this.aria = new Aria({
+            this.aria = new Aria2({
 				auth: {
 					type: config.dAria_auth,
 					user: config.sAria_user,

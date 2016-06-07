@@ -5,16 +5,16 @@ import { Parse } from "./helper/QueryString";
 import { error } from "./helper/Logger";
 
 
-import { Sites, SiteRule, FireEvent } from "./SiteRule";
+import { Sites, ISiteRule, FireEvent } from "./SiteRule";
 
 var $_GET = Parse(currentUrl);
 
 import {} from "./Rules";
 
 if (Config.bUseCustomRules) {
-    var customRules: SiteRule[] = [];
+    var customRules: ISiteRule[] = [];
     try {
-        customRules = <SiteRule[]>eval(`[${Config.sCustomRule}]`);
+        customRules = <ISiteRule[]>eval(`[${Config.sCustomRule}]`);
         
         customRules.forEach((rule) => {
             Sites.push(rule);

@@ -1,10 +1,10 @@
 import { BeginWith, Contains, EndWith } from "../helper/Extension";
 import { WaitUntil } from "../helper/Wait";
-import { SiteRule } from "../SiteRule";
+import { ISiteRule } from "../SiteRule";
 import { } from "../typings/Userscript.d";
 import { } from "../typings/GM_Unsafe.d";
 
-var rule: SiteRule = {
+var rule: ISiteRule = {
 	id: 'dl.baidu',
 	name: '百度盘免下载管家',
 	host: ['yun.baidu.com', 'pan.baidu.com'],
@@ -26,4 +26,4 @@ var rule: SiteRule = {
     }
 };
 
-export var Rules: SiteRule[] = [rule];
+export var Rules: ISiteRule[] = [rule];

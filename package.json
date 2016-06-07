@@ -5,7 +5,8 @@
   "main": "",
   "dependencies": {
     "coffee-script": "^1.10.0",
-    "js-yaml": "^3.4.3"
+    "js-yaml": "^3.4.3",
+    "typescript-require": "^0.2.9-1"
   },
   "devDependencies": {},
   "scripts": {

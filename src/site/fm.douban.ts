@@ -1,15 +1,16 @@
 import { info } from "../helper/Logger";
 import { WaitUntil } from "../helper/Wait";
-import { BatchDownload } from "../helper/BatchDownload";
+import { Downloader } from "../helper/Downloader";
 import { BeginWith, Contains, EndWith } from "../helper/Extension";
 
-import { SiteRule } from "../SiteRule";
+import { ISiteRule, IDownloadRule } from "../SiteRule";
 
 import { } from "../typings/Userscript.d";
 import { } from "../typings/GM_Unsafe.d";
 
-var rule: IDoubanSiteRule = {
+var rule: IDownloadRule = {
 	id: 'fm.douban',
+	ssl: true,
 
 	name: '豆瓣电台下载解析',
 	host: 'douban.fm',
@@ -40,7 +41,7 @@ div#jx_douban_dl_wrap {
 
     bd: null,
 	onStart: () => {
-        rule.bd = new BatchDownload();
+        rule.bd = new Downloader();
         rule.bd.CaptureAria();
 	},
 
@@ -61,15 +62,16 @@ div#jx_douban_dl_wrap {
 		WaitUntil('extStatusHandler', function () {
 			info('绑定豆瓣电台函数 ..');
 			unsafeOverwriteFunctionSafeProxy ({
-				extStatusHandler: function (jsonSongObj) {
-					var songObj = JSON.parse(jsonSongObj);
-					if ('start' == songObj.type && songObj.song) {
-                        var file = songObj.song.title + songObj.song.url.slice(-4);
+				extStatusHandler: function (jsonSongObj: string) {
+					var event: DoubanFmEvent = <DoubanFmEvent>JSON.parse(jsonSongObj);
+					if ('start' == event.type) {
+						var song = (<DoubanFmSongEvent>event).song;
+                        var file = song.title + song.url.slice(-4);
 						linkDownload
-							.attr('href', rule.bd.GenerateUri (songObj.song.url, file))
-							.attr('title', '下载: ' + songObj.song.title);
+							.attr('href', rule.bd.GenerateUri (song.url, file))
+							.attr('title', `下载: ${song.title}`);
 						
-						info (`${songObj.song.title} => ${songObj.song.url}`);
+						info (`${song.title} => ${song.url}`);
 					}
 
 					throw new ErrorUnsafeSuccess ();
@@ -81,8 +83,34 @@ div#jx_douban_dl_wrap {
     }
 };
 
-export var Rules: SiteRule[] = [rule];
+export var Rules: ISiteRule[] = [rule];
 
-interface IDoubanSiteRule extends SiteRule {
-    bd: BatchDownload;
+interface DoubanFmEvent {
+	type: string;
+}
+
+interface DoubanFmSongEvent extends DoubanFmEvent {
+	song: DoubanFmSingleSong,
+	channel: string;
+}
+
+interface DoubanFmSingleSong {
+	album_id: string;
+	album: string;
+	pubtime: string;
+	extrainfo: string;
+	ssid: string;
+	subtype: string;
+	picture: string;
+	songlists_count: string;
+	monitor_url: string;
+	len: string;
+	url: string;
+	adtype: string;
+	albumtitle: string;
+	like: string;
+	sid: string;
+	kbps: string;
+	artist: string;
+	title: string;
 }

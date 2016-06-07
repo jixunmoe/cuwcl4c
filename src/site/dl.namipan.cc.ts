@@ -1,10 +1,10 @@
 import { BeginWith, Contains, EndWith } from "../helper/Extension";
 import { WaitUntil } from "../helper/Wait";
-import { SiteRule } from "../SiteRule";
+import { ISiteRule } from "../SiteRule";
 import { } from "../typings/Userscript.d";
 import { } from "../typings/GM_Unsafe.d";
 
-var rule: SiteRule = {
+var rule: ISiteRule = {
 	id: 'dl.namipan',
 	name: '纳米盘.cc [原 87盘 应该]',
 	host: 'namipan.cc',
@@ -48,4 +48,4 @@ body, body > .ggao {
     }
 };
 
-export var Rules: SiteRule[] = [rule];
+export var Rules: ISiteRule[] = [rule];

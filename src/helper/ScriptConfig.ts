@@ -2,7 +2,7 @@ import { Script } from "./Script";
 
 import { } from "../typings/UserScript.d"
 import { } from "../../typings/jquery/jquery.d";
-import { AriaAuthType } from "../typings/GM_Aria2RPC"
+import { } from "../typings/GM_Aria2RPC.d";
 
 export enum UriType {
     NormalUrl = 0,
@@ -21,7 +21,7 @@ Config = $.extend({
     bUseCustomRules: false,
     bUseThridOnFail: false,
     
-    dAria_auth: AriaAuthType.NoAuth,
+    dAria_auth: Aria2.AUTH.noAuth,
     dAria_port: 6800,
     dUriType: UriType.NormalUrl,
     
@@ -48,7 +48,7 @@ export interface IScriptConfig {
     bUseCustomRules: boolean;
     bUseThridOnFail: boolean;
     
-    dAria_auth: AriaAuthType;
+    dAria_auth: number;
     dAria_port: number;
     dUriType: UriType;
     

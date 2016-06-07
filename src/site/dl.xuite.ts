@@ -1,13 +1,13 @@
 import { BeginWith, Contains, EndWith } from "../helper/Extension";
 import { WaitUntil } from "../helper/Wait";
 import { RedirectTo } from "../helper/Redirect";
-import { SiteRule } from "../SiteRule";
+import { ISiteRule } from "../SiteRule";
 
 import { } from "../typings/GM_Unsafe.d";
 import { } from "../typings/Userscript.d";
 import { } from "../typings/jquery/jquery.d";
 
-var rule: SiteRule = {
+var rule: ISiteRule = {
 	id: 'dl.hami-cloud',
 	name: 'Hami+ 個人雲',
 	host: ['webhd.xuite.net', 'sync.hamicloud.net'],
@@ -28,4 +28,4 @@ var rule: SiteRule = {
     }
 };
 
-export var Rules: SiteRule[] = [rule];
+export var Rules: ISiteRule[] = [rule];

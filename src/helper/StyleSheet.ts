@@ -1,7 +1,7 @@
 export class StyleSheet {
     style: HTMLStyleElement;
     
-    StyleSheet () {
+    constructor () {
         this.style = document.createElement('style');
         this.Apply();
     }

@@ -1,13 +1,14 @@
 import { isFrame, lowerHost, topHostMask, downloadIconClass } from "./helper/Constants";
 import { BeginWith, Contains, EndWith } from "./helper/Extension";
 import { StyleSheet } from "./helper/StyleSheet";
+import { Downloader } from "./helper/Downloader";
 import { info, error } from "./helper/Logger";
 
 import { } from "../typings/jquery/jquery.d";
 
-export var Sites: SiteRule[] = [];
+export var Sites: ISiteRule[] = [];
 
-export function Add(siteRule:SiteRule): void
+export function Add(siteRule:ISiteRule): void
 {
     siteRule._styleApplied = false;
     Sites.push(siteRule);
@@ -42,7 +43,7 @@ export function CheckPath(
     return false;
 }
 
-export function Check(site:SiteRule, event:string): boolean
+export function Check(site:ISiteRule, event:string): boolean
 {
     if (site.subModule) {
         return false;
@@ -78,7 +79,7 @@ export function Check(site:SiteRule, event:string): boolean
     return true;
 }
 
-export function Get(id: string): SiteRule
+export function Get(id: string): ISiteRule
 {
     for(var i = Sites.length; i--; ) {
         if (Sites[i].id == id) {
@@ -115,7 +116,7 @@ export function FireEvent(event:string)
     }
 }
 
-export function Run(site:SiteRule, eventName: string): void
+export function Run(site:ISiteRule, eventName: string): void
 {
     var event: EventCallback ;
     
@@ -179,9 +180,11 @@ ${downloadIconClass}::before {
     event.call(this);
 }
 
-export interface SiteRule {
+export interface ISiteRule {
     id: string;
     name: string;
+    ssl?: boolean;
+
     onStart: EventCallback;
     onBody: EventCallback;
     
@@ -202,6 +205,10 @@ export interface SiteRule {
     style?: StyleSheet;
     
     noFrame?: boolean;
+}
+
+export interface IDownloadRule extends ISiteRule {
+    bd: Downloader
 }
 
 interface PathCheckCallback {

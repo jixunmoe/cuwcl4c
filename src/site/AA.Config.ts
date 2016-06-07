@@ -1,8 +1,8 @@
 import { version } from "../helper/Constants";
 import { Config } from "../helper/ScriptConfig";
 import { Script } from "../helper/Script";
-import { BatchDownload } from "../helper/BatchDownload";
-import { SiteRule } from "../SiteRule";
+import { Downloader } from "../helper/Downloader";
+import { ISiteRule } from "../SiteRule";
 
 import { } from "../typings/Userscript.d";
 
@@ -35,14 +35,14 @@ var rule: IConfigPageRule = {
     },
     
     onBody: () => {
-        rule.bd = new BatchDownload();
+        rule.bd = new Downloader();
         rule.bd.CaptureAria();
     }
 }
 
 
-interface IConfigPageRule extends SiteRule {
-    bd: BatchDownload;
+interface IConfigPageRule extends ISiteRule {
+    bd: Downloader;
 }
 
-export var Rules: SiteRule[] = [rule];
+export var Rules: ISiteRule[] = [rule];

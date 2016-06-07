@@ -19,6 +19,7 @@ fs.readdirSync (modDir).forEach (function (m) {
 			.replace (/\/\*[\s\S]+\*\//g, '');
 		
 		var noSubHost = /\bincludeSubHost\s*:\s*false\b/.test(file);
+		var useSsl = /\bssl\s*:\s*true\b/.test(file);
 		
 		if (hosts[0] == '[') {
 			hosts = hosts.slice(1,-1).split(',');
@@ -28,13 +29,15 @@ fs.readdirSync (modDir).forEach (function (m) {
 		
 		// TODO: path parse
 		hosts.forEach(function (host) {
-			if (!host || host == 'localhost' || host == 'jixunmoe.github.io')
+			if (!host)
 				return ;
 			
 			ret.push('http://' + host + '/*');
+			if (useSsl) ret.push('https://' + host + '/*');
 			
 			if (!noSubHost) {
 				ret.push('http://*.' + host + '/*');
+				if (useSsl) ret.push('https://*.' + host + '/*');
 			}
 		});
 	}
