@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.600
+// @version        4.0.601
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -85,7 +85,7 @@ var define = (function () {
         var _this_module = {
             exports: {}
         };
-        var params = requires.map(function (module) {
+        var params = requires.map((module) => {
             if (module == 'exports') {
                 return _this_module.exports;
             }
@@ -110,7 +110,7 @@ define("helper/Script", ["require", "exports"], function (require, exports) {
         Script.Config = "https://jixunmoe.github.io/cuwcl4c/config/";
         Script.Feedback = "https://greasyfork.org/forum/post/discussion?Discussion/ScriptID=2600";
         function ListenEvent(listener) {
-            document.addEventListener(Script.Name, function (e) {
+            document.addEventListener(Script.Name, (e) => {
                 var info;
                 if (typeof e.detail == 'string') {
                     info = JSON.parse(e.detail);
@@ -132,7 +132,7 @@ define("helper/Constants", ["require", "exports"], function (require, exports) {
     exports.currentUrl = location.href.split('#')[0];
     exports.lowerHost = location.hostname.toLowerCase();
     exports.topHost = exports.lowerHost.match(/\w+\.?\w+?$/)[0];
-    exports.topHostMask = "." + exports.topHost;
+    exports.topHostMask = `.${exports.topHost}`;
     exports.downloadIcon = 'jx_dl';
     exports.downloadIconClass = '.jx_dl';
     function _isFrame() {
@@ -214,11 +214,7 @@ define("helper/Extension", ["require", "exports"], function (require, exports) {
     exports.GetExtensionFromUrl = GetExtensionFromUrl;
     // Fisher-Yates Shuffle by community wiki(?)
     // http://stackoverflow.com/a/6274398
-    function Shuffle() {
-        var array = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            array[_i - 0] = arguments[_i];
-        }
+    function Shuffle(...array) {
         var counter = array.length;
         var temp, index;
         // While there are elements in the array
@@ -247,11 +243,11 @@ define("helper/QueryString", ["require", "exports", "helper/Extension"], functio
         var flashVars = {};
         var size = ele.childNodes.length;
         var flashObject;
-        for (var i = size; i--;) {
+        for (let i = size; i--;) {
             if (ele.childNodes[i].name == 'flashvars') {
                 flashObject = ele.childNodes[i];
                 flashObject.value.replace(/&amp;/g, '&')
-                    .replace(/([\s\S]+?)=([\s\S]+?)(&|$)/g, function (n, key, value) {
+                    .replace(/([\s\S]+?)=([\s\S]+?)(&|$)/g, (n, key, value) => {
                     // 利用正则的批量替换功能抓取数据
                     flashVars[key] = decodeURIComponent(value);
                     return '';
@@ -291,19 +287,15 @@ define("helper/Logger", ["require", "exports", "helper/Script", "helper/ScriptCo
         if (args.length < 1)
             return;
         if (typeof args[0] == 'string') {
-            args[0] = "[" + Script_2.Script.Name + "][" + prefix + "] " + args[0];
+            args[0] = `[${Script_2.Script.Name}][${prefix}] ${args[0]}`;
         }
         else {
-            args.splice(0, 0, "[" + Script_2.Script.Name + "][" + prefix + "] " + args[0]);
+            args.splice(0, 0, `[${Script_2.Script.Name}][${prefix}] ${args[0]}`);
         }
         console[method].apply(console, args);
     }
     function WrapLog(prefix, method) {
-        return function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
-            }
+        return (...args) => {
             return DoLog(prefix, method, args);
         };
     }
@@ -321,97 +313,82 @@ define("helper/Logger", ["require", "exports", "helper/Script", "helper/ScriptCo
 });
 define("helper/StyleSheet", ["require", "exports"], function (require, exports) {
     "use strict";
-    var StyleSheet = (function () {
-        function StyleSheet() {
+    class StyleSheet {
+        constructor() {
             this.style = document.createElement('style');
             this.Apply();
         }
-        StyleSheet.prototype.Add = function () {
-            var styleText = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                styleText[_i - 0] = arguments[_i];
-            }
+        Add(...styleText) {
             this.style.textContent += '\n' + styleText.join('\n');
-        };
-        StyleSheet.prototype.Hide = function (selector) {
-            var selectors = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                selectors[_i - 1] = arguments[_i];
-            }
+        }
+        Hide(selector, ...selectors) {
             if ('string' == typeof selector) {
                 selectors.splice(0, 0, selector);
             }
             else {
                 selectors = selector;
             }
-            var styleText = selectors.join(', ') + " { display: none !important }";
+            var styleText = `${selectors.join(', ')} { display: none !important }`;
             this.Add(styleText);
-        };
-        StyleSheet.prototype.Show = function (selector) {
-            var selectors = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                selectors[_i - 1] = arguments[_i];
-            }
+        }
+        Show(selector, ...selectors) {
             if ('string' == typeof selector) {
                 selectors.splice(0, 0, selector);
             }
             else {
                 selectors = selector;
             }
-            var styleText = selectors.join(', ') + " { display: block !important }";
+            var styleText = `${selectors.join(', ')} { display: block !important }`;
             this.Add(styleText);
-        };
-        StyleSheet.prototype.HideFrames = function () {
+        }
+        HideFrames() {
             this.Hide('frame, iframe, frameset');
-        };
-        StyleSheet.prototype.Apply = function (body) {
-            if (body === void 0) { body = true; }
+        }
+        Apply(body = true) {
             if (body && document.body) {
                 document.body.appendChild(this.style);
             }
             else {
                 document.head.appendChild(this.style);
             }
-        };
-        return StyleSheet;
-    }());
+        }
+    }
     exports.StyleSheet = StyleSheet;
 });
 define("helper/Downloader", ["require", "exports", "helper/Script", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Script_3, ScriptConfig_2, Extension_2) {
     "use strict";
     var config = ScriptConfig_2.Config;
-    var Downloader = (function () {
-        function Downloader() {
+    class Downloader {
+        constructor() {
             this._captured = false;
             // TODO: ??
         }
-        Downloader.prototype.GenerateUrlPart = function (url, filename, ref) {
-            return url + "|" + this.GetReferrerUrl(filename) + "|" + this.GetReferrerUrl(ref);
-        };
-        Downloader.prototype.GetReferrerUrl = function (url) {
+        GenerateUrlPart(url, filename, ref) {
+            return `${url}|${this.GetReferrerUrl(filename)}|${this.GetReferrerUrl(ref)}`;
+        }
+        GetReferrerUrl(url) {
             return String(url || location.href).replace(/#.*/, '');
-        };
-        Downloader.prototype.NormaliseFilename = function (filename) {
+        }
+        NormaliseFilename(filename) {
             return String(filename).replace(/['"\/\\:|]/g, '_');
-        };
-        Downloader.prototype.GenerateUri = function (url, filename, ref) {
+        }
+        GenerateUri(url, filename, ref) {
             switch (config.dUriType) {
                 case ScriptConfig_2.UriType.Custom:
-                    return "cuwcl4c://|1|" + this.GenerateUrlPart(url, filename, ref);
+                    return `cuwcl4c://|1|${this.GenerateUrlPart(url, filename, ref)}`;
                 case ScriptConfig_2.UriType.Aria:
                     if (!this._captured)
                         this.CaptureAria();
-                    return "aria2://|" + this.GenerateUrlPart(url, filename, ref);
+                    return `aria2://|${this.GenerateUrlPart(url, filename, ref)}`;
             }
             return url;
-        };
-        Downloader.prototype.CaptureAria = function (el) {
-            var _this = this;
+        }
+        CaptureAria(el) {
             this._captured = true;
             this.SetupAria(false);
             if (!el)
                 el = document.body;
-            $(el).click(function (e) {
+            $(el).click((e) => {
                 var el = e.target;
                 var $el = $(el);
                 var linkEl = ($el.is('a') ? el : $el.parents('a')[0]);
@@ -419,11 +396,11 @@ define("helper/Downloader", ["require", "exports", "helper/Script", "helper/Scri
                     e.stopPropagation();
                     e.preventDefault();
                     var link = linkEl.href.split('|');
-                    _this.AddToAria(link[1], decodeURIComponent(link[2]), link[3], linkEl.classList.contains('aria-cookie'));
+                    this.AddToAria(link[1], decodeURIComponent(link[2]), link[3], linkEl.classList.contains('aria-cookie'));
                 }
             });
-        };
-        Downloader.prototype.AddToAria = function (url, filename, referer, cookie, headers) {
+        }
+        AddToAria(url, filename, referer, cookie, headers) {
             AriaRequestEvent;
             var ariaParam = {
                 out: filename,
@@ -436,18 +413,20 @@ define("helper/Downloader", ["require", "exports", "helper/Script", "helper/Scri
                 cookie = document.cookie;
             if (cookie)
                 ariaParam.header.push('Cookie: ' + cookie);
-            this.aria.addUri([url], ariaParam, function (r) { }, function (b, r) {
+            this.aria.addUri([url], ariaParam, (r) => { }, (b, r) => {
                 var sErrorMsg;
                 if (r.error) {
-                    sErrorMsg = "\u9519\u8BEF\u4EE3\u7801 " + r.error.code + ": " + r.error.message;
+                    sErrorMsg = `错误代码 ${r.error.code}: ${r.error.message}`;
                 }
                 else {
                     sErrorMsg = "与 Aria2 后台通信失败, 服务未开启?";
                 }
-                alert("[" + Script_3.Script.Name + "] \u63D0\u4EA4\u4EFB\u52A1\u53D1\u751F\u9519\u8BEF!\n\n" + sErrorMsg);
+                alert(`[${Script_3.Script.Name}] 提交任务发生错误!
+
+${sErrorMsg}`);
             });
-        };
-        Downloader.prototype.SetupAria = function (forceSetup) {
+        }
+        SetupAria(forceSetup) {
             if (forceSetup || !this.aria) {
                 this.aria = new Aria2({
                     auth: {
@@ -459,17 +438,16 @@ define("helper/Downloader", ["require", "exports", "helper/Script", "helper/Scri
                     port: config.dAria_port
                 });
             }
-        };
-        Downloader.prototype.AddDownload = function (url, file) {
+        }
+        AddDownload(url, file) {
             if (config.dUriType == ScriptConfig_2.UriType.Aria) {
                 this.AddToAria(url, file);
             }
             else {
                 GM_openInTab(this.GenerateUri(url, file), true);
             }
-        };
-        return Downloader;
-    }());
+        }
+    }
     exports.Downloader = Downloader;
 });
 define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension", "helper/StyleSheet", "helper/Logger"], function (require, exports, Constants_1, Extension_3, StyleSheet_1, Logger_1) {
@@ -508,7 +486,7 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
         if (typeof site.host == 'string') {
             site.host = [site.host];
         }
-        var hosts = site.host.map(function (host) {
+        var hosts = site.host.map((host) => {
             return host.toLowerCase();
         });
         if (!Extension_3.Contains(hosts, Constants_1.lowerHost)) {
@@ -571,7 +549,7 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
                 event = site.onBody;
                 break;
             default:
-                Logger_1.error("\u65E0\u6548\u7684\u4E8B\u4EF6 " + eventName);
+                Logger_1.error(`无效的事件 ${eventName}`);
                 return;
         }
         if (!site._styleApplied) {
@@ -587,12 +565,31 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
                 site.style.Add(site.css);
             }
             if (site.dl_icon) {
-                site.style.Add("\n            \n@font-face {\n\tfont-family: ccc;\n\tsrc: url(https://cdn.bootcss.com/font-awesome/4.2.0/fonts/fontawesome-webfont.woff) format('woff');\n\tfont-weight: normal;\n\tfont-style: normal;\n}\n\n" + Constants_1.downloadIconClass + "::before {\n\tfont-family: ccc;\n\tcontent: \"\f019\";\n\tpadding-right: .5em;\n}\n\n.jx_hide {\n\tdisplay: none;\n}\n\n            ");
+                site.style.Add(`
+            
+@font-face {
+	font-family: ccc;
+	src: url(https://cdn.bootcss.com/font-awesome/4.2.0/fonts/fontawesome-webfont.woff) format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+${Constants_1.downloadIconClass}::before {
+	font-family: ccc;
+	content: "\f019";
+	padding-right: .5em;
+}
+
+.jx_hide {
+	display: none;
+}
+
+            `);
             }
         }
         if (!event)
             return;
-        Logger_1.info("\u6267\u884C\u89C4\u5219: " + site.id + " \u4E8E " + site.name + " [\u4E8B\u4EF6: " + eventName + "]");
+        Logger_1.info(`执行规则: ${site.id} 于 ${site.name} [事件: ${eventName}]`);
         event.call(this);
     }
     exports.Run = Run;
@@ -607,7 +604,7 @@ define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/Scri
         includeSubHost: false,
         host: ['localhost.cuwcl4c', 'jixunmoe.github.io'],
         path: ['/conf/', '/cuwcl4c/config'],
-        onStart: function () {
+        onStart: () => {
             unsafeWindow.rScriptVersion = Constants_2.version;
             unsafeWindow.rScriptConfig = JSON.stringify(ScriptConfig_3.Config);
             var _c = confirm;
@@ -619,11 +616,11 @@ define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/Scri
                     alert('解析设定值出错!');
                     return;
                 }
-                if (_c("\u786E\u5B9A\u50A8\u5B58\u8BBE\u5B9A\u81F3 " + Script_4.Script.Name + "?"))
+                if (_c(`确定储存设定至 ${Script_4.Script.Name}?`))
                     GM_setValue(Script_4.Script.Name, config);
             });
         },
-        onBody: function () {
+        onBody: () => {
             rule.bd = new Downloader_1.Downloader();
             rule.bd.CaptureAria();
         }
@@ -632,16 +629,13 @@ define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/Scri
 });
 define("helper/Wait", ["require", "exports"], function (require, exports) {
     "use strict";
-    function WaitUntil(check, cb, nTimeout, nInterval) {
-        var _this = this;
-        if (nTimeout === void 0) { nTimeout = 10000; }
-        if (nInterval === void 0) { nInterval = 150; }
+    function WaitUntil(check, cb, nTimeout = 10000, nInterval = 150) {
         if ('string' == typeof check) {
             check = check.split('.');
         }
         var isReady;
         if ($.isArray(check)) {
-            isReady = function () {
+            isReady = () => {
                 var r = unsafeWindow;
                 for (var i = 0; i < check.length; i++) {
                     r = r[check[i]];
@@ -652,7 +646,7 @@ define("helper/Wait", ["require", "exports"], function (require, exports) {
             };
         }
         else {
-            isReady = function () {
+            isReady = () => {
                 try {
                     return check();
                 }
@@ -661,15 +655,15 @@ define("helper/Wait", ["require", "exports"], function (require, exports) {
                 }
             };
         }
-        var timer = setInterval(function () {
+        var timer = setInterval(() => {
             if (!isReady()) {
                 return;
             }
             clearInterval(timer);
-            cb.call(_this);
+            cb.call(this);
         }, nInterval);
         if (nTimeout !== true) {
-            setTimeout(function () {
+            setTimeout(() => {
                 clearInterval(timer);
             }, nTimeout);
         }
@@ -682,10 +676,10 @@ define("helper/Redirect", ["require", "exports", "helper/Wait", "helper/Extensio
      * 跳转后保留当前页面作为 referrer.
      */
     function RedirectTo(url) {
-        Logger_2.info("\u51C6\u5907\u8DF3\u8F6C " + url + "...");
+        Logger_2.info(`准备跳转 ${url}...`);
         var link = $('<a>')
             .attr('href', url)
-            .text("\u6B63\u5728\u8DF3\u8F6C [" + url + "], \u8BF7\u7A0D\u540E.. ")
+            .text(`正在跳转 [${url}], 请稍后.. `)
             .prependTo(document.body)
             .css({ fontSize: 12, color: 'inherit' });
         link[0].click();
@@ -699,8 +693,8 @@ define("helper/Redirect", ["require", "exports", "helper/Wait", "helper/Extensio
      */
     function phpdiskAutoRedirect(callback) {
         if (!callback) {
-            callback = document.body ? RedirectTo : function (url) {
-                Wait_1.WaitUntil('document.body', function () {
+            callback = document.body ? RedirectTo : (url) => {
+                Wait_1.WaitUntil('document.body', () => {
                     RedirectTo(url);
                 });
             };
@@ -729,11 +723,16 @@ define("site/dl.123564", ["require", "exports", "helper/Extension", "helper/Redi
         subModule: false,
         hide: '#yzm',
         show: '#download',
-        css: "\n.ad1, .ad4{\n    height: 999px !important;\n    width:  0px   !important;\n}\n    ",
-        onStart: function () {
+        css: `
+.ad1, .ad4{
+    height: 999px !important;
+    width:  0px   !important;
+}
+    `,
+        onStart: () => {
             unsafeWindow.killpanads = 1;
         },
-        onBody: function () {
+        onBody: () => {
             // 文件第一页
             var url = $('.caocuo .jubao').next().find('a').attr('href');
             if (url) {
@@ -762,11 +761,16 @@ define("site/dl.5xfile", ["require", "exports", "helper/Extension", "helper/Redi
         subModule: false,
         hide: '#yzm',
         show: '#download',
-        css: "\n.ad1, .ad4{\n    height: 999px !important;\n    width:  0px   !important;\n}\n    ",
-        onStart: function () {
+        css: `
+.ad1, .ad4{
+    height: 999px !important;
+    width:  0px   !important;
+}
+    `,
+        onStart: () => {
             unsafeWindow.killpanads = 1;
         },
-        onBody: function () {
+        onBody: () => {
             // 文件第一页
             var url = $('.caocuo .jubao').next().find('a').attr('href');
             if (url) {
@@ -793,9 +797,9 @@ define("site/dl.baidu", ["require", "exports", "helper/Wait"], function (require
         host: ['yun.baidu.com', 'pan.baidu.com'],
         includeSubHost: false,
         subModule: false,
-        onStart: function () {
+        onStart: () => {
         },
-        onBody: function () {
+        onBody: () => {
             Wait_2.WaitUntil('require', function () {
                 unsafeExec(function () {
                     var require = window.require;
@@ -815,10 +819,16 @@ define("site/dl.howfile", ["require", "exports"], function (require, exports) {
         host: 'howfile.com',
         includeSubHost: true,
         subModule: false,
-        css: "\n#floatdiv {\n    top: 150px;\n    z-index: 99999;\n    display: block !important;\n}\n    ",
-        onStart: function () {
+        css: `
+#floatdiv {
+    top: 150px;
+    z-index: 99999;
+    display: block !important;
+}
+    `,
+        onStart: () => {
         },
-        onBody: function () {
+        onBody: () => {
         }
     };
     exports.Rules = [rule];
@@ -833,10 +843,14 @@ define("site/dl.namipan.cc", ["require", "exports"], function (require, exports)
         includeSubHost: true,
         subModule: false,
         hide: '#box',
-        css: "\nbody, body > .ggao {\n    height: initial;\n}\n    ",
-        onStart: function () {
+        css: `
+body, body > .ggao {
+    height: initial;
+}
+    `,
+        onStart: () => {
         },
-        onBody: function () {
+        onBody: () => {
             // 下载按钮: #downgo
             var m = location.pathname.match(/\d+/);
             var dlBtn = $('#downgo');
@@ -845,7 +859,7 @@ define("site/dl.namipan.cc", ["require", "exports"], function (require, exports)
                 var note = $('<p>');
                 note.text('注意: 需要登录才能下载。').css('color', 'red');
                 frame.attr({
-                    src: "/down.php?file_id=" + m[0]
+                    src: `/down.php?file_id=${m[0]}`,
                 }).css({
                     display: 'table',
                     border: 0,
@@ -869,9 +883,9 @@ define("site/dl.xuite", ["require", "exports"], function (require, exports) {
         path: '/_oops/',
         includeSubHost: false,
         subModule: false,
-        onStart: function () {
+        onStart: () => {
         },
-        onBody: function () {
+        onBody: () => {
             $('#share-download-func-submit').click();
             unsafeExec(function () {
                 $(function () {
@@ -891,13 +905,33 @@ define("site/fm.douban", ["require", "exports", "helper/Logger", "helper/Wait", 
         host: 'douban.fm',
         includeSubHost: false,
         subModule: false,
-        css: "\na#jx_douban_dl {\n\tbackground: #9DD6C5;\n\tpadding: 3px 5px;\n\tcolor: #fff\n}\n\na#jx_douban_dl:hover {\n\tmargin-left: 5px;\n\tpadding-left: 10px;\n\tbackground: #BAE2D6;\n}\n\ndiv#jx_douban_dl_wrap {\n\tfloat: right;\n\tmargin-top: -230px;\n\tmargin-right: -32px;\n\tfont-weight: bold;\n\tfont-family: 'Microsoft JHengHei UI', '\u5FAE\u8F6F\u96C5\u9ED1', serif-sans;\n}\n    ",
+        css: `
+a#jx_douban_dl {
+	background: #9DD6C5;
+	padding: 3px 5px;
+	color: #fff
+}
+
+a#jx_douban_dl:hover {
+	margin-left: 5px;
+	padding-left: 10px;
+	background: #BAE2D6;
+}
+
+div#jx_douban_dl_wrap {
+	float: right;
+	margin-top: -230px;
+	margin-right: -32px;
+	font-weight: bold;
+	font-family: 'Microsoft JHengHei UI', '微软雅黑', serif-sans;
+}
+    `,
         bd: null,
-        onStart: function () {
+        onStart: () => {
             rule.bd = new Downloader_2.Downloader();
             rule.bd.CaptureAria();
         },
-        onBody: function () {
+        onBody: () => {
             var linkDownload = $('<a>');
             linkDownload.css('transition', 'all .2s')
                 .attr('target', '_blank')
@@ -918,8 +952,8 @@ define("site/fm.douban", ["require", "exports", "helper/Logger", "helper/Wait", 
                             var file = song.title + song.url.slice(-4);
                             linkDownload
                                 .attr('href', rule.bd.GenerateUri(song.url, file))
-                                .attr('title', "\u4E0B\u8F7D: " + song.title);
-                            Logger_3.info(song.title + " => " + song.url);
+                                .attr('title', `下载: ${song.title}`);
+                            Logger_3.info(`${song.title} => ${song.url}`);
                         }
                         throw new ErrorUnsafeSuccess();
                     }
@@ -939,24 +973,32 @@ define("site/fm.moe", ["require", "exports", "helper/Downloader", "helper/Script
         host: 'moe.fm',
         includeSubHost: false,
         subModule: false,
-        css: "\n\na.jixun-dl {\n    width: 26px !important;\n    background-position: -19px -96px !important;\n    transform: rotate(90deg);\n}\n\n    ",
+        css: `
+
+a.jixun-dl {
+    width: 26px !important;
+    background-position: -19px -96px !important;
+    transform: rotate(90deg);
+}
+
+    `,
         bd: null,
-        onStart: function () {
+        onStart: () => {
             rule.bd = new Downloader_3.Downloader();
             rule.bd.CaptureAria();
         },
-        onBody: function () {
+        onBody: () => {
             unsafeWindow.is_login = true;
             var dlLink = $('<a>');
             dlLink
                 .addClass('player-button left jixun-dl')
                 .insertAfter('div.player-button.button-volume');
-            Script_5.Script.ListenEvent(function (clip) {
+            Script_5.Script.ListenEvent((clip) => {
                 dlLink
-                    .attr('href', rule.bd.GenerateUri(clip.url, clip.sub_title + ".mp3"))
-                    .attr('title', "\u4E0B\u8F7D: " + clip.sub_title);
+                    .attr('href', rule.bd.GenerateUri(clip.url, `${clip.sub_title}.mp3`))
+                    .attr('title', `下载: ${clip.sub_title}`);
             });
-            unsafeExec(function (scriptName) {
+            unsafeExec((scriptName) => {
                 function notifyUpdate(clip) {
                     document.dispatchEvent(new CustomEvent(scriptName, { detail: JSON.stringify(clip) }));
                 }
@@ -996,20 +1038,20 @@ define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants",
     if (ScriptConfig_4.Config.bUseCustomRules) {
         var customRules = [];
         try {
-            customRules = eval("[" + ScriptConfig_4.Config.sCustomRule + "]");
-            customRules.forEach(function (rule) {
+            customRules = eval(`[${ScriptConfig_4.Config.sCustomRule}]`);
+            customRules.forEach((rule) => {
                 SiteRule_2.Sites.push(rule);
             });
         }
         catch (ex) {
-            Logger_4.error("\u89E3\u6790\u81EA\u5B9A\u4E49\u89C4\u5219\u53D1\u751F\u9519\u8BEF: " + ex.message);
+            Logger_4.error(`解析自定义规则发生错误: ${ex.message}`);
         }
     }
-    GM_registerMenuCommand("\u914D\u7F6E " + Script_6.Script.Name, function () {
+    GM_registerMenuCommand(`配置 ${Script_6.Script.Name}`, () => {
         GM_openInTab(Script_6.Script.Config, false);
     });
     SiteRule_2.FireEvent('start');
-    $(function () {
+    $(() => {
         SiteRule_2.FireEvent('body');
     });
 });

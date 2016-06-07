@@ -2,7 +2,7 @@
     "compileOnSave": true,
     "compilerOptions": {
         "module": "amd",
-        "target": "es5",
+        "target": "es6",
         "noImplicitAny": true,
         "sourceMap": true,
         "outFile": "out/app-build.js"
