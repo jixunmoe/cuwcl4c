@@ -17,3 +17,4 @@ node compile.js -out=obj/meta.js -input=src/meta.js
 echo Join output..
 copy /b obj\meta.js+obj\loader.js+obj\stage1.js out\script.js /y
 
+popd
