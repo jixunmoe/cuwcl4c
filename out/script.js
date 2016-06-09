@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.635
+// @version        4.0.636
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -440,7 +440,6 @@ define("helper/Downloader", ["require", "exports", "helper/Script", "helper/Scri
             });
         }
         AddToAria(url, filename, referer, cookie, headers) {
-            AriaRequestEvent;
             var ariaParam = {
                 out: filename,
                 referer: referer || location.href,

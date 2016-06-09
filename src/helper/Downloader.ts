@@ -80,7 +80,6 @@ export class Downloader {
         cookie?: boolean|string,
         headers?: string[]): void
     {
-        AriaRequestEvent
 		var ariaParam: AriaXhrOptions = {
 			out: filename,
 			referer: referer || location.href,
