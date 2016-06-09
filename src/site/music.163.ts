@@ -1,9 +1,10 @@
 import { warn, info, error } from "../helper/Logger";
-import { isFrame, downloadIconClass } from "../helper/Constants";
+import { isFrame, downloadIconClass, version } from "../helper/Constants";
 import { WaitUntil } from "../helper/Wait";
 import { Downloader } from "../helper/Downloader";
 import { Script } from "../helper/Script";
 import { Config, UriType } from "../helper/ScriptConfig";
+import * as qs from "../helper/QueryString";
 import { BeginWith, Contains, EndWith, Shuffle } from "../helper/Extension";
 
 import { ISiteRule } from "../SiteRule";
@@ -15,12 +16,12 @@ import { } from "../typings/GM_Unsafe.d";
 const __MP3_BLANK = 'https://jixunmoe.github.io/cuwcl4c/blank.mp3';
 
 var rule: IYellowEaseRule = {
-	id: 'music.163',
-	ssl: false,
+    id: 'music.163',
+    ssl: false,
 
-	name: '黄易云音乐',
-	host: 'music.163.com',
-	includeSubHost: false,
+    name: '黄易云音乐',
+    host: 'music.163.com',
+    includeSubHost: false,
     subModule: false,
     runInFrame: true,
     dl_icon: true,
@@ -28,59 +29,59 @@ var rule: IYellowEaseRule = {
     css: `
 
 .m-pbar, .m-pbar .barbg {
-	width: calc( 455px - 2.5em );
+    width: calc( 455px - 2.5em );
 }
 
 .m-playbar .play {
-	width: calc( 570px - 2.5em );
+    width: calc( 570px - 2.5em );
 }
 
 .m-playbar .oper {
-	width: initial;
+    width: initial;
 }
 
 .jx_dl:hover {
-	color: white;
+    color: white;
 }
 
 /* 底部单曲下载 */
 .m-playbar .oper .jx_btn {
-	text-indent: 0;
-	font-size: 1.5em;
-	margin: 13px 2px 0 0;
-	float: left;
-	color: #ccc;
-	text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em #aaa;
-	line-height: 1.6em;
-	font-size: 1.2em;
+    text-indent: 0;
+    font-size: 1.5em;
+    margin: 13px 2px 0 0;
+    float: left;
+    color: #ccc;
+    text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em #aaa;
+    line-height: 1.6em;
+    font-size: 1.2em;
 }
 
 .m-playbar .oper .jx_dl::before {
-	padding-right: .25em;
+    padding-right: .25em;
 }
 
 .jx_btn:hover {
-	color: white;
+    color: white;
 }
 
 /* 播放列表下载 */
 .m-playbar .listhdc .jx_dl.addall {
-	left: 306px;
-	line-height: 1em;
-	/* 多一个 px, 对齐文字 */
-	top: 13px;
+    left: 306px;
+    line-height: 1em;
+    /* 多一个 px, 对齐文字 */
+    top: 13px;
 }
 
 .m-playbar .listhdc .line.jx_dl_line {
-	left: 385px;
+    left: 385px;
 }
 
     `,
 
     instance: null,
-	onStart: () => {
+    onStart: () => {
         rule.instance = new YellowEase();
-	},
+    },
 
     onBody: () => {
         rule.instance.BodyEvent();
@@ -101,27 +102,21 @@ class YellowEase {
     _cdns: string[];
 
     constructor() {
-        this._localProxy = Config.bInternational && Config.bProxyInstalled;
         if (localStorage.__HIDE_BANNER) {
             rule.style.Hide('#index-banner');
         }
 
-        if (Config.bInternational)
+        if (Config.bYellowEaseInternational)
             this._cdns = GenerateCdnList();
 
-        Script.ListenEvent<SongLoadedEvent>((song) => {
-            this._btnDownload.attr({
-                href: this._downloader.GenerateUri(song.url, `${song.name} [${song.artists.join()}].mp3`),
-                title: `下载: ${song.name}`
-            });
-        });
+        this._downloader = new Downloader();
 
         unsafeExec(() => {
-			var fakePlatForm = navigator.platform + "--Fake-mac";
-			Object.defineProperty(navigator, "platform", {
-				get: () => { return fakePlatForm; },
-				set: () => { }
-			});
+            var fakePlatForm = navigator.platform + "--Fake-mac";
+            Object.defineProperty(navigator, "platform", {
+                get: () => { return fakePlatForm; },
+                set: () => { }
+            });
         });
     }
 
@@ -160,7 +155,6 @@ class YellowEase {
 
         if (isFrame) {
             this.FramePage();
-            return ;
         } else {
             this.PlayerPage();
         }
@@ -220,12 +214,19 @@ class YellowEase {
 
         WaitUntil('nej.j', () => {
             var fnAjax = this.Search(unsafeWindow.nej.j, "nej.j", '.replace("api","weapi');
-            var fnGetSong = this.Search(unsafeWindow.nm.w.pP.prototype, 'nm.w.pP.prototype', /return this\.\w+\[this\.\w+\]/);
+            var fnGetSong = this.Search(
+                unsafeWindow.nm.w.pP.prototype,
+                'nm.w.pP.prototype',
+                /return this\.\w+\[this\.\w+\]/
+            );
 
-            if (Config.bInternational && !Config.bProxyInstalled) {
+            if (Config.bYellowEaseInternational) {
                 this._btnChangeCdn = $('<a>');
                 this._btnChangeCdn
-                    .click(() => this.NextCdn());
+                    .addClass('jx_btn jx_cdn')
+                    .click(() => this.NextCdn())
+                    .insertAfter(this._btnDownload)
+                    .text('换');
 
                 var cdn = GM_getValue('_ws_cdn_media', null);
                 if (!cdn) {
@@ -235,57 +236,82 @@ class YellowEase {
                 }
             }
 
-            ////// 安装修改后的函数开始
+            ////// 安装修改后的 取得曲目信息 函数开始
+
+            var callEventFn = GenerateValidName();
+
+            exportFunction((song: string) => {
+                var data = JSON.parse(song) as ISongInfoCache;
+                this._song = {
+                    artists: data.artists.map((artist) => artist.name).join('、'),
+                    name: data.name,
+                    url: null
+                };
+                info(`捕捉到音乐切换: ${this._song.name}`);
+            }, unsafeWindow, {
+                defineAs: callEventFn
+            });
+
+            unsafeExec((callEventFn: string, fnGetSong: string) => {
+                var _getSongBackup: Function = window.nm.w.pP.prototype[fnGetSong];
+                window.nm.w.pP.prototype[fnGetSong] = function () {
+                    var r = _getSongBackup.call(this);
+                    window[callEventFn](JSON.stringify(r));
+                    return r;
+                }
+            }, callEventFn, fnGetSong);
+
+            ////// 安装修改后的 取得曲目信息 函数结束
+
+
+            ////// 安装修改后的 Ajax 函数开始
 
             var ajaxPatchFn = GenerateValidName();
             this._ajaxBackup = unsafeWindow.nej.j[fnAjax];
 
-            let onlyInternational = Config.bInternational && !Config.bProxyInstalled;
-            let hookedAjax = (onlyInternational ? this.AjaxInternational : this.AjaxMainland);
-            
-            exportFunction(hookedAjax.bind(this), unsafeWindow, {
-                defineAs: ajaxPatchFn
-            });
+            if (Config.bYellowEaseUseOldApi || Config.bYellowEaseInternational) {
+                let hookedAjax = (Config.bYellowEaseUseOldApi ? this.AjaxPatchedOldApi : this.AjaxPatchedInternational);
+                
+                exportFunction(hookedAjax.bind(this), unsafeWindow, {
+                    defineAs: ajaxPatchFn
+                });
 
-            if (!onlyInternational) {
-                warn('%c 作者我不在国内，无法测试大陆解析模式是否可用 _(:3__ ', "background: yellow");
+                unsafeExec((ajaxPatchFn: string, fnAjax: string) => {
+                    var ajaxPatched  = (<any>window)[ajaxPatchFn] as YellowEaseAjax;
+                    var ajaxOriginal = window.nej.j[fnAjax] as YellowEaseAjax;
+                    window.nej.j[fnAjax] = CustomAjax as YellowEaseAjax;
+
+                    function CustomAjax(url: string, params: IXhrParam): void
+                    {
+                        if (url.indexOf('log/') != -1) {
+                            setTimeout(() => {
+                                params.onload({
+                                    code: 200
+                                });
+                            }, 100);
+                            return ;
+                        }
+
+                        if (!params.headers)
+                            params.headers = {};
+
+                        var _onload = params.onload;
+                        // params._onload = params.onload;
+                        params.onload = (data) => {
+                            params.onload = _onload;
+                            if (params._onload) {
+                                params._onload(data, _onload);
+                            } else {
+                                params.onload(data);
+                            }
+                        };
+
+                        ajaxPatched(url, params);
+                    }
+                }, ajaxPatchFn, fnAjax);
             }
 
-            ////// 安装修改后的函数结束
-
-            unsafeExec((ajaxPatchFn: string, fnAjax: string) => {
-                var ajaxPatched  = (<any>window)[ajaxPatchFn] as YellowEaseAjax;
-                var ajaxOriginal = window.nej.j[fnAjax] as YellowEaseAjax;
-                window.nej.j[fnAjax] = CustomAjax as YellowEaseAjax;
-
-                function CustomAjax(url: string, params: IXhrParam): void
-                {
-                    if (url.indexOf('log/') != -1) {
-                        setTimeout(() => {
-                            params.onload({
-                                code: 200
-                            });
-                        }, 100);
-                        return ;
-                    }
-
-                    if (!params.headers)
-                        params.headers = {};
-
-                    var _onload = params.onload;
-                    // params._onload = params.onload;
-                    params.onload = (data) => {
-                        params.onload = _onload;
-                        if (params._onload) {
-                            params._onload(data, _onload);
-                        } else {
-                            params.onload(data);
-                        }
-                    };
-
-                    ajaxPatched(url, params);
-                }
-            }, ajaxPatchFn, fnAjax);
+            ////// 安装修改后的 Ajax 函数结束
 
             /// 挂钩下一首切换事件, 强制重新读取当前曲目地址。
             var fnNextSong = this.Search(unsafeWindow.nm.w.pP.prototype, 'nm.w.pP.prototype', '(+1),"ui")');
@@ -302,7 +328,7 @@ class YellowEase {
         });
     }
 
-    private AjaxMainland(url: string, params: IXhrParam): void
+    private AjaxPatchedOldApi(url: string, params: IXhrParam): void
     {
         if (url != '/api/song/enhance/player/url') {
             return this._ajaxBackup(url, params);
@@ -330,7 +356,9 @@ class YellowEase {
 
         if (requestIds.length === 0) {
             info(`从缓存读取曲目信息。`);
-            params.onload(SongsToUrlReply(songs));
+            let reply = SongsToUrlReply(songs);
+            this.NotifyUrlChange(reply.data[0].url);
+            params.onload(reply);
             return ;
         }
 
@@ -347,7 +375,9 @@ class YellowEase {
             });
             this.SaveCache();
 
-            _onload(SongsToUrlReply(_ids.map((id: string) => this._songCache[id])));
+            let reply = SongsToUrlReply(_ids.map((id: string) => this._songCache[id]));
+            this.NotifyUrlChange(reply.data[0].url);
+            _onload(reply);
         }, unsafeWindow);
 
         this._ajaxBackup(url, params);
@@ -373,7 +403,8 @@ class YellowEase {
         localStorage.__track_queue_cache = JSON.stringify(this._songCache);
     }
 
-    private AjaxInternational(url: string, params: IXhrSongUrlParam, try_br?: number): void
+    _song: SongChangeEvent;
+    private AjaxPatchedInternational(url: string, params: IXhrSongUrlParam, try_br?: number): void
     {
         if (url != '/api/song/enhance/player/url') {
             return ;
@@ -384,21 +415,37 @@ class YellowEase {
         var id = JSON.parse(params.query.ids)[0];
         params._onload = <IXhrOnloadCustom>exportFunction((data: IXhrSongUrlReply, _onload: IXhrOnload) => {
             if (data.data[0].url) {
-                _onload(UrlToSongUrlReply(id, this.InjectCdn(data.data[0].url)));
-
-                let reply = UrlToSongUrlReply(id, this.InjectCdn(data.data[0].url));
-            } else if (Config.bUseThridOnFail && !try_br) {
+                let url = this.InjectCdn(data.data[0].url);
+                _onload(UrlToSongUrlReply(id, url));
+                this.NotifyUrlChange(url);
+            } else if (Config.bYellowEaseUseThridOnFail && !try_br) {
                 MusicSpy.Get(id, (err, url) => {
                     if (err) {
                         error(err);
                         return ;
                     }
-                    _onload(UrlToSongUrlReply(id, this.InjectCdn(url)));
+                    let cdn_url = this.InjectCdn(url);
+                    _onload(UrlToSongUrlReply(id, cdn_url));
+                    this.NotifyUrlChange(cdn_url);
                 });
             };
         }, unsafeWindow);
 
         this._ajaxBackup(url, params);
+    }
+
+    private NotifyUrlChange(url: string): void
+    {
+        this._song.url = url;
+        this.OnSongChange();
+    }
+
+    private OnSongChange(): void
+    {
+        this._btnDownload.attr({
+            href: this._downloader.GenerateUri(this._song.url, `${this._song.name} [${this._song.artists}].mp3`),
+            title: `下载: ${this._song.name}`
+        });
     }
 
     private InjectCdn(url: string): string
@@ -429,9 +476,9 @@ class YellowEase {
         localStorage.ws_cdn_media = ip;
         GM_setValue("_ws_cdn_media", ip);
 
-		document.dispatchEvent(new CustomEvent(Script.Name + '-cdn', {
-			detail: ip
-		}));
+        document.dispatchEvent(new CustomEvent(Script.Name + '-cdn', {
+            detail: ip
+        }));
     }
 
     private HookRadioPlayer()
@@ -441,7 +488,125 @@ class YellowEase {
 
     private FramePage()
     {
-        // TODO: 处理框架 
+        switch(location.pathname.split('/')[1]) {
+            case 'mv':              // MV
+                this.MoviePage();
+                break;
+
+            case 'outchain':        // 外链
+                this.OutchainPage();
+                break;
+
+            case 'song':            // 单曲
+                this.SinglePage();
+                break;
+
+            case 'album':           // 专辑
+            case 'artist':          // 艺术家
+            case 'playlist':        // 播放列表
+            case 'discover':        // 首页
+                this.EnableItems();
+                break;
+        }
+    }
+
+    private MoviePage () {
+        var $flashBox = $('#flash_box');
+        if ($flashBox.length > 0) {
+            var html = $flashBox.html();
+            var params: MvFlashParams = <MvFlashParams>
+                qs.Parse(html.match(/flashvars="([\s\S]+?)"/)[1].replace(/&amp;/g, '&'));
+
+            var qualities: IStringDictionary = {
+                hurl: '高清',
+                murl: '标清',
+                lurl: '渣画质'
+            };
+
+            var $dlHolder = $('<p>').css({
+                textAlign: 'right'
+            }).text('MV 下载: ').insertAfter($flashBox);
+
+            Object.keys(qualities).forEach((qualityId) => {
+                if (params[qualityId]) {
+                    var $dl = $('<a>').attr({
+                        
+                        href: this._downloader.GenerateUri(params[qualityId],
+                                `${params.trackName}[${qualities[qualityId]}].mp4`),
+                        
+                        title: `下载 ${params.trackName} 的 ${qualities[qualityId]} Mv`
+
+                    }).prop('download', true).text(qualities[qualityId]);
+
+                    // 修正 163 自己的跳转.
+                    this._downloader.CaptureAria($dl);
+                    $dlHolder.append($dl);
+                    $dlHolder.append(' | ');
+                }
+            });
+            $dlHolder.append(`提供: ${Script.Name} ${version}`);
+
+            if (Config.bYellowEaseInternational) {
+                $flashBox.html(html.replace(/restrict=true/g, 'restrict='));
+
+                // 自动关闭弹出的提示框
+                var timer = setInterval(function () {
+                    var el = document.getElementsByClassName('zcls');
+                    if (el.length > 0) {
+                        el[0].dispatchEvent(new Event('mousedown'));
+                        clearInterval(timer);
+                    }
+                }, 100);
+            }
+        }
+
+    }
+
+    private OutchainPage () {
+        // TODO: 外链页面
+    }
+
+    private SinglePage () {
+        var timer = window.setInterval(() => {
+            var playButton = document.getElementsByClassName('u-btni-addply');
+            if (playButton.length == 1) {
+                window.clearInterval(timer);
+                return;
+            }
+
+            // Otherwise it should be a disabled button.
+            var playButtons = document.getElementsByClassName('u-btni-play-dis');
+            if (playButtons.length == 1) {
+                window.clearInterval(timer);
+                var songId = $('#content-operation').data('rid');
+
+                (<HTMLAnchorElement>playButtons[0]).outerHTML = `
+<a data-res-action="play" data-res-id="${songId}" data-res-type="18" href="javascript:;"
+  class="u-btn2 u-btn2-2 u-btni-addply f-fl" hidefocus="true" title="播放">
+    <i><em class="ply"></em>播放</i>
+</a>
+
+<a data-res-action="addto" data-res-id="${songId}" data-res-type="18" href="javascript:;"
+  class="u-btni u-btni-add" hidefocus="true" title="添加到播放列表">
+</a>
+                `;
+            }
+
+        }, 1000);
+    }
+
+    private EnableItems () {
+        var timer = window.setInterval(() => {
+            var disbledItems = document.getElementsByClassName('js-dis');
+
+            if (disbledItems.length === 0){
+                window.clearInterval(timer);
+            }
+
+            for (var i = 0; i < disbledItems.length; ){
+                disbledItems[i].classList.remove('js-dis');
+            }
+        }, 1000);
     }
 }
 
@@ -506,7 +671,6 @@ function GenerateCdnList(): string[]
 
         // 北京电信
         '203.130.59.8',
-        '203.130.59.9',
         '203.130.59.10',
         '203.130.59.11',
         '203.130.59.12'
@@ -589,10 +753,11 @@ function GenerateUrlFromSong(song:ISongInfo) {
     var randServer = ~~(Math.random() * 2) + 1;
 
     var ipPrefix: string = '';
-    if (Config.bInternational) {
-        if (Config.bProxyInstalled) {
+    if (Config.bYellowEaseInternational) {
+        if (Config.bYellowEaseUseOldApi) {
             ipPrefix = '127.0.0.1:4003/';
         } else {
+            // TODO: 这些 Ip 有用嘛?
             ipPrefix = rule.instance._cdn;
         }
     }
@@ -652,13 +817,13 @@ module MusicSpy {
         _reloadCache = false;
     }
 
-	function ReadCache (id: string|number): MusicSpyCacheItem
+    function ReadCache (id: string|number): MusicSpyCacheItem
     {
-		if (_reloadCache)
-			ReloadCache();
+        if (_reloadCache)
+            ReloadCache();
 
         return _cache[id];
-	}
+    }
 
     function SaveCache(): void
     {
@@ -671,17 +836,17 @@ module MusicSpy {
 
         info(`第一步: 搜索曲目 (${id})`);
 
-		var cacheSong = ReadCache(id);
-		if (cacheSong) {
+        var cacheSong = ReadCache(id);
+        if (cacheSong) {
             info(`读自缓存, 请求解析真实地址。`);
             ParseRealAddress(cacheSong, callback);
-			// callback(null, cacheSong.url);
-			return ;
-		}
+            // callback(null, cacheSong.url);
+            return ;
+        }
 
-		GM_xmlhttpRequest({
-			method: "GET",
-			url: `http://itwusun.com/search/wy/${id}?p=1&f=json&sign=itwusun`,
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: `http://itwusun.com/search/wy/${id}?p=1&f=json&sign=itwusun`,
             onload: (response) => {
                 var data: MusicSpyItem[];
                 try {
@@ -691,10 +856,10 @@ module MusicSpy {
                     return ;
                 }
 
-				if (data.length === 0) {
-					callback(new Error('无效的曲目搜索结果。'));
-					return ;
-				}
+                if (data.length === 0) {
+                    callback(new Error('无效的曲目搜索结果。'));
+                    return ;
+                }
 
                 var song = data
                     .filter((song) => song.Type == 'wy' && song.SongId == id)
@@ -739,8 +904,8 @@ module MusicSpy {
         }
 
         GM_xmlhttpRequest({
-			method: "GET",
-			url: cacheSong.url,
+            method: "GET",
+            url: cacheSong.url,
             headers: {
                 Range: 'bytes=0-2'
             },
@@ -811,9 +976,6 @@ module MusicSpy {
     }
 }
 
-
-
-
 declare var localStorage: YellowEaseStorage;
 declare var unsafeWindow: YellowEaseWindow;
 declare var window: YellowEaseWindow;
@@ -824,14 +986,19 @@ interface YellowEaseStorage extends Storage {
     __track_queue_cache: string;
     _MUSIC_SPY: string;
 }
+
 interface YellowEaseWindow extends Window {
     nej: any;
     nm:  any;
     [key: string]: any;
 }
 
-interface SongLoadedEvent {
-    artists: string[];
+interface IStringDictionary {
+    [key: string]: string;
+}
+
+interface SongChangeEvent {
+    artists: string;
     name: string;
     url: string;
 }
@@ -844,16 +1011,22 @@ interface TrackCache {
 
 // 版权状态
 interface CrStatus {
-    privilege: IPrivileg;
+    privilege: IPrivilege;
     status: number;
     fee: number;
+}
+
+// Mv 参数
+interface MvFlashParams extends IStringDictionary {
+    trackName: string;
+
 }
 
 /**
  * 黄易的 Xhr 返回
  */
 interface IXhrReply {
-	code: number;
+    code: number;
 }
 
 interface IXhrData {}
@@ -863,103 +1036,75 @@ interface IXhrSongUrlReply extends IXhrReply {
 }
 
 interface IEnhancedData extends IXhrData {
-	id: number;
-	url: string;
-	br: number;
-	size: number;
-	md5: string;
-	code: number;
-	expi: number;
-	type: string;
-	gain: number;
-	fee: number;
-	uf: void /* 未知类型 */;
-	payed: number;
-	canExtend: boolean;
+    id: number;
+    url: string;
+    br: number;
+    size: number;
+    md5: string;
+    code: number;
+    expi: number;
+    type: string;
+    gain: number;
+    fee: number;
+    uf: void /* 未知类型 */;
+    payed: number;
+    canExtend: boolean;
 }
 
 // url: /api/v3/song/detail
 interface IXhrSongDetailReply extends IXhrReply {
-	songs: ISongInfo[];
-	privileges: IPrivileg[];
-}
-
-interface IPrivileg {
-	id: number;
-	fee: number;
-	payed: number;
-	st: number;
-	pl: number;
-	dl: number;
-	sp: number;
-	cp: number;
-	subp: number;
-	cs: boolean;
-	maxbr: number;
-	fl: number;
+    songs: ISongInfo[];
+    privileges: IPrivilege[];
 }
 
 interface ISongInfo {
-	rtUrls: void[];
-	ar: IAlbumRecord[];
-	al: IAlbumInfo;
-	st: number;
-	a: void /* 未知类型 */;
-	m: IQualityInfo;
-	no: number;
-	cd: string;
-	fee: number;
-	ftype: number;
-	rtype: number;
-	rurl: void /* 未知类型 */;
-	t: number;
-	v: number;
-	crbt: void /* 未知类型 */;
-	rtUrl: void /* 未知类型 */;
-	pst: number;
-	alia: void[];
-	pop: number;
-	rt: string;
-	mst: number;
-	cp: number;
-	mv: number;
-	cf: string;
-	dt: number;
-	h: IQualityInfo;
-	l: IQualityInfo;
-	name: string;
-	id: number;
+    id: number;
+    name: string;
+    
+    rtUrls: void[];
+    ar: IArtist[];
+    al: IAlbum;
+    st: number;
+    a: void /* 未知类型 */;
+    no: number;
+    cd: string;
+    fee: number;
+    ftype: number;
+    rtype: number;
+    rurl: void /* 未知类型 */;
+    t: number;
+    v: number;
+    crbt: void /* 未知类型 */;
+    rtUrl: void /* 未知类型 */;
+    pst: number;
+    alia: void[];
+    pop: number;
+    rt: string;
+    mst: number;
+    cp: number;
+    mv: number;
+    cf: string;
+    dt: number;
+    l: IQualityInfo;
+    m: IQualityInfo;
+    h: IQualityInfo;
 }
 
 
 interface IQualityInfo {
-	br: number;
-	fid: number;
-	size: number;
-	vd: number;
-}
-
-interface IAlbumInfo {
-	id: number;
-	name: string;
-	picUrl: string;
-	pic_str: string;
-	pic: number;
-}
-
-
-interface IAlbumRecord {
-	id: number;
-	name: string;
+    br: number;
+    fid: number;
+    size: number;
+    vd: number;
 }
 
 /**
  * 黄易的 Xhr 参数构造
  */
 interface IXhrParam {
-	type: string;
-	query: IQuery;
-	headers?: IHttpHeader;
+    type: string;
+    query: IQuery;
+    headers?: IHttpHeader;
     onload: IXhrOnload;
     _onload: IXhrOnloadCustom;
     onerror: Function;
@@ -974,14 +1119,14 @@ interface IXhrOnloadCustom extends IXhrOnload {
 }
 
 interface IHttpHeader {
-	"X-Real-IP"?: string;
+    "X-Real-IP"?: string;
 }
 
 interface IQuery { }
 
 interface ISongUrlQuery extends IQuery {
-	ids: string;
-	br: number;
+    ids: string;
+    br: number;
 }
 
 interface IXhrSongUrlParam extends IXhrParam {
@@ -993,4 +1138,64 @@ interface IXhrSongUrlParam extends IXhrParam {
  */
 interface YellowEaseAjax {
     (url: string, params: IXhrParam): void
+}
+
+/**
+ * 黄易
+ */
+interface ISongInfoCache {
+	album: IAlbum;
+	alias: void[];
+	artists: IArtist[];
+	commentThreadId: string;
+	copyrightId: number;
+	duration: number;
+	id: number;
+	mvid: number;
+	name: string;
+	cd: string;
+	position: number;
+	ringtone: string;
+	rtUrl: void /* 未知类型 */;
+	status: number;
+	pstatus: number;
+	fee: number;
+	version: number;
+	songType: number;
+	mst: number;
+	score: number;
+	ftype: number;
+	rtUrls: void[];
+	privilege: IPrivilege;
+	source: void /* 未知类型 */;
+}
+
+interface IPrivilege {
+	id: number;
+	fee: number;
+	payed: number;
+	st: number;
+	pl: number;
+	dl: number;
+	sp: number;
+	cp: number;
+	subp: number;
+	cs: boolean;
+	maxbr: number;
+	fl: number;
+	status: number;
+}
+
+interface IArtist {
+	id: number;
+	name: string;
+}
+
+interface IAlbum {
+	id: number;
+	name: string;
+	picUrl: string;
+	pic_str: string;
+	pic: number;
+	alia: string[];
 }

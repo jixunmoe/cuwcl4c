@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.626
+// @version        4.0.634
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -158,7 +158,38 @@ define("helper/Constants", ["require", "exports"], function (require, exports) {
         }
     }
 });
-define("helper/ScriptConfig", ["require", "exports", "helper/Script"], function (require, exports, Script_1) {
+define("helper/Logger", ["require", "exports", "helper/Script"], function (require, exports, Script_1) {
+    "use strict";
+    function DoLog(prefix, method, args) {
+        if (args.length < 1)
+            return;
+        if (typeof args[0] == 'string') {
+            args[0] = `[${Script_1.Script.Name}][${prefix}] ${args[0]}`;
+        }
+        else {
+            args.splice(0, 0, `[${Script_1.Script.Name}][${prefix}] ${args[0]}`);
+        }
+        console[method].apply(console, args);
+    }
+    function WrapLog(prefix, method) {
+        return (...args) => {
+            return DoLog(prefix, method, args);
+        };
+    }
+    function DoNothing() { }
+    exports.log = DoNothing;
+    exports.info = DoNothing;
+    exports.error = DoNothing;
+    exports.warn = DoNothing;
+    function EnableLogs() {
+        exports.log = WrapLog('日志', 'log');
+        exports.info = WrapLog('信息', 'info');
+        exports.error = WrapLog('错误', 'error');
+        exports.warn = WrapLog('警告', 'warn');
+    }
+    exports.EnableLogs = EnableLogs;
+});
+define("helper/ScriptConfig", ["require", "exports", "helper/Script", "helper/Logger"], function (require, exports, Script_2, Logger_1) {
     "use strict";
     (function (UriType) {
         UriType[UriType["NormalUrl"] = 0] = "NormalUrl";
@@ -167,12 +198,21 @@ define("helper/ScriptConfig", ["require", "exports", "helper/Script"], function 
         UriType[UriType["Aria"] = 2] = "Aria";
     })(exports.UriType || (exports.UriType = {}));
     var UriType = exports.UriType;
+    function ReadConfig() {
+        try {
+            return JSON.parse(GM_getValue(Script_2.Script.Name, ""));
+        }
+        catch (ex) {
+            return { version: 0 };
+        }
+    }
     exports.Config = $.extend({
+        version: 1,
         bDiaplayLog: true,
-        bInternational: false,
-        bProxyInstalled: false,
+        bYellowEaseInternational: false,
+        bYellowEaseUseOldApi: false,
+        bYellowEaseUseThridOnFail: false,
         bUseCustomRules: false,
-        bUseThridOnFail: false,
         dAria_auth: Aria2.AUTH.noAuth,
         dAria_port: 6800,
         dUriType: UriType.NormalUrl,
@@ -182,14 +222,28 @@ define("helper/ScriptConfig", ["require", "exports", "helper/Script"], function 
         sAria_user: "",
         sCustomRule: ""
     }, ReadConfig());
-    function ReadConfig() {
-        try {
-            return JSON.parse(GM_getValue(Script_1.Script.Name, ""));
+    // 升级
+    const __latest_version = 1;
+    if (exports.Config.version != __latest_version) {
+        switch (exports.Config.version) {
+            case undefined:
+            case 0:
+                Logger_1.info('升级 v0 配置文件...');
+                exports.Config.version = 1;
+                exports.Config.bYellowEaseInternational = exports.Config.bInternational;
+                exports.Config.bYellowEaseUseOldApi = exports.Config.bProxyInstalled;
+                exports.Config.bYellowEaseUseThridOnFail = exports.Config.bUseThridOnFail;
+                delete exports.Config.bInternational;
+                delete exports.Config.bUseThridOnFail;
+                delete exports.Config.bProxyInstalled;
+                break;
+            case 1:
+                break;
         }
-        catch (ex) {
-            return {};
-        }
+        GM_setValue(Script_2.Script.Name, JSON.stringify(exports.Config));
     }
+    if (exports.Config.bDiaplayLog)
+        Logger_1.EnableLogs();
 });
 define("helper/Extension", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -296,36 +350,6 @@ define("helper/QueryString", ["require", "exports", "helper/Extension"], functio
     }
     exports.Parse = Parse;
 });
-define("helper/Logger", ["require", "exports", "helper/Script", "helper/ScriptConfig"], function (require, exports, Script_2, ScriptConfig_1) {
-    "use strict";
-    function DoLog(prefix, method, args) {
-        if (args.length < 1)
-            return;
-        if (typeof args[0] == 'string') {
-            args[0] = `[${Script_2.Script.Name}][${prefix}] ${args[0]}`;
-        }
-        else {
-            args.splice(0, 0, `[${Script_2.Script.Name}][${prefix}] ${args[0]}`);
-        }
-        console[method].apply(console, args);
-    }
-    function WrapLog(prefix, method) {
-        return (...args) => {
-            return DoLog(prefix, method, args);
-        };
-    }
-    function DoNothing() { }
-    exports.log = DoNothing;
-    exports.info = DoNothing;
-    exports.error = DoNothing;
-    exports.warn = DoNothing;
-    if (ScriptConfig_1.Config.bDiaplayLog) {
-        exports.log = WrapLog('日志', 'log');
-        exports.info = WrapLog('信息', 'info');
-        exports.error = WrapLog('错误', 'error');
-        exports.warn = WrapLog('警告', 'warn');
-    }
-});
 define("helper/StyleSheet", ["require", "exports"], function (require, exports) {
     "use strict";
     class StyleSheet {
@@ -370,9 +394,9 @@ define("helper/StyleSheet", ["require", "exports"], function (require, exports) 
     }
     exports.StyleSheet = StyleSheet;
 });
-define("helper/Downloader", ["require", "exports", "helper/Script", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Script_3, ScriptConfig_2, Extension_2) {
+define("helper/Downloader", ["require", "exports", "helper/Script", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Script_3, ScriptConfig_1, Extension_2) {
     "use strict";
-    var config = ScriptConfig_2.Config;
+    var config = ScriptConfig_1.Config;
     class Downloader {
         constructor() {
             this._captured = false;
@@ -389,9 +413,9 @@ define("helper/Downloader", ["require", "exports", "helper/Script", "helper/Scri
         }
         GenerateUri(url, filename, ref) {
             switch (config.dUriType) {
-                case ScriptConfig_2.UriType.Custom:
+                case ScriptConfig_1.UriType.Custom:
                     return `cuwcl4c://|1|${this.GenerateUrlPart(url, filename, ref)}`;
-                case ScriptConfig_2.UriType.Aria:
+                case ScriptConfig_1.UriType.Aria:
                     if (!this._captured)
                         this.CaptureAria();
                     return `aria2://|${this.GenerateUrlPart(url, filename, ref)}`;
@@ -455,7 +479,7 @@ ${sErrorMsg}`);
             }
         }
         AddDownload(url, file) {
-            if (config.dUriType == ScriptConfig_2.UriType.Aria) {
+            if (config.dUriType == ScriptConfig_1.UriType.Aria) {
                 this.AddToAria(url, file);
             }
             else {
@@ -465,7 +489,7 @@ ${sErrorMsg}`);
     }
     exports.Downloader = Downloader;
 });
-define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension", "helper/StyleSheet", "helper/Logger"], function (require, exports, Constants_1, Extension_3, StyleSheet_1, Logger_1) {
+define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension", "helper/StyleSheet", "helper/Logger"], function (require, exports, Constants_1, Extension_3, StyleSheet_1, Logger_2) {
     "use strict";
     exports.Sites = [];
     function Add(siteRule) {
@@ -564,7 +588,7 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
                 event = site.onBody;
                 break;
             default:
-                Logger_1.error(`无效的事件 ${eventName}`);
+                Logger_2.error(`无效的事件 ${eventName}`);
                 return;
         }
         if (!site._styleApplied) {
@@ -605,12 +629,12 @@ ${Constants_1.downloadIconSelector}::before {
         site.style.Apply(true);
         if (!event)
             return;
-        Logger_1.info(`执行规则: ${site.id} 于 ${site.name} [事件: ${eventName}]`);
+        Logger_2.info(`执行规则: ${site.id} 于 ${site.name} [事件: ${eventName}]`);
         event.call(this);
     }
     exports.Run = Run;
 });
-define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/ScriptConfig", "helper/Script", "helper/Downloader"], function (require, exports, Constants_2, ScriptConfig_3, Script_4, Downloader_1) {
+define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/ScriptConfig", "helper/Script", "helper/Downloader"], function (require, exports, Constants_2, ScriptConfig_2, Script_4, Downloader_1) {
     "use strict";
     var rule = {
         bd: null,
@@ -619,10 +643,10 @@ define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/Scri
         subModule: false,
         includeSubHost: false,
         host: ['localhost.cuwcl4c', 'jixunmoe.github.io'],
-        path: ['/conf/', '/cuwcl4c/config'],
+        path: ['/config/', '/cuwcl4c/config'],
         onStart: () => {
             unsafeWindow.rScriptVersion = Constants_2.version;
-            unsafeWindow.rScriptConfig = JSON.stringify(ScriptConfig_3.Config);
+            unsafeWindow.rScriptConfig = JSON.stringify(ScriptConfig_2.Config);
             var _c = confirm;
             document.addEventListener('SaveConfig', function (e) {
                 try {
@@ -686,13 +710,13 @@ define("helper/Wait", ["require", "exports"], function (require, exports) {
     }
     exports.WaitUntil = WaitUntil;
 });
-define("helper/Redirect", ["require", "exports", "helper/Wait", "helper/Extension", "helper/Logger"], function (require, exports, Wait_1, Extension_4, Logger_2) {
+define("helper/Redirect", ["require", "exports", "helper/Wait", "helper/Extension", "helper/Logger"], function (require, exports, Wait_1, Extension_4, Logger_3) {
     "use strict";
     /**
      * 跳转后保留当前页面作为 referrer.
      */
     function RedirectTo(url) {
-        Logger_2.info(`准备跳转 ${url}...`);
+        Logger_3.info(`准备跳转 ${url}...`);
         var link = $('<a>')
             .attr('href', url)
             .text(`正在跳转 [${url}], 请稍后.. `)
@@ -912,7 +936,7 @@ define("site/dl.xuite", ["require", "exports"], function (require, exports) {
     };
     exports.Rules = [rule];
 });
-define("site/fm.douban", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader"], function (require, exports, Logger_3, Wait_3, Downloader_2) {
+define("site/fm.douban", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader"], function (require, exports, Logger_4, Wait_3, Downloader_2) {
     "use strict";
     var rule = {
         id: 'fm.douban',
@@ -957,9 +981,9 @@ div#jx_douban_dl_wrap {
                 .attr('id', 'jx_douban_dl_wrap')
                 .append(linkDownload)
                 .insertAfter('.player-wrap');
-            Logger_3.info('等待豆瓣电台加载 ..');
+            Logger_4.info('等待豆瓣电台加载 ..');
             Wait_3.WaitUntil('extStatusHandler', function () {
-                Logger_3.info('绑定豆瓣电台函数 ..');
+                Logger_4.info('绑定豆瓣电台函数 ..');
                 unsafeOverwriteFunctionSafeProxy({
                     extStatusHandler: function (jsonSongObj) {
                         var event = JSON.parse(jsonSongObj);
@@ -969,12 +993,12 @@ div#jx_douban_dl_wrap {
                             linkDownload
                                 .attr('href', rule.bd.GenerateUri(song.url, file))
                                 .attr('title', `下载: ${song.title}`);
-                            Logger_3.info(`${song.title} => ${song.url}`);
+                            Logger_4.info(`${song.title} => ${song.url}`);
                         }
                         throw new ErrorUnsafeSuccess();
                     }
                 });
-                Logger_3.info('函数绑定完毕, Enjoy~');
+                Logger_4.info('函数绑定完毕, Enjoy~');
             });
         }
     };
@@ -1036,7 +1060,7 @@ a.jixun-dl {
     };
     exports.Rules = [rule];
 });
-define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constants", "helper/Wait", "helper/Script", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Logger_4, Constants_3, Wait_4, Script_6, ScriptConfig_4, Extension_7) {
+define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constants", "helper/Wait", "helper/Downloader", "helper/Script", "helper/ScriptConfig", "helper/QueryString", "helper/Extension"], function (require, exports, Logger_5, Constants_3, Wait_4, Downloader_4, Script_6, ScriptConfig_3, qs, Extension_7) {
     "use strict";
     const __MP3_BLANK = 'https://jixunmoe.github.io/cuwcl4c/blank.mp3';
     var rule = {
@@ -1051,51 +1075,51 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         css: `
 
 .m-pbar, .m-pbar .barbg {
-	width: calc( 455px - 2.5em );
+    width: calc( 455px - 2.5em );
 }
 
 .m-playbar .play {
-	width: calc( 570px - 2.5em );
+    width: calc( 570px - 2.5em );
 }
 
 .m-playbar .oper {
-	width: initial;
+    width: initial;
 }
 
 .jx_dl:hover {
-	color: white;
+    color: white;
 }
 
 /* 底部单曲下载 */
 .m-playbar .oper .jx_btn {
-	text-indent: 0;
-	font-size: 1.5em;
-	margin: 13px 2px 0 0;
-	float: left;
-	color: #ccc;
-	text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em #aaa;
-	line-height: 1.6em;
-	font-size: 1.2em;
+    text-indent: 0;
+    font-size: 1.5em;
+    margin: 13px 2px 0 0;
+    float: left;
+    color: #ccc;
+    text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em #aaa;
+    line-height: 1.6em;
+    font-size: 1.2em;
 }
 
 .m-playbar .oper .jx_dl::before {
-	padding-right: .25em;
+    padding-right: .25em;
 }
 
 .jx_btn:hover {
-	color: white;
+    color: white;
 }
 
 /* 播放列表下载 */
 .m-playbar .listhdc .jx_dl.addall {
-	left: 306px;
-	line-height: 1em;
-	/* 多一个 px, 对齐文字 */
-	top: 13px;
+    left: 306px;
+    line-height: 1em;
+    /* 多一个 px, 对齐文字 */
+    top: 13px;
 }
 
 .m-playbar .listhdc .line.jx_dl_line {
-	left: 385px;
+    left: 385px;
 }
 
     `,
@@ -1111,18 +1135,12 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
     class YellowEase {
         constructor() {
             this._reloadCache = true;
-            this._localProxy = ScriptConfig_4.Config.bInternational && ScriptConfig_4.Config.bProxyInstalled;
             if (localStorage.__HIDE_BANNER) {
                 rule.style.Hide('#index-banner');
             }
-            if (ScriptConfig_4.Config.bInternational)
+            if (ScriptConfig_3.Config.bYellowEaseInternational)
                 this._cdns = GenerateCdnList();
-            Script_6.Script.ListenEvent((song) => {
-                this._btnDownload.attr({
-                    href: this._downloader.GenerateUri(song.url, `${song.name} [${song.artists.join()}].mp3`),
-                    title: `下载: ${song.name}`
-                });
-            });
+            this._downloader = new Downloader_4.Downloader();
             unsafeExec(() => {
                 var fakePlatForm = navigator.platform + "--Fake-mac";
                 Object.defineProperty(navigator, "platform", {
@@ -1159,7 +1177,6 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             });
             if (Constants_3.isFrame) {
                 this.FramePage();
-                return;
             }
             else {
                 this.PlayerPage();
@@ -1172,13 +1189,13 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                     if (fn && typeof fn == 'function') {
                         let fnStr = String(fn);
                         if (TestString(fnStr, keyword)) {
-                            Logger_4.info(`定位查找 %c${keyword}%c 成功: %c${displayBase}.${itemName}`, 'color: darkviolet', 'reset', 'color: green');
+                            Logger_5.info(`定位查找 %c${keyword}%c 成功: %c${displayBase}.${itemName}`, 'color: darkviolet', 'reset', 'color: green');
                             return itemName;
                         }
                     }
                 }
             }
-            Logger_4.error(`定位查找 ${keyword} 失败, 请联系作者修复!`);
+            Logger_5.error(`定位查找 ${keyword} 失败, 请联系作者修复!`);
             return null;
         }
         PlayerPage() {
@@ -1190,7 +1207,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 .addClass('jx_btn')
                 .appendTo('.m-playbar .oper');
             // TODO: 加入歌单下载按钮
-            if (ScriptConfig_4.Config.dUriType == ScriptConfig_4.UriType.Aria) {
+            if (ScriptConfig_3.Config.dUriType == ScriptConfig_3.UriType.Aria) {
                 this._downloader.CaptureAria(this._btnDownload);
             }
             else {
@@ -1209,10 +1226,13 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             Wait_4.WaitUntil('nej.j', () => {
                 var fnAjax = this.Search(unsafeWindow.nej.j, "nej.j", '.replace("api","weapi');
                 var fnGetSong = this.Search(unsafeWindow.nm.w.pP.prototype, 'nm.w.pP.prototype', /return this\.\w+\[this\.\w+\]/);
-                if (ScriptConfig_4.Config.bInternational && !ScriptConfig_4.Config.bProxyInstalled) {
+                if (ScriptConfig_3.Config.bYellowEaseInternational) {
                     this._btnChangeCdn = $('<a>');
                     this._btnChangeCdn
-                        .click(() => this.NextCdn());
+                        .addClass('jx_btn jx_cdn')
+                        .click(() => this.NextCdn())
+                        .insertAfter(this._btnDownload)
+                        .text('换');
                     var cdn = GM_getValue('_ws_cdn_media', null);
                     if (!cdn) {
                         this.NextCdn();
@@ -1221,47 +1241,67 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                         this._cdn = cdn;
                     }
                 }
-                ////// 安装修改后的函数开始
+                ////// 安装修改后的 取得曲目信息 函数开始
+                var callEventFn = GenerateValidName();
+                exportFunction((song) => {
+                    var data = JSON.parse(song);
+                    this._song = {
+                        artists: data.artists.map((artist) => artist.name).join('、'),
+                        name: data.name,
+                        url: null
+                    };
+                    Logger_5.info(`捕捉到音乐切换: ${this._song.name}`);
+                }, unsafeWindow, {
+                    defineAs: callEventFn
+                });
+                unsafeExec((callEventFn, fnGetSong) => {
+                    var _getSongBackup = window.nm.w.pP.prototype[fnGetSong];
+                    window.nm.w.pP.prototype[fnGetSong] = function () {
+                        var r = _getSongBackup.call(this);
+                        window[callEventFn](JSON.stringify(r));
+                        return r;
+                    };
+                }, callEventFn, fnGetSong);
+                ////// 安装修改后的 取得曲目信息 函数结束
+                ////// 安装修改后的 Ajax 函数开始
                 var ajaxPatchFn = GenerateValidName();
                 this._ajaxBackup = unsafeWindow.nej.j[fnAjax];
-                let onlyInternational = ScriptConfig_4.Config.bInternational && !ScriptConfig_4.Config.bProxyInstalled;
-                let hookedAjax = (onlyInternational ? this.AjaxInternational : this.AjaxMainland);
-                exportFunction(hookedAjax.bind(this), unsafeWindow, {
-                    defineAs: ajaxPatchFn
-                });
-                if (!onlyInternational) {
-                    Logger_4.warn('%c 作者我不在国内，无法测试大陆解析模式是否可用 _(:3__ ', "background: yellow");
-                }
-                ////// 安装修改后的函数结束
-                unsafeExec((ajaxPatchFn, fnAjax) => {
-                    var ajaxPatched = window[ajaxPatchFn];
-                    var ajaxOriginal = window.nej.j[fnAjax];
-                    window.nej.j[fnAjax] = CustomAjax;
-                    function CustomAjax(url, params) {
-                        if (url.indexOf('log/') != -1) {
-                            setTimeout(() => {
-                                params.onload({
-                                    code: 200
-                                });
-                            }, 100);
-                            return;
+                if (ScriptConfig_3.Config.bYellowEaseUseOldApi || ScriptConfig_3.Config.bYellowEaseInternational) {
+                    let hookedAjax = (ScriptConfig_3.Config.bYellowEaseUseOldApi ? this.AjaxPatchedOldApi : this.AjaxPatchedInternational);
+                    exportFunction(hookedAjax.bind(this), unsafeWindow, {
+                        defineAs: ajaxPatchFn
+                    });
+                    unsafeExec((ajaxPatchFn, fnAjax) => {
+                        var ajaxPatched = window[ajaxPatchFn];
+                        var ajaxOriginal = window.nej.j[fnAjax];
+                        window.nej.j[fnAjax] = CustomAjax;
+                        function CustomAjax(url, params) {
+                            if (url.indexOf('log/') != -1) {
+                                setTimeout(() => {
+                                    params.onload({
+                                        code: 200
+                                    });
+                                }, 100);
+                                return;
+                            }
+                            if (!params.headers)
+                                params.headers = {};
+                            var _onload = params.onload;
+                            // params._onload = params.onload;
+                            params.onload = (data) => {
+                                params.onload = _onload;
+                                if (params._onload) {
+                                    params._onload(data, _onload);
+                                }
+                                else {
+                                    params.onload(data);
+                                }
+                            };
+                            ajaxPatched(url, params);
                         }
-                        if (!params.headers)
-                            params.headers = {};
-                        var _onload = params.onload;
-                        // params._onload = params.onload;
-                        params.onload = (data) => {
-                            params.onload = _onload;
-                            if (params._onload) {
-                                params._onload(data, _onload);
-                            }
-                            else {
-                                params.onload(data);
-                            }
-                        };
-                        ajaxPatched(url, params);
-                    }
-                }, ajaxPatchFn, fnAjax);
+                    }, ajaxPatchFn, fnAjax);
+                }
+                ////// 安装修改后的 Ajax 函数结束
                 /// 挂钩下一首切换事件, 强制重新读取当前曲目地址。
                 var fnNextSong = this.Search(unsafeWindow.nm.w.pP.prototype, 'nm.w.pP.prototype', '(+1),"ui")');
                 unsafeExec((fnNextSong) => {
@@ -1275,7 +1315,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 }, fnNextSong);
             });
         }
-        AjaxMainland(url, params) {
+        AjaxPatchedOldApi(url, params) {
             if (url != '/api/song/enhance/player/url') {
                 return this._ajaxBackup(url, params);
             }
@@ -1296,11 +1336,13 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 return song;
             });
             if (requestIds.length === 0) {
-                Logger_4.info(`从缓存读取曲目信息。`);
-                params.onload(SongsToUrlReply(songs));
+                Logger_5.info(`从缓存读取曲目信息。`);
+                let reply = SongsToUrlReply(songs);
+                this.NotifyUrlChange(reply.data[0].url);
+                params.onload(reply);
                 return;
             }
-            Logger_4.info('请求服务器获取信息: %o', requestIds);
+            Logger_5.info('请求服务器获取信息: %o', requestIds);
             params.query = {
                 ids: requestIds
             };
@@ -1310,7 +1352,9 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                     this._songCache[song.id] = song;
                 });
                 this.SaveCache();
-                _onload(SongsToUrlReply(_ids.map((id) => this._songCache[id])));
+                let reply = SongsToUrlReply(_ids.map((id) => this._songCache[id]));
+                this.NotifyUrlChange(reply.data[0].url);
+                _onload(reply);
             }, unsafeWindow);
             this._ajaxBackup(url, params);
         }
@@ -1329,7 +1373,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         SaveCache() {
             localStorage.__track_queue_cache = JSON.stringify(this._songCache);
         }
-        AjaxInternational(url, params, try_br) {
+        AjaxPatchedInternational(url, params, try_br) {
             if (url != '/api/song/enhance/player/url') {
                 return;
             }
@@ -1337,25 +1381,38 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             var id = JSON.parse(params.query.ids)[0];
             params._onload = exportFunction((data, _onload) => {
                 if (data.data[0].url) {
-                    _onload(UrlToSongUrlReply(id, this.InjectCdn(data.data[0].url)));
-                    let reply = UrlToSongUrlReply(id, this.InjectCdn(data.data[0].url));
+                    let url = this.InjectCdn(data.data[0].url);
+                    _onload(UrlToSongUrlReply(id, url));
+                    this.NotifyUrlChange(url);
                 }
-                else if (ScriptConfig_4.Config.bUseThridOnFail && !try_br) {
+                else if (ScriptConfig_3.Config.bYellowEaseUseThridOnFail && !try_br) {
                     MusicSpy.Get(id, (err, url) => {
                         if (err) {
-                            Logger_4.error(err);
+                            Logger_5.error(err);
                             return;
                         }
-                        _onload(UrlToSongUrlReply(id, this.InjectCdn(url)));
+                        let cdn_url = this.InjectCdn(url);
+                        _onload(UrlToSongUrlReply(id, cdn_url));
+                        this.NotifyUrlChange(cdn_url);
                     });
                 }
                 ;
             }, unsafeWindow);
             this._ajaxBackup(url, params);
         }
+        NotifyUrlChange(url) {
+            this._song.url = url;
+            this.OnSongChange();
+        }
+        OnSongChange() {
+            this._btnDownload.attr({
+                href: this._downloader.GenerateUri(this._song.url, `${this._song.name} [${this._song.artists}].mp3`),
+                title: `下载: ${this._song.name}`
+            });
+        }
         InjectCdn(url) {
             var r = url.replace(/(m10\.music\.126\.net)/, `${this._cdn}/$1`);
-            Logger_4.info(`播放音乐 (${r})`);
+            Logger_5.info(`播放音乐 (${r})`);
             return r;
         }
         NextCdn() {
@@ -1368,7 +1425,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         NotifyCdn(ip) {
             if (this._btnChangeCdn)
                 this._btnChangeCdn.attr('title', `更换 CDN [当前: ${ip}]`);
-            Logger_4.info(`使用 CDN: ${ip}`);
+            Logger_5.info(`使用 CDN: ${ip}`);
             this._cdn = ip;
             localStorage.ws_cdn_media = ip;
             GM_setValue("_ws_cdn_media", ip);
@@ -1379,7 +1436,101 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         HookRadioPlayer() {
         }
         FramePage() {
-            // TODO: 处理框架 
+            switch (location.pathname.split('/')[1]) {
+                case 'mv':
+                    this.MoviePage();
+                    break;
+                case 'outchain':
+                    this.OutchainPage();
+                    break;
+                case 'song':
+                    this.SinglePage();
+                    break;
+                case 'album': // 专辑
+                case 'artist': // 艺术家
+                case 'playlist': // 播放列表
+                case 'discover':
+                    this.EnableItems();
+                    break;
+            }
+        }
+        MoviePage() {
+            var $flashBox = $('#flash_box');
+            if ($flashBox.length > 0) {
+                var html = $flashBox.html();
+                var params = qs.Parse(html.match(/flashvars="([\s\S]+?)"/)[1].replace(/&amp;/g, '&'));
+                var qualities = {
+                    hurl: '高清',
+                    murl: '标清',
+                    lurl: '渣画质'
+                };
+                var $dlHolder = $('<p>').css({
+                    textAlign: 'right'
+                }).text('MV 下载: ').insertAfter($flashBox);
+                Object.keys(qualities).forEach((qualityId) => {
+                    if (params[qualityId]) {
+                        var $dl = $('<a>').attr({
+                            href: this._downloader.GenerateUri(params[qualityId], `${params.trackName}[${qualities[qualityId]}].mp4`),
+                            title: `下载 ${params.trackName} 的 ${qualities[qualityId]} Mv`
+                        }).prop('download', true).text(qualities[qualityId]);
+                        // 修正 163 自己的跳转.
+                        this._downloader.CaptureAria($dl);
+                        $dlHolder.append($dl);
+                        $dlHolder.append(' | ');
+                    }
+                });
+                $dlHolder.append(`提供: ${Script_6.Script.Name} ${Constants_3.version}`);
+                if (ScriptConfig_3.Config.bYellowEaseInternational) {
+                    $flashBox.html(html.replace(/restrict=true/g, 'restrict='));
+                    // 自动关闭弹出的提示框
+                    var timer = setInterval(function () {
+                        var el = document.getElementsByClassName('zcls');
+                        if (el.length > 0) {
+                            el[0].dispatchEvent(new Event('mousedown'));
+                            clearInterval(timer);
+                        }
+                    }, 100);
+                }
+            }
+        }
+        OutchainPage() {
+            // TODO: 外链页面
+        }
+        SinglePage() {
+            var timer = window.setInterval(() => {
+                var playButton = document.getElementsByClassName('u-btni-addply');
+                if (playButton.length == 1) {
+                    window.clearInterval(timer);
+                    return;
+                }
+                // Otherwise it should be a disabled button.
+                var playButtons = document.getElementsByClassName('u-btni-play-dis');
+                if (playButtons.length == 1) {
+                    window.clearInterval(timer);
+                    var songId = $('#content-operation').data('rid');
+                    playButtons[0].outerHTML = `
+<a data-res-action="play" data-res-id="${songId}" data-res-type="18" href="javascript:;"
+  class="u-btn2 u-btn2-2 u-btni-addply f-fl" hidefocus="true" title="播放">
+    <i><em class="ply"></em>播放</i>
+</a>
+
+<a data-res-action="addto" data-res-id="${songId}" data-res-type="18" href="javascript:;"
+  class="u-btni u-btni-add" hidefocus="true" title="添加到播放列表">
+</a>
+                `;
+                }
+            }, 1000);
+        }
+        EnableItems() {
+            var timer = window.setInterval(() => {
+                var disbledItems = document.getElementsByClassName('js-dis');
+                if (disbledItems.length === 0) {
+                    window.clearInterval(timer);
+                }
+                for (var i = 0; i < disbledItems.length;) {
+                    disbledItems[i].classList.remove('js-dis');
+                }
+            }, 1000);
         }
     }
     function TestString(src, needle) {
@@ -1440,7 +1591,6 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             '218.87.111.83',
             // 北京电信
             '203.130.59.8',
-            '203.130.59.9',
             '203.130.59.10',
             '203.130.59.11',
             '203.130.59.12'
@@ -1505,17 +1655,18 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         var dfsId;
         var q = (song.h || song.m || song.l || song.a);
         if (!q) {
-            Logger_4.error(`歌曲 ${song.name} 已经下架，获取地址失败!`);
+            Logger_5.error(`歌曲 ${song.name} 已经下架，获取地址失败!`);
             return __MP3_BLANK;
         }
         dfsId = q.fid;
         var randServer = ~~(Math.random() * 2) + 1;
         var ipPrefix = '';
-        if (ScriptConfig_4.Config.bInternational) {
-            if (ScriptConfig_4.Config.bProxyInstalled) {
+        if (ScriptConfig_3.Config.bYellowEaseInternational) {
+            if (ScriptConfig_3.Config.bYellowEaseUseOldApi) {
                 ipPrefix = '127.0.0.1:4003/';
             }
             else {
+                // TODO: 这些 Ip 有用嘛?
                 ipPrefix = rule.instance._cdn;
             }
         }
@@ -1573,10 +1724,10 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         function Get(id, callback) {
             if (!_ready)
                 Init();
-            Logger_4.info(`第一步: 搜索曲目 (${id})`);
+            Logger_5.info(`第一步: 搜索曲目 (${id})`);
             var cacheSong = ReadCache(id);
             if (cacheSong) {
-                Logger_4.info(`读自缓存, 请求解析真实地址。`);
+                Logger_5.info(`读自缓存, 请求解析真实地址。`);
                 ParseRealAddress(cacheSong, callback);
                 // callback(null, cacheSong.url);
                 return;
@@ -1613,7 +1764,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                     };
                     _cache[id] = songObj;
                     SaveCache();
-                    Logger_4.info(`成功取得地址, 请求解析真实地址。`);
+                    Logger_5.info(`成功取得地址, 请求解析真实地址。`);
                     ParseRealAddress(songObj, callback);
                     // callback(null, url);
                 },
@@ -1626,9 +1777,9 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         // 四小时后过期
         // 1000 * 60 * 60 *4 == 14400000
         function ParseRealAddress(cacheSong, callback) {
-            Logger_4.info(`第二步: 解析真实地址 (${cacheSong.url})`);
+            Logger_5.info(`第二步: 解析真实地址 (${cacheSong.url})`);
             if (Date.now() - cacheSong.real_time < 14400000) {
-                Logger_4.info(`读自缓存，结束读取。`);
+                Logger_5.info(`读自缓存，结束读取。`);
                 callback(null, cacheSong.real_url);
                 return;
             }
@@ -1642,7 +1793,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                     cacheSong.real_url = response.finalUrl;
                     cacheSong.real_time = Date.now();
                     SaveCache();
-                    Logger_4.info(`解析结束: ${cacheSong.real_url}`);
+                    Logger_5.info(`解析结束: ${cacheSong.real_url}`);
                     callback(null, response.finalUrl);
                 },
                 onerror: () => {
@@ -1665,19 +1816,19 @@ define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.12
     i.Rules.forEach(SiteRule_1.Add);
     j.Rules.forEach(SiteRule_1.Add);
 });
-define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_7, Constants_4, ScriptConfig_5, QueryString_1, Logger_5, SiteRule_2) {
+define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_7, Constants_4, ScriptConfig_4, QueryString_1, Logger_6, SiteRule_2) {
     "use strict";
     var $_GET = QueryString_1.Parse(Constants_4.currentUrl);
-    if (ScriptConfig_5.Config.bUseCustomRules) {
+    if (ScriptConfig_4.Config.bUseCustomRules) {
         var customRules = [];
         try {
-            customRules = eval(`[${ScriptConfig_5.Config.sCustomRule}]`);
+            customRules = eval(`[${ScriptConfig_4.Config.sCustomRule}]`);
             customRules.forEach((rule) => {
                 SiteRule_2.Sites.push(rule);
             });
         }
         catch (ex) {
-            Logger_5.error(`解析自定义规则发生错误: ${ex.message}`);
+            Logger_6.error(`解析自定义规则发生错误: ${ex.message}`);
         }
     }
     GM_registerMenuCommand(`配置 ${Script_7.Script.Name}`, () => {

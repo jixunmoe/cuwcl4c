@@ -1,5 +1,4 @@
 import { Script } from "./Script";
-import { Config } from "./ScriptConfig";
 
 interface IConsole {
     [key: string]: LogFunction
@@ -43,7 +42,7 @@ export var info:  LogFunction = DoNothing;
 export var error: LogFunction = DoNothing;
 export var warn:  LogFunction = DoNothing;
 
-if (Config.bDiaplayLog) {
+export function EnableLogs () {
     log   = WrapLog('日志', 'log'  );
     info  = WrapLog('信息', 'info' );
     error = WrapLog('错误', 'error');

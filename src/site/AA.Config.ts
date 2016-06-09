@@ -14,7 +14,7 @@ var rule: IConfigPageRule = {
     includeSubHost: false,
     
     host: ['localhost.cuwcl4c', 'jixunmoe.github.io'],
-    path: ['/conf/', '/cuwcl4c/config'],
+    path: ['/config/', '/cuwcl4c/config'],
     
     onStart: () => {
         (<any>unsafeWindow).rScriptVersion = version;
