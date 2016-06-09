@@ -11,7 +11,7 @@ import { } from "../typings/GM_Unsafe.d";
 
 var rule: IDownloadRule = {
 	id: 'fm.moe',
-	ssl: true,
+	ssl: false,
 
 	name: '萌否电台',
 	host: 'moe.fm',

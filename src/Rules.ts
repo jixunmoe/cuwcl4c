@@ -27,3 +27,6 @@ h.Rules.forEach(Add);
 
 import * as i from "./site/fm.moe";
 i.Rules.forEach(Add);
+
+import * as j from "./site/music.163";
+j.Rules.forEach(Add);

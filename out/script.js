@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.601
+// @version        4.0.626
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -65,7 +65,7 @@
 // @include http://douban.fm/*
 // @include https://douban.fm/*
 // @include http://moe.fm/*
-// @include https://moe.fm/*
+// @include http://music.163.com/*
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
@@ -122,6 +122,20 @@ define("helper/Script", ["require", "exports"], function (require, exports) {
             });
         }
         Script.ListenEvent = ListenEvent;
+        function FireEvent(name, data) {
+            document.dispatchEvent(new CustomEvent(name, {
+                detail: JSON.stringify(data)
+            }));
+        }
+        Script.FireEvent = FireEvent;
+        function RegisterStorageEvent(key, listener) {
+            window.addEventListener('storage', (e) => {
+                if (e.key == key) {
+                    listener(key);
+                }
+            });
+        }
+        Script.RegisterStorageEvent = RegisterStorageEvent;
     })(Script = exports.Script || (exports.Script = {}));
 });
 define("helper/Constants", ["require", "exports"], function (require, exports) {
@@ -133,8 +147,8 @@ define("helper/Constants", ["require", "exports"], function (require, exports) {
     exports.lowerHost = location.hostname.toLowerCase();
     exports.topHost = exports.lowerHost.match(/\w+\.?\w+?$/)[0];
     exports.topHostMask = `.${exports.topHost}`;
-    exports.downloadIcon = 'jx_dl';
-    exports.downloadIconClass = '.jx_dl';
+    exports.downloadIconClass = 'jx_dl';
+    exports.downloadIconSelector = '.jx_dl';
     function _isFrame() {
         try {
             return unsafeWindow.top !== unsafeWindow.self;
@@ -156,6 +170,7 @@ define("helper/ScriptConfig", ["require", "exports", "helper/Script"], function 
     exports.Config = $.extend({
         bDiaplayLog: true,
         bInternational: false,
+        bProxyInstalled: false,
         bUseCustomRules: false,
         bUseThridOnFail: false,
         dAria_auth: Aria2.AUTH.noAuth,
@@ -214,7 +229,7 @@ define("helper/Extension", ["require", "exports"], function (require, exports) {
     exports.GetExtensionFromUrl = GetExtensionFromUrl;
     // Fisher-Yates Shuffle by community wiki(?)
     // http://stackoverflow.com/a/6274398
-    function Shuffle(...array) {
+    function Shuffle(array) {
         var counter = array.length;
         var temp, index;
         // While there are elements in the array
@@ -531,7 +546,7 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
     function FireEvent(event) {
         for (var i = exports.Sites.length; i--;) {
             var rule = exports.Sites[i];
-            if (Constants_1.isFrame && rule.noFrame)
+            if (Constants_1.isFrame && !rule.runInFrame)
                 continue;
             if (Check(rule, event)) {
                 Run(rule, event);
@@ -574,9 +589,9 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
 	font-style: normal;
 }
 
-${Constants_1.downloadIconClass}::before {
+${Constants_1.downloadIconSelector}::before {
 	font-family: ccc;
-	content: "\f019";
+	content: "\\f019";
 	padding-right: .5em;
 }
 
@@ -587,6 +602,7 @@ ${Constants_1.downloadIconClass}::before {
             `);
             }
         }
+        site.style.Apply(true);
         if (!event)
             return;
         Logger_1.info(`执行规则: ${site.id} 于 ${site.name} [事件: ${eventName}]`);
@@ -968,7 +984,7 @@ define("site/fm.moe", ["require", "exports", "helper/Downloader", "helper/Script
     "use strict";
     var rule = {
         id: 'fm.moe',
-        ssl: true,
+        ssl: false,
         name: '萌否电台',
         host: 'moe.fm',
         includeSubHost: false,
@@ -1020,7 +1036,623 @@ a.jixun-dl {
     };
     exports.Rules = [rule];
 });
-define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i) {
+define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constants", "helper/Wait", "helper/Script", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Logger_4, Constants_3, Wait_4, Script_6, ScriptConfig_4, Extension_7) {
+    "use strict";
+    const __MP3_BLANK = 'https://jixunmoe.github.io/cuwcl4c/blank.mp3';
+    var rule = {
+        id: 'music.163',
+        ssl: false,
+        name: '黄易云音乐',
+        host: 'music.163.com',
+        includeSubHost: false,
+        subModule: false,
+        runInFrame: true,
+        dl_icon: true,
+        css: `
+
+.m-pbar, .m-pbar .barbg {
+	width: calc( 455px - 2.5em );
+}
+
+.m-playbar .play {
+	width: calc( 570px - 2.5em );
+}
+
+.m-playbar .oper {
+	width: initial;
+}
+
+.jx_dl:hover {
+	color: white;
+}
+
+/* 底部单曲下载 */
+.m-playbar .oper .jx_btn {
+	text-indent: 0;
+	font-size: 1.5em;
+	margin: 13px 2px 0 0;
+	float: left;
+	color: #ccc;
+	text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em #aaa;
+	line-height: 1.6em;
+	font-size: 1.2em;
+}
+
+.m-playbar .oper .jx_dl::before {
+	padding-right: .25em;
+}
+
+.jx_btn:hover {
+	color: white;
+}
+
+/* 播放列表下载 */
+.m-playbar .listhdc .jx_dl.addall {
+	left: 306px;
+	line-height: 1em;
+	/* 多一个 px, 对齐文字 */
+	top: 13px;
+}
+
+.m-playbar .listhdc .line.jx_dl_line {
+	left: 385px;
+}
+
+    `,
+        instance: null,
+        onStart: () => {
+            rule.instance = new YellowEase();
+        },
+        onBody: () => {
+            rule.instance.BodyEvent();
+        }
+    };
+    exports.Rules = [rule];
+    class YellowEase {
+        constructor() {
+            this._reloadCache = true;
+            this._localProxy = ScriptConfig_4.Config.bInternational && ScriptConfig_4.Config.bProxyInstalled;
+            if (localStorage.__HIDE_BANNER) {
+                rule.style.Hide('#index-banner');
+            }
+            if (ScriptConfig_4.Config.bInternational)
+                this._cdns = GenerateCdnList();
+            Script_6.Script.ListenEvent((song) => {
+                this._btnDownload.attr({
+                    href: this._downloader.GenerateUri(song.url, `${song.name} [${song.artists.join()}].mp3`),
+                    title: `下载: ${song.name}`
+                });
+            });
+            unsafeExec(() => {
+                var fakePlatForm = navigator.platform + "--Fake-mac";
+                Object.defineProperty(navigator, "platform", {
+                    get: () => { return fakePlatForm; },
+                    set: () => { }
+                });
+            });
+        }
+        BodyEvent() {
+            Wait_4.WaitUntil('nm.x', () => {
+                // 两个版权提示, 一个权限提示.
+                var fnBypassCr1 = this.Search(unsafeWindow.nej.e, 'nej.e', '.dataset;if');
+                var fnBypassCr2 = this.Search(unsafeWindow.nm.x, 'nm.x', '.copyrightId==');
+                var fnBypassCr3 = this.Search(unsafeWindow.nm.x, 'nm.x', '.privilege;if');
+                unsafeExec((fnBypassCr1, fnBypassCr2, fnBypassCr3) => {
+                    var _fnBypassCr1 = window.nej.e[fnBypassCr1];
+                    window.nej.e[fnBypassCr1] = function (z, name) {
+                        if (name == 'copyright' || name == 'resCopyright') {
+                            return 1;
+                        }
+                        return _fnBypassCr1.apply(this, arguments);
+                    };
+                    window.nm.x[fnBypassCr2] = () => {
+                        return false;
+                    };
+                    window.nm.x[fnBypassCr3] = (song) => {
+                        song.status = 0;
+                        if (song.privilege) {
+                            song.privilege.pl = 320000;
+                        }
+                        return 0;
+                    };
+                }, fnBypassCr1, fnBypassCr2, fnBypassCr3);
+            });
+            if (Constants_3.isFrame) {
+                this.FramePage();
+                return;
+            }
+            else {
+                this.PlayerPage();
+            }
+        }
+        Search(base, displayBase, keyword) {
+            for (let itemName in base) {
+                if (base.hasOwnProperty(itemName)) {
+                    let fn = base[itemName];
+                    if (fn && typeof fn == 'function') {
+                        let fnStr = String(fn);
+                        if (TestString(fnStr, keyword)) {
+                            Logger_4.info(`定位查找 %c${keyword}%c 成功: %c${displayBase}.${itemName}`, 'color: darkviolet', 'reset', 'color: green');
+                            return itemName;
+                        }
+                    }
+                }
+            }
+            Logger_4.error(`定位查找 ${keyword} 失败, 请联系作者修复!`);
+            return null;
+        }
+        PlayerPage() {
+            this._btnDownload = $('<a>');
+            this._btnDownload
+                .attr('title', '播放音乐，即刻解析。')
+                .click((e) => e.stopPropagation())
+                .addClass(Constants_3.downloadIconClass)
+                .addClass('jx_btn')
+                .appendTo('.m-playbar .oper');
+            // TODO: 加入歌单下载按钮
+            if (ScriptConfig_4.Config.dUriType == ScriptConfig_4.UriType.Aria) {
+                this._downloader.CaptureAria(this._btnDownload);
+            }
+            else {
+            }
+            if (location.pathname == '/demo/fm') {
+                this.HookRadioPlayer();
+            }
+            else {
+                this.HookNormalPlayer();
+            }
+        }
+        HookNormalPlayer() {
+            function nextSong() {
+                document.querySelector('.nxt').click();
+            }
+            Wait_4.WaitUntil('nej.j', () => {
+                var fnAjax = this.Search(unsafeWindow.nej.j, "nej.j", '.replace("api","weapi');
+                var fnGetSong = this.Search(unsafeWindow.nm.w.pP.prototype, 'nm.w.pP.prototype', /return this\.\w+\[this\.\w+\]/);
+                if (ScriptConfig_4.Config.bInternational && !ScriptConfig_4.Config.bProxyInstalled) {
+                    this._btnChangeCdn = $('<a>');
+                    this._btnChangeCdn
+                        .click(() => this.NextCdn());
+                    var cdn = GM_getValue('_ws_cdn_media', null);
+                    if (!cdn) {
+                        this.NextCdn();
+                    }
+                    else {
+                        this._cdn = cdn;
+                    }
+                }
+                ////// 安装修改后的函数开始
+                var ajaxPatchFn = GenerateValidName();
+                this._ajaxBackup = unsafeWindow.nej.j[fnAjax];
+                let onlyInternational = ScriptConfig_4.Config.bInternational && !ScriptConfig_4.Config.bProxyInstalled;
+                let hookedAjax = (onlyInternational ? this.AjaxInternational : this.AjaxMainland);
+                exportFunction(hookedAjax.bind(this), unsafeWindow, {
+                    defineAs: ajaxPatchFn
+                });
+                if (!onlyInternational) {
+                    Logger_4.warn('%c 作者我不在国内，无法测试大陆解析模式是否可用 _(:3__ ', "background: yellow");
+                }
+                ////// 安装修改后的函数结束
+                unsafeExec((ajaxPatchFn, fnAjax) => {
+                    var ajaxPatched = window[ajaxPatchFn];
+                    var ajaxOriginal = window.nej.j[fnAjax];
+                    window.nej.j[fnAjax] = CustomAjax;
+                    function CustomAjax(url, params) {
+                        if (url.indexOf('log/') != -1) {
+                            setTimeout(() => {
+                                params.onload({
+                                    code: 200
+                                });
+                            }, 100);
+                            return;
+                        }
+                        if (!params.headers)
+                            params.headers = {};
+                        var _onload = params.onload;
+                        // params._onload = params.onload;
+                        params.onload = (data) => {
+                            params.onload = _onload;
+                            if (params._onload) {
+                                params._onload(data, _onload);
+                            }
+                            else {
+                                params.onload(data);
+                            }
+                        };
+                        ajaxPatched(url, params);
+                    }
+                }, ajaxPatchFn, fnAjax);
+                /// 挂钩下一首切换事件, 强制重新读取当前曲目地址。
+                var fnNextSong = this.Search(unsafeWindow.nm.w.pP.prototype, 'nm.w.pP.prototype', '(+1),"ui")');
+                unsafeExec((fnNextSong) => {
+                    var oldNextSong = window.nm.w.pP.prototype[fnNextSong];
+                    var reloadSong = eval('(' + oldNextSong.toString().replace('1', '0') + ')');
+                    window.nm.w.pP.prototype[fnNextSong] = function () {
+                        window.nm.w.pP.prototype[fnNextSong] = oldNextSong;
+                        return reloadSong.call(this);
+                    };
+                    document.querySelector('.nxt').click();
+                }, fnNextSong);
+            });
+        }
+        AjaxMainland(url, params) {
+            if (url != '/api/song/enhance/player/url') {
+                return this._ajaxBackup(url, params);
+            }
+            url = '/api/v3/song/detail';
+            let query = params.query;
+            if (query.br)
+                delete query.br;
+            var _ids = JSON.parse(query.ids);
+            var requestIds = [];
+            this.LoadCache();
+            var songs = _ids.map((id) => {
+                if (id in this._songCache) {
+                    return this._songCache[id];
+                }
+                requestIds.push(id);
+                return null;
+            }).filter((song) => {
+                return song;
+            });
+            if (requestIds.length === 0) {
+                Logger_4.info(`从缓存读取曲目信息。`);
+                params.onload(SongsToUrlReply(songs));
+                return;
+            }
+            Logger_4.info('请求服务器获取信息: %o', requestIds);
+            params.query = {
+                ids: requestIds
+            };
+            params._onload = exportFunction((data, _onload) => {
+                this.LoadCache(false);
+                data.songs.forEach((song) => {
+                    this._songCache[song.id] = song;
+                });
+                this.SaveCache();
+                _onload(SongsToUrlReply(_ids.map((id) => this._songCache[id])));
+            }, unsafeWindow);
+            this._ajaxBackup(url, params);
+        }
+        LoadCache(force = false) {
+            if (force || this._reloadCache) {
+                try {
+                    this._songCache = JSON.parse(localStorage.__track_queue_cache);
+                }
+                catch (err) {
+                    this._songCache = {};
+                    localStorage.__track_queue_cache = '{}';
+                }
+            }
+            this._reloadCache = false;
+        }
+        SaveCache() {
+            localStorage.__track_queue_cache = JSON.stringify(this._songCache);
+        }
+        AjaxInternational(url, params, try_br) {
+            if (url != '/api/song/enhance/player/url') {
+                return;
+            }
+            params.headers['X-Real-IP'] = '118.88.88.88';
+            var id = JSON.parse(params.query.ids)[0];
+            params._onload = exportFunction((data, _onload) => {
+                if (data.data[0].url) {
+                    _onload(UrlToSongUrlReply(id, this.InjectCdn(data.data[0].url)));
+                    let reply = UrlToSongUrlReply(id, this.InjectCdn(data.data[0].url));
+                }
+                else if (ScriptConfig_4.Config.bUseThridOnFail && !try_br) {
+                    MusicSpy.Get(id, (err, url) => {
+                        if (err) {
+                            Logger_4.error(err);
+                            return;
+                        }
+                        _onload(UrlToSongUrlReply(id, this.InjectCdn(url)));
+                    });
+                }
+                ;
+            }, unsafeWindow);
+            this._ajaxBackup(url, params);
+        }
+        InjectCdn(url) {
+            var r = url.replace(/(m10\.music\.126\.net)/, `${this._cdn}/$1`);
+            Logger_4.info(`播放音乐 (${r})`);
+            return r;
+        }
+        NextCdn() {
+            if (!this._cdns)
+                this._cdns = GenerateCdnList();
+            var ip = this._cdns.shift();
+            this._cdns.push(ip);
+            this.NotifyCdn(ip);
+        }
+        NotifyCdn(ip) {
+            if (this._btnChangeCdn)
+                this._btnChangeCdn.attr('title', `更换 CDN [当前: ${ip}]`);
+            Logger_4.info(`使用 CDN: ${ip}`);
+            this._cdn = ip;
+            localStorage.ws_cdn_media = ip;
+            GM_setValue("_ws_cdn_media", ip);
+            document.dispatchEvent(new CustomEvent(Script_6.Script.Name + '-cdn', {
+                detail: ip
+            }));
+        }
+        HookRadioPlayer() {
+        }
+        FramePage() {
+            // TODO: 处理框架 
+        }
+    }
+    function TestString(src, needle) {
+        if (typeof needle == 'string') {
+            return Extension_7.Contains(src, needle);
+        }
+        else {
+            return needle.test(src);
+        }
+    }
+    function GenerateCdnList() {
+        var cdns = [
+            // 电信
+            "125.90.206.32",
+            "222.186.132.103",
+            "117.23.6.89",
+            "119.145.207.17",
+            "180.97.180.71",
+            "116.55.236.93",
+            "218.76.105.42",
+            "125.64.232.15",
+            "115.231.87.37",
+            "58.221.78.68",
+            "220.112.195.148",
+            "218.64.94.67",
+            "36.42.32.76",
+            "61.136.211.16",
+            "218.64.94.68",
+            "219.138.21.71",
+            "49.79.232.58",
+            "122.228.24.30",
+            "182.106.194.85",
+            "218.59.186.98",
+            "61.158.133.21",
+            "117.27.241.20",
+            "58.51.150.133",
+            "218.29.49.132",
+            "60.215.125.76",
+            "183.61.22.17",
+            "183.134.14.26",
+            "58.220.6.142",
+            "115.231.158.44",
+            "61.164.241.105",
+            "125.46.22.124",
+            "222.28.152.139",
+            "124.165.216.244",
+            "218.60.106.115",
+            "202.107.85.81",
+            "61.179.107.116",
+            "175.43.20.69",
+            "220.194.203.86",
+            "61.160.209.27",
+            "120.209.141.79",
+            "120.209.142.138",
+            "219.138.21.72",
+            "58.216.21.132",
+            '14.215.228.10',
+            '218.87.111.83',
+            // 北京电信
+            '203.130.59.8',
+            '203.130.59.9',
+            '203.130.59.10',
+            '203.130.59.11',
+            '203.130.59.12'
+        ];
+        return Extension_7.Shuffle(cdns);
+    }
+    function GenerateValidName() {
+        return `${Script_6.Script.Name}__${Date.now()}${Math.random()}`;
+    }
+    function SongsToUrlReply(songs) {
+        var reply = {
+            code: 200,
+            data: songs.map((song) => {
+                var r = {
+                    id: song.id,
+                    url: GenerateUrlFromSong(song),
+                    br: 192000,
+                    size: 0,
+                    md5: '0000000000000000',
+                    code: 200,
+                    expi: 1200,
+                    type: 'mp3',
+                    gain: 0,
+                    fee: 0,
+                    uf: null,
+                    payed: 0,
+                    canExtend: false
+                };
+                return r;
+            })
+        };
+        return cloneInto(reply, unsafeWindow, {
+            cloneFunctions: false,
+            wrapReflectors: true
+        });
+    }
+    function UrlToSongUrlReply(id, url) {
+        var reply = {
+            code: 200,
+            data: [{
+                    id: id,
+                    url: url,
+                    br: 192000,
+                    size: 0,
+                    md5: '0000000000000000',
+                    code: 200,
+                    expi: 1200,
+                    type: 'mp3',
+                    gain: 0,
+                    fee: 0,
+                    uf: null,
+                    payed: 0,
+                    canExtend: false
+                }]
+        };
+        return cloneInto(reply, unsafeWindow, {
+            cloneFunctions: false,
+            wrapReflectors: false
+        });
+    }
+    function GenerateUrlFromSong(song) {
+        var dfsId;
+        var q = (song.h || song.m || song.l || song.a);
+        if (!q) {
+            Logger_4.error(`歌曲 ${song.name} 已经下架，获取地址失败!`);
+            return __MP3_BLANK;
+        }
+        dfsId = q.fid;
+        var randServer = ~~(Math.random() * 2) + 1;
+        var ipPrefix = '';
+        if (ScriptConfig_4.Config.bInternational) {
+            if (ScriptConfig_4.Config.bProxyInstalled) {
+                ipPrefix = '127.0.0.1:4003/';
+            }
+            else {
+                ipPrefix = rule.instance._cdn;
+            }
+        }
+        var dfsHash = DoDfsHash(dfsId);
+        return `http://${ipPrefix}m${randServer}.music.126.net/${dfsHash}/${dfsId}.mp3`;
+    }
+    function strToKeyCodes(str) {
+        return String(str).split('').map((ch) => ch.charCodeAt(0));
+    }
+    const keys = [
+        51, 103, 111, 56, 38, 36,
+        56, 42, 51, 42, 51, 104,
+        48, 107, 40, 50, 41, 50
+    ];
+    function DoDfsHash(dfsid) {
+        var fids = strToKeyCodes(dfsid).map(function (fid, i) {
+            return (fid ^ keys[i % keys.length]) & 0xFF;
+        });
+        return CryptoJS.MD5(CryptoJS.lib.ByteArray(fids))
+            .toString(CryptoJS.enc.Base64)
+            .replace(/\//g, "_")
+            .replace(/\+/g, "-");
+    }
+    var MusicSpy;
+    (function (MusicSpy) {
+        var _ready = false;
+        var _reloadCache = true;
+        var _cache = {};
+        function Init() {
+            _ready = true;
+            Script_6.Script.RegisterStorageEvent('_MUSIC_SPY', () => {
+                _reloadCache = true;
+            });
+            ReloadCache();
+        }
+        function ReloadCache(force = false) {
+            if (force || _reloadCache) {
+                try {
+                    _cache = JSON.parse(localStorage._MUSIC_SPY);
+                }
+                catch (ex) {
+                    _cache = {};
+                }
+            }
+            _reloadCache = false;
+        }
+        function ReadCache(id) {
+            if (_reloadCache)
+                ReloadCache();
+            return _cache[id];
+        }
+        function SaveCache() {
+            localStorage._MUSIC_SPY = JSON.stringify(_cache);
+        }
+        function Get(id, callback) {
+            if (!_ready)
+                Init();
+            Logger_4.info(`第一步: 搜索曲目 (${id})`);
+            var cacheSong = ReadCache(id);
+            if (cacheSong) {
+                Logger_4.info(`读自缓存, 请求解析真实地址。`);
+                ParseRealAddress(cacheSong, callback);
+                // callback(null, cacheSong.url);
+                return;
+            }
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: `http://itwusun.com/search/wy/${id}?p=1&f=json&sign=itwusun`,
+                onload: (response) => {
+                    var data;
+                    try {
+                        data = JSON.parse(response.responseText);
+                    }
+                    catch (err) {
+                        callback(err);
+                        return;
+                    }
+                    if (data.length === 0) {
+                        callback(new Error('无效的曲目搜索结果。'));
+                        return;
+                    }
+                    var song = data
+                        .filter((song) => song.Type == 'wy' && song.SongId == id)
+                        .pop();
+                    if (!song) {
+                        callback(new Error('找不到曲目信息。'));
+                        return;
+                    }
+                    var url = song.SqUrl || song.HqUrl || song.LqUrl;
+                    var songObj = {
+                        time: Date.now(),
+                        url: url,
+                        real_time: 0,
+                        real_url: null
+                    };
+                    _cache[id] = songObj;
+                    SaveCache();
+                    Logger_4.info(`成功取得地址, 请求解析真实地址。`);
+                    ParseRealAddress(songObj, callback);
+                    // callback(null, url);
+                },
+                onerror: () => {
+                    callback(new Error('网络错误 (搜索曲目)'));
+                }
+            });
+        }
+        MusicSpy.Get = Get;
+        // 四小时后过期
+        // 1000 * 60 * 60 *4 == 14400000
+        function ParseRealAddress(cacheSong, callback) {
+            Logger_4.info(`第二步: 解析真实地址 (${cacheSong.url})`);
+            if (Date.now() - cacheSong.real_time < 14400000) {
+                Logger_4.info(`读自缓存，结束读取。`);
+                callback(null, cacheSong.real_url);
+                return;
+            }
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: cacheSong.url,
+                headers: {
+                    Range: 'bytes=0-2'
+                },
+                onload: (response) => {
+                    cacheSong.real_url = response.finalUrl;
+                    cacheSong.real_time = Date.now();
+                    SaveCache();
+                    Logger_4.info(`解析结束: ${cacheSong.real_url}`);
+                    callback(null, response.finalUrl);
+                },
+                onerror: () => {
+                    callback(new Error('网络错误 (解析真实地址时)'), null);
+                }
+            });
+        }
+    })(MusicSpy || (MusicSpy = {}));
+});
+define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j) {
     "use strict";
     a.Rules.forEach(SiteRule_1.Add);
     b.Rules.forEach(SiteRule_1.Add);
@@ -1031,24 +1663,25 @@ define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.12
     g.Rules.forEach(SiteRule_1.Add);
     h.Rules.forEach(SiteRule_1.Add);
     i.Rules.forEach(SiteRule_1.Add);
+    j.Rules.forEach(SiteRule_1.Add);
 });
-define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_6, Constants_3, ScriptConfig_4, QueryString_1, Logger_4, SiteRule_2) {
+define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_7, Constants_4, ScriptConfig_5, QueryString_1, Logger_5, SiteRule_2) {
     "use strict";
-    var $_GET = QueryString_1.Parse(Constants_3.currentUrl);
-    if (ScriptConfig_4.Config.bUseCustomRules) {
+    var $_GET = QueryString_1.Parse(Constants_4.currentUrl);
+    if (ScriptConfig_5.Config.bUseCustomRules) {
         var customRules = [];
         try {
-            customRules = eval(`[${ScriptConfig_4.Config.sCustomRule}]`);
+            customRules = eval(`[${ScriptConfig_5.Config.sCustomRule}]`);
             customRules.forEach((rule) => {
                 SiteRule_2.Sites.push(rule);
             });
         }
         catch (ex) {
-            Logger_4.error(`解析自定义规则发生错误: ${ex.message}`);
+            Logger_5.error(`解析自定义规则发生错误: ${ex.message}`);
         }
     }
-    GM_registerMenuCommand(`配置 ${Script_6.Script.Name}`, () => {
-        GM_openInTab(Script_6.Script.Config, false);
+    GM_registerMenuCommand(`配置 ${Script_7.Script.Name}`, () => {
+        GM_openInTab(Script_7.Script.Config, false);
     });
     SiteRule_2.FireEvent('start');
     $(() => {

@@ -40,9 +40,10 @@ export function GetExtensionFromUrl(url:string): string
 
 // Fisher-Yates Shuffle by community wiki(?)
 // http://stackoverflow.com/a/6274398
-export function Shuffle(...array:any[]) {
+export function Shuffle<T>(array:T[]): T[]
+{
     var counter: number = array.length;
-    var temp: any, index: number;
+    var temp: T, index: number;
 
     // While there are elements in the array
     while (counter > 0) {

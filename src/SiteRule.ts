@@ -1,4 +1,4 @@
-import { isFrame, lowerHost, topHostMask, downloadIconClass } from "./helper/Constants";
+import { isFrame, lowerHost, topHostMask, downloadIconSelector } from "./helper/Constants";
 import { BeginWith, Contains, EndWith } from "./helper/Extension";
 import { StyleSheet } from "./helper/StyleSheet";
 import { Downloader } from "./helper/Downloader";
@@ -107,7 +107,7 @@ export function FireEvent(event:string)
 {
     for (var i = Sites.length; i--; ) {
         var rule = Sites[i];
-        if (isFrame && rule.noFrame)
+        if (isFrame && !rule.runInFrame)
             continue;
         
         if (Check(rule, event)) {
@@ -160,9 +160,9 @@ export function Run(site:ISiteRule, eventName: string): void
 	font-style: normal;
 }
 
-${downloadIconClass}::before {
+${downloadIconSelector}::before {
 	font-family: ccc;
-	content: "\f019";
+	content: "\\f019";
 	padding-right: .5em;
 }
 
@@ -173,6 +173,8 @@ ${downloadIconClass}::before {
             `);
         }
     }
+
+    site.style.Apply(true);
     
     if (!event) return ;
     
@@ -204,7 +206,7 @@ export interface ISiteRule {
     _styleApplied?: boolean;
     style?: StyleSheet;
     
-    noFrame?: boolean;
+    runInFrame?: boolean;
 }
 
 export interface IDownloadRule extends ISiteRule {

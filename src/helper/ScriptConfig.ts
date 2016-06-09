@@ -18,6 +18,7 @@ export var Config: IScriptConfig;
 Config = $.extend({
     bDiaplayLog: true,
     bInternational: false,
+    bProxyInstalled: false,
     bUseCustomRules: false,
     bUseThridOnFail: false,
     
@@ -31,7 +32,7 @@ Config = $.extend({
     sAria_user: "",
     
     sCustomRule: ""
-}, ReadConfig ()) as IScriptConfig;
+} as IScriptConfig, ReadConfig ()) as IScriptConfig;
 
 function ReadConfig (): IScriptConfig
 {
@@ -45,6 +46,7 @@ function ReadConfig (): IScriptConfig
 export interface IScriptConfig {
     bDiaplayLog: boolean;
     bInternational: boolean;
+    bProxyInstalled: boolean;
     bUseCustomRules: boolean;
     bUseThridOnFail: boolean;
     

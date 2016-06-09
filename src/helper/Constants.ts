@@ -8,8 +8,8 @@ export var lowerHost = location.hostname.toLowerCase();
 export var topHost = lowerHost.match(/\w+\.?\w+?$/)[0];
 export var topHostMask = `.${topHost}`;
 
-export var downloadIcon      =  'jx_dl';
-export var downloadIconClass = '.jx_dl';
+export var downloadIconClass    =  'jx_dl';
+export var downloadIconSelector = '.jx_dl';
 
 function _isFrame(): boolean
 {

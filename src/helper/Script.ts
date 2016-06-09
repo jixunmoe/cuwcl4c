@@ -15,8 +15,27 @@ export module Script {
             listener(info);
         });
     }
+
+    export function FireEvent<T>(name: string, data:T): void
+    {
+        document.dispatchEvent(new CustomEvent(name, {
+            detail: JSON.stringify(data)
+        }));
+    }
+
+    export function RegisterStorageEvent(key:string, listener: StorageEventListener) {
+        window.addEventListener('storage', (e) => {
+            if (e.key == key) {
+                listener(key);
+            }
+        });
+    }
 }
 
 interface CustomEventListener<T> {
     (e: T): void;
+}
+
+interface StorageEventListener {
+    (key: string): void;
 }

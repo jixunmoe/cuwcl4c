@@ -1,11 +1,11 @@
-// Type definitions for CryptoJS 3.1.2
+// Type definitions for CryptoJS_NS 3.1.2
 // Project: https://code.google.com/p/crypto-js/
 // Definitions by: Gia Bảo @ Sân Đình <https://github.com/giabao>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
-declare var CryptoJS: CryptoJS.CryptoJSStatic;
+declare var CryptoJS: CryptoJS_NS.CryptoJS_NSStatic;
 
-declare namespace CryptoJS{
+declare namespace CryptoJS_NS{
     namespace lib{
         interface Base{
             extend(overrides: Object): Object
@@ -15,9 +15,8 @@ declare namespace CryptoJS{
             mixIn(properties: Object): void
             clone(): Base
         }
-        
-        class ByteArray {
-            constructor(array:Uint8Array);
+
+        interface ByteArray extends lib.WordArray {
         }
 
         interface WordArray extends Base{
@@ -209,6 +208,7 @@ declare namespace CryptoJS{
             CipherParams: lib.CipherParams
             SerializableCipher: lib.SerializableCipher
             PasswordBasedCipher: lib.PasswordBasedCipher
+            ByteArray: (val: Uint8Array) => lib.ByteArray
         }
     }
 
@@ -430,7 +430,7 @@ declare namespace CryptoJS{
         }
     }
 
-    interface CryptoJSStatic{
+    interface CryptoJS_NSStatic{
         lib: lib.LibStatic
         enc: enc.EncStatic
         kdf: kdf.KdfStatic
@@ -440,34 +440,34 @@ declare namespace CryptoJS{
         pad: pad.PadStatic
         x64: x64.X64Static
 
-        AES: CryptoJS.lib.ICipherHelper<CryptoJS.lib.IBlockCipherCfg>
-        DES: CryptoJS.lib.ICipherHelper<CryptoJS.lib.IBlockCipherCfg>
-        TripleDES: CryptoJS.lib.ICipherHelper<CryptoJS.lib.IBlockCipherCfg>
+        AES: CryptoJS_NS.lib.ICipherHelper<CryptoJS_NS.lib.IBlockCipherCfg>
+        DES: CryptoJS_NS.lib.ICipherHelper<CryptoJS_NS.lib.IBlockCipherCfg>
+        TripleDES: CryptoJS_NS.lib.ICipherHelper<CryptoJS_NS.lib.IBlockCipherCfg>
 
-        RabbitLegacy: CryptoJS.lib.CipherHelper
-        Rabbit: CryptoJS.lib.CipherHelper
-        RC4: CryptoJS.lib.CipherHelper
-        RC4Drop: CryptoJS.lib.ICipherHelper<Object>
+        RabbitLegacy: CryptoJS_NS.lib.CipherHelper
+        Rabbit: CryptoJS_NS.lib.CipherHelper
+        RC4: CryptoJS_NS.lib.CipherHelper
+        RC4Drop: CryptoJS_NS.lib.ICipherHelper<Object>
 
-        MD5: CryptoJS.lib.HasherHelper
-        HmacMD5: CryptoJS.lib.IHasherHmacHelper
-        RIPEMD160: CryptoJS.lib.HasherHelper
-        HmacRIPEMD160: CryptoJS.lib.IHasherHmacHelper
-        SHA1: CryptoJS.lib.HasherHelper
-        HmacSHA1: CryptoJS.lib.IHasherHmacHelper
-        SHA256: CryptoJS.lib.HasherHelper
-        HmacSHA256: CryptoJS.lib.IHasherHmacHelper
-        SHA224: CryptoJS.lib.HasherHelper
-        HmacSHA224: CryptoJS.lib.IHasherHmacHelper
-        SHA512: CryptoJS.lib.HasherHelper
-        HmacSHA512: CryptoJS.lib.IHasherHmacHelper
-        SHA384: CryptoJS.lib.HasherHelper
-        HmacSHA384: CryptoJS.lib.IHasherHmacHelper
+        MD5: CryptoJS_NS.lib.HasherHelper
+        HmacMD5: CryptoJS_NS.lib.IHasherHmacHelper
+        RIPEMD160: CryptoJS_NS.lib.HasherHelper
+        HmacRIPEMD160: CryptoJS_NS.lib.IHasherHmacHelper
+        SHA1: CryptoJS_NS.lib.HasherHelper
+        HmacSHA1: CryptoJS_NS.lib.IHasherHmacHelper
+        SHA256: CryptoJS_NS.lib.HasherHelper
+        HmacSHA256: CryptoJS_NS.lib.IHasherHmacHelper
+        SHA224: CryptoJS_NS.lib.HasherHelper
+        HmacSHA224: CryptoJS_NS.lib.IHasherHmacHelper
+        SHA512: CryptoJS_NS.lib.HasherHelper
+        HmacSHA512: CryptoJS_NS.lib.IHasherHmacHelper
+        SHA384: CryptoJS_NS.lib.HasherHelper
+        HmacSHA384: CryptoJS_NS.lib.IHasherHmacHelper
 
-        SHA3: CryptoJS.lib.IHasherHelper<CryptoJS.algo.ISHA3Cfg>
-        HmacSHA3: CryptoJS.lib.IHasherHmacHelper
+        SHA3: CryptoJS_NS.lib.IHasherHelper<CryptoJS_NS.algo.ISHA3Cfg>
+        HmacSHA3: CryptoJS_NS.lib.IHasherHmacHelper
 
-        EvpKDF: CryptoJS.algo.IEvpKDFHelper
-        PBKDF2: CryptoJS.algo.IEvpKDFHelper //PBKDF2 is same as EvpKDF
+        EvpKDF: CryptoJS_NS.algo.IEvpKDFHelper
+        PBKDF2: CryptoJS_NS.algo.IEvpKDFHelper //PBKDF2 is same as EvpKDF
     }
 }
