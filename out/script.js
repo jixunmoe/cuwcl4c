@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.634
+// @version        4.0.635
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -1207,6 +1207,12 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 .addClass('jx_btn')
                 .appendTo('.m-playbar .oper');
             // TODO: 加入歌单下载按钮
+            this._btnDownloadAll = $('<a>');
+            this._btnDownloadAll
+                .addClass('addall')
+                .text('全部下载')
+                .addClass(Constants_3.downloadIconClass)
+                .click(() => this.DownloadAll());
             if (ScriptConfig_3.Config.dUriType == ScriptConfig_3.UriType.Aria) {
                 this._downloader.CaptureAria(this._btnDownload);
             }
@@ -1219,7 +1225,21 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 this.HookNormalPlayer();
             }
         }
+        DownloadAll() {
+            // TODO: 下载所有曲目
+        }
         HookNormalPlayer() {
+            Wait_4.WaitUntil(() => {
+                return document.querySelector('.listhdc > .addall') != null;
+            }, () => {
+                var dlLine = $('<a>');
+                dlLine
+                    .addClass('line jx_dl_line')
+                    .hide();
+                this._btnDownloadAll
+                    .insertBefore('.m-playbar .listhdc .addall')
+                    .after(dlLine);
+            }, true, 500);
             function nextSong() {
                 document.querySelector('.nxt').click();
             }

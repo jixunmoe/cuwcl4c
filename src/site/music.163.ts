@@ -178,6 +178,7 @@ class YellowEase {
         return null;
     }
 
+    _btnDownloadAll: JQuery;
     private PlayerPage()
     {
         this._btnDownload = $('<a>');
@@ -189,6 +190,13 @@ class YellowEase {
             .appendTo('.m-playbar .oper');
         
         // TODO: 加入歌单下载按钮
+        this._btnDownloadAll = $('<a>');
+        this._btnDownloadAll
+            .addClass('addall')
+            .text('全部下载')
+            .addClass(downloadIconClass)
+            .click( () => this.DownloadAll () );
+
         if (Config.dUriType == UriType.Aria) {
             this._downloader.CaptureAria(this._btnDownload);
         } else {
@@ -204,10 +212,28 @@ class YellowEase {
 
     }
 
+    private DownloadAll(): void
+    {
+        // TODO: 下载所有曲目
+    }
+
     _btnChangeCdn: JQuery;
     _ajaxBackup: YellowEaseAjax;
     private HookNormalPlayer()
     {
+        WaitUntil(() => {
+            return document.querySelector('.listhdc > .addall') != null;
+        }, () => {
+            var dlLine = $('<a>');
+            dlLine
+                .addClass('line jx_dl_line')
+                .hide();
+
+            this._btnDownloadAll
+                .insertBefore('.m-playbar .listhdc .addall')
+                .after(dlLine);
+        }, true, 500);
+
         function nextSong () {
             (document.querySelector('.nxt') as HTMLAnchorElement).click();
         }
