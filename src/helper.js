@@ -258,19 +258,23 @@ H.merge (H, {
 });
 
 H.config = H.merge ({
-	bDiaplayLog: true,
-
-	dUriType:   0,
-	dAria_auth: 0,
-
-	sAria_user: '',
-	sAria_pass: '',
-	sAria_host: '127.0.0.1',
-	dAria_port: 6800,
-	sAria_dir: 'D:\\Download\\',
-
-	bUseCustomRules: false,
-	sCustomRule: ''
+    version: 1,
+    bDiaplayLog: true,
+    bYellowEaseInternational: false,
+    bYellowEaseUseOldApi: false,
+    bYellowEaseUseThridOnFail: false,
+    bUseCustomRules: false,
+    
+    dAria_auth: Aria2.AUTH.noAuth,
+    dAria_port: 6800,
+    dUriType: 0,
+    
+    sAria_dir: "D:\\Download\\",
+    sAria_host: "127.0.0.1",
+    sAria_pass: "",
+    sAria_user: "",
+    
+    sCustomRule: ""
 }, (function (conf) {
 	if (!conf) return {};
 
@@ -281,6 +285,30 @@ H.config = H.merge ({
 		return {};
 	}
 })(GM_getValue (H.scriptName)));
+
+const __latest_version = 1;
+if (H.config.version != __latest_version) {
+    switch (Config.version) {
+        case undefined:
+        case 0:
+            H.info('升级 v0 配置文件...');
+            Config.version = 1;
+
+            Config.bYellowEaseInternational = H.config.bInternational;
+            Config.bYellowEaseUseOldApi = H.config.bProxyInstalled;
+            Config.bYellowEaseUseThridOnFail = H.config.bUseThridOnFail;
+
+            delete H.config.bInternational;
+            delete H.config.bUseThridOnFail;
+            delete H.config.bProxyInstalled;
+            break;
+        
+        case 1:
+            break;
+    }
+
+    GM_setValue (H.scriptName, JSON.stringify(H.config));
+}
 
 // 2014.11.30: 不显示日志
 if (!H.config.bDiaplayLog || H.isFrame) {
