@@ -73,47 +73,67 @@
 <div id="form-config">
 			<div class="ui form">
 				<div class="ui horizontal header divider">日志选项</div>
-				<div class="field">
-					<div class="ui toggle checkbox">
-						<input type="checkbox" v-model="conf.bDiaplayLog">
-						<label>启用日志: 如果您觉得控制台的输出太乱的话，可以将此项关闭。</label>
-					</div>
-				</div>
+				<section>
+					<div class="field">
+						<div class="ui toggle checkbox">
+							<input type="checkbox" v-model="conf.bDiaplayLog">
+							<label>记录脚本运行日志</label>
+						</div>
 
-				<div class="ui horizontal header divider">云音乐♪ - 海外用户</div>
-				<div class="field">
-					<div class="ui toggle checkbox">
-						<input type="checkbox" v-model="conf.bInternational">
-						<label>我是海外用户，而且我听不了歌。</label>
+						<p class="note">
+							如果您觉得控制台的输出让您心烦的话，可以将此项关闭。
+							<br> 该项默认启用。
+						</p>
+					</div>
+				</section>
+
+				<div class="ui horizontal header divider">云音乐♪</div>
+				<section>
+					<div class="field">
+						<div class="ui toggle checkbox">
+							<input type="checkbox" v-model="conf.bYellowEaseInternational">
+							<label>我是海外用户，无法正常收听曲目。</label>
+						</div>
+						<p class="note">
+							启用后将重定向部分资源文件的请求，以达到解除海外限制的功能。
+						</p>
 					</div>
 
-					<p class="note">
-						启用后将重定向部分资源文件的请求。
-						<br> 对于封锁 ip 直连的受限网络，请修改您的 Hosts 文件。
-					</p>
-				</div>
+					<div class="field">
+						<div class="ui toggle checkbox">
+							<input type="checkbox" v-model="conf.bYellowEaseUseOldApi">
+							<label>使用旧版本 API 获取曲目数据。</label>
+						</div>
 
-				<div class="field">
-					<div class="ui toggle checkbox">
-						<input type="checkbox" v-model="conf.bUseThridOnFail">
-						<label>允许在无法正常解析音乐地址时使用第三方服务进行解析。</label>
-					</div>
-					<p class="note">
-						允许该操作将导致您当前浏览的页面地址、浏览器识别代码、您的 IP 地址等数据被第三方获取。
-						<br> 脚本不会主动提供非必须资料给第三方，开启该选项则代表您了解并认可该行为。
-					</p>
-				</div>
+						<p class="note" v-class="hide: conf.bYellowEaseInternational">
+							<!-- 国内用户提示 -->
+							旧版本的 API 限制较少，可以方便的解析出所需要的数据。
+							<br> 如果旧版本 API 失效了请不要勾选。
+							<br> 该选项默认关闭。
+						</p>
 
-				<div class="field">
-					<div class="ui toggle checkbox">
-						<input type="checkbox" v-model="conf.bProxyInstalled">
-						<label>我自己代理 <code>m*.music.126.net</code> 流量。</label>
+						<p class="note" v-class="hide: !conf.bYellowEaseInternational">
+							<!-- 海外用户提示 -->
+							因为地域封锁原因，<code>m1-m4.music.126.net</code> 无法播放解析出来的音乐。
+							<br> 因此启用该选项后，脚本将重定向所有请求至 <code>http://127.0.0.1:4003/m*.music.126.net/*</code>。 
+							<br> 请确保您的代理程序支持 HTTP 访问转发。
+							<br> 该选项默认关闭。
+						</p>
 					</div>
-					<p class="note">
-						启用后，脚本将重定向所有请求至 <code>http://127.0.0.1:4003/m*.music.126.net/*</code>。
-						<br> 请确保您的代<span>理</span>程序支持 HTTP 访问转发。
-					</p>
-				</div>
+
+					<div class="field">
+						<div class="ui toggle checkbox">
+							<input type="checkbox" v-model="conf.bYellowEaseUseThridOnFail">
+							<label>允许在无法正常解析音乐地址时使用第三方服务进行解析。</label>
+						</div>
+
+						<p class="note">
+							允许该操作将导致您当前浏览的页面地址、浏览器识别代码、IP 地址等数据被第三方获取。
+							<br> 该脚本不对通过第三方获取的数据准确性做出保证，亦不会主动提供非必须资料给第三方。
+							<br> 开启该选项则代表您了解并认可该行为 (默认关闭)。
+						</p>
+					</div>
+				</section>
 
 				<div class="ui horizontal header divider">下载选项</div>
 
@@ -184,7 +204,7 @@ three:  conf.dAria_auth == 2
 </div>
 
 
-<div class="ui horizontal header divider">启动后台</div>
+<div class="ui horizontal header divider">Aria 后台进程参数</div>
 
 <div class="two fields">
 	<div class="field">
@@ -196,7 +216,7 @@ three:  conf.dAria_auth == 2
 	<div class="field">
 		<div class="ui toggle checkbox">
 			<input type="checkbox" v-model="conf.xAlwaysResume">
-			<label>目标文件存在时尝试继续下载</label>
+			<label>目标文件存在时继续下载而非覆盖</label>
 		</div>
 	</div>
 </div>

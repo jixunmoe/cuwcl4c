@@ -90,3 +90,8 @@ p.note {
 	font-size: small;
 	color: darkgray;
 }
+
+section {
+    margin: 0 auto;
+    max-width: 43em;
+}
