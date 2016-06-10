@@ -30,3 +30,6 @@ i.Rules.forEach(Add);
 
 import * as j from "./site/music.163";
 j.Rules.forEach(Add);
+
+import * as k from "./site/music.1ting";
+k.Rules.forEach(Add);

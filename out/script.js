@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.636
+// @version        4.0.640
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -66,6 +66,7 @@
 // @include https://douban.fm/*
 // @include http://moe.fm/*
 // @include http://music.163.com/*
+// @include http://www.1ting.com/*
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
@@ -1822,7 +1823,47 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         }
     })(MusicSpy || (MusicSpy = {}));
 });
-define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j) {
+define("site/music.1ting", ["require", "exports", "helper/Wait", "helper/Downloader"], function (require, exports, Wait_5, Downloader_5) {
+    "use strict";
+    var rule = {
+        id: 'music.1ting',
+        ssl: false,
+        name: '一听音乐',
+        host: 'www.1ting.com',
+        includeSubHost: false,
+        subModule: false,
+        css: ``,
+        bd: null,
+        _dl: null,
+        onStart: () => {
+            rule.bd = new Downloader_5.Downloader();
+        },
+        onBody: () => {
+            rule._dl = $('.songact > .down');
+            rule._dl
+                .removeAttr('onclick')
+                .attr('target', '_blank');
+            rule.bd.CaptureAria(rule._dl);
+            Wait_5.WaitUntil('yiting.player.hook', () => {
+                unsafeWindow.yiting.player.hook('play', exportFunction(() => {
+                    rule.UpdateSong();
+                }, unsafeWindow));
+                rule.UpdateSong();
+            });
+        },
+        UpdateSong: () => {
+            var name = unsafeWindow.yiting.player.get('song-name');
+            var singer = unsafeWindow.yiting.player.get('singer-name');
+            var link = unsafeWindow.yiting.player.host + unsafeWindow.yiting.player.get('song-media');
+            rule._dl.attr({
+                href: rule.bd.GenerateUri(link, `${name} [${singer}].mp3`),
+                title: `点我下载: ${name}`
+            });
+        }
+    };
+    exports.Rules = [rule];
+});
+define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k) {
     "use strict";
     a.Rules.forEach(SiteRule_1.Add);
     b.Rules.forEach(SiteRule_1.Add);
@@ -1834,6 +1875,7 @@ define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.12
     h.Rules.forEach(SiteRule_1.Add);
     i.Rules.forEach(SiteRule_1.Add);
     j.Rules.forEach(SiteRule_1.Add);
+    k.Rules.forEach(SiteRule_1.Add);
 });
 define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_7, Constants_4, ScriptConfig_4, QueryString_1, Logger_6, SiteRule_2) {
     "use strict";
