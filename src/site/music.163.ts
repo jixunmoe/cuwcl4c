@@ -231,7 +231,8 @@ class YellowEase {
 
             this._btnDownloadAll
                 .insertBefore('.m-playbar .listhdc .addall')
-                .after(dlLine);
+                .after(dlLine)
+                .hide();
         }, true, 500);
 
         function nextSong () {

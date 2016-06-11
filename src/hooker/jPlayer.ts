@@ -11,7 +11,7 @@ export function Patch(callback:jPlayerMediaCallback, namespace: string = "jPlaye
     WaitUntil(`$.${namespace}.prototype.setMedia`, () => {
         info ('开始绑定函数 ..');
         unsafeOverwriteFunctionSafeProxy({
-            setMedia: (newMedia: Media) => {
+            setMedia: (newMedia: jPlayerMedia) => {
                 info ('歌曲数据: ', newMedia);
                 callback (newMedia);
                 throw new ErrorUnsafeSuccess();
@@ -21,10 +21,10 @@ export function Patch(callback:jPlayerMediaCallback, namespace: string = "jPlaye
 }
 
 interface jPlayerMediaCallback {
-    (media: Media): void
+    (media: jPlayerMedia): void
 }
 
-interface Media {
+export interface jPlayerMedia {
     mp3: string;
     m4a: string;
     m4v: string;

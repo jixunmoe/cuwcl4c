@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.640
+// @version        4.0.642
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -67,6 +67,7 @@
 // @include http://moe.fm/*
 // @include http://music.163.com/*
 // @include http://www.1ting.com/*
+// @include http://www.23356.com/*
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
@@ -1238,7 +1239,8 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                     .hide();
                 this._btnDownloadAll
                     .insertBefore('.m-playbar .listhdc .addall')
-                    .after(dlLine);
+                    .after(dlLine)
+                    .hide();
             }, true, 500);
             function nextSong() {
                 document.querySelector('.nxt').click();
@@ -1863,7 +1865,64 @@ define("site/music.1ting", ["require", "exports", "helper/Wait", "helper/Downloa
     };
     exports.Rules = [rule];
 });
-define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k) {
+define("hooker/jPlayer", ["require", "exports", "helper/Logger", "helper/Wait"], function (require, exports, Logger_6, Wait_6) {
+    "use strict";
+    function Patch(callback, namespace = "jPlayer") {
+        Logger_6.info('等待 jPlayer 就绪 ..');
+        Wait_6.WaitUntil(`$.${namespace}.prototype.setMedia`, () => {
+            Logger_6.info('开始绑定函数 ..');
+            unsafeOverwriteFunctionSafeProxy({
+                setMedia: (newMedia) => {
+                    Logger_6.info('歌曲数据: ', newMedia);
+                    callback(newMedia);
+                    throw new ErrorUnsafeSuccess();
+                }
+            }, unsafeWindow['$'][namespace].prototype, `.$.${namespace}.prototype`);
+        });
+    }
+    exports.Patch = Patch;
+});
+define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Script", "helper/Extension", "hooker/jPlayer"], function (require, exports, Downloader_6, Script_7, Extension_8, jPlayer) {
+    "use strict";
+    var rule = {
+        id: 'music.56',
+        ssl: false,
+        name: '56 音乐网',
+        host: 'www.23356.com',
+        path: ['/plus/player.ashx', '/ting/', '/music/'],
+        includeSubHost: false,
+        subModule: false,
+        hide: '.player-bottom-gg, .nocopyright',
+        bd: null,
+        onStart: () => {
+            rule.bd = new Downloader_6.Downloader();
+        },
+        onBody: () => {
+            jPlayer.Patch((media) => {
+                var addr = media.mp3 || media.m4a;
+                $('.play-info-otheropt > a:last')
+                    .attr('href', rule.bd.GenerateUri(addr, media.songname + addr.slice(-4)))
+                    .attr('title', `下载: ${media.songname} (歌手: ${media.singername})`)
+                    .find('span').text(`下载 (${Script_7.Script.Name})`);
+            });
+            var need_play = false;
+            unsafeWindow.splayer.song_data[0].forEach((song) => {
+                if (song.delflag || song.delflag != 0) {
+                    need_play = true;
+                    song.delflag = 0;
+                    if (Extension_8.BeginWith(song.url, '/del')) {
+                        song.url = song.url.replace('/del', '');
+                    }
+                }
+            });
+            if (need_play) {
+                unsafeWindow.$('#play').click();
+            }
+        }
+    };
+    exports.Rules = [rule];
+});
+define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting", "site/music.56"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k, l) {
     "use strict";
     a.Rules.forEach(SiteRule_1.Add);
     b.Rules.forEach(SiteRule_1.Add);
@@ -1876,8 +1935,9 @@ define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.12
     i.Rules.forEach(SiteRule_1.Add);
     j.Rules.forEach(SiteRule_1.Add);
     k.Rules.forEach(SiteRule_1.Add);
+    l.Rules.forEach(SiteRule_1.Add);
 });
-define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_7, Constants_4, ScriptConfig_4, QueryString_1, Logger_6, SiteRule_2) {
+define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_8, Constants_4, ScriptConfig_4, QueryString_1, Logger_7, SiteRule_2) {
     "use strict";
     var $_GET = QueryString_1.Parse(Constants_4.currentUrl);
     if (ScriptConfig_4.Config.bUseCustomRules) {
@@ -1889,11 +1949,11 @@ define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants",
             });
         }
         catch (ex) {
-            Logger_6.error(`解析自定义规则发生错误: ${ex.message}`);
+            Logger_7.error(`解析自定义规则发生错误: ${ex.message}`);
         }
     }
-    GM_registerMenuCommand(`配置 ${Script_7.Script.Name}`, () => {
-        GM_openInTab(Script_7.Script.Config, false);
+    GM_registerMenuCommand(`配置 ${Script_8.Script.Name}`, () => {
+        GM_openInTab(Script_8.Script.Config, false);
     });
     SiteRule_2.FireEvent('start');
     $(() => {
