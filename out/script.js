@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.642
+// @version        4.0.647
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -1183,20 +1183,42 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 this.PlayerPage();
             }
         }
-        Search(base, displayBase, keyword) {
+        Search(base, displayBase, keyword, suppressLog = false) {
             for (let itemName in base) {
                 if (base.hasOwnProperty(itemName)) {
                     let fn = base[itemName];
                     if (fn && typeof fn == 'function') {
                         let fnStr = String(fn);
                         if (TestString(fnStr, keyword)) {
-                            Logger_5.info(`定位查找 %c${keyword}%c 成功: %c${displayBase}.${itemName}`, 'color: darkviolet', 'reset', 'color: green');
+                            if (!suppressLog)
+                                Logger_5.info(`定位查找 %c${keyword}%c 成功: %c${displayBase}.${itemName}`, 'color: darkviolet', 'reset', 'color: green');
                             return itemName;
                         }
                     }
                 }
             }
-            Logger_5.error(`定位查找 ${keyword} 失败, 请联系作者修复!`);
+            if (!suppressLog)
+                Logger_5.error(`定位查找子函数 ${keyword} 于 ${displayBase} 失败, 请联系作者修复!`);
+            return null;
+        }
+        SearchSubPrototype(base, displayBase, keyword, suppressLog = false) {
+            for (let itemName in base) {
+                if (base.hasOwnProperty(itemName)) {
+                    let newBase = base[itemName];
+                    // 检查现在的这个是不是子类
+                    if (newBase && newBase.prototype) {
+                        // info(`查找 %c${displayBase}.${itemName}.prototype%c ...`, 'color:lightgray', 'reset');
+                        let r = this.Search(newBase.prototype, displayBase, keyword, true);
+                        if (r != null) {
+                            if (!suppressLog)
+                                Logger_5.info(`定位查找 %c${keyword}%c 成功: %c${displayBase}.${itemName}::${r}`, 'color: darkviolet', 'reset', 'color: green');
+                            return [itemName, 'prototype', r];
+                        }
+                    }
+                }
+            }
+            if (!suppressLog)
+                Logger_5.error(`定位查找子类函数 ${keyword} 于 ${displayBase} 失败, 请联系作者修复!`);
             return null;
         }
         PlayerPage() {
@@ -1247,7 +1269,9 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             }
             Wait_4.WaitUntil('nej.j', () => {
                 var fnAjax = this.Search(unsafeWindow.nej.j, "nej.j", '.replace("api","weapi');
-                var fnGetSong = this.Search(unsafeWindow.nm.w.pP.prototype, 'nm.w.pP.prototype', /return this\.\w+\[this\.\w+\]/);
+                var fnGetSongRaw = this.SearchSubPrototype(unsafeWindow.nm.w, 'nm.w', /return this\.\w+\[this\.\w+\]/);
+                var clsPlayer = fnGetSongRaw[0];
+                var fnGetSong = fnGetSongRaw[2];
                 if (ScriptConfig_3.Config.bYellowEaseInternational) {
                     this._btnChangeCdn = $('<a>');
                     this._btnChangeCdn
@@ -1276,14 +1300,14 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 }, unsafeWindow, {
                     defineAs: callEventFn
                 });
-                unsafeExec((callEventFn, fnGetSong) => {
-                    var _getSongBackup = window.nm.w.pP.prototype[fnGetSong];
-                    window.nm.w.pP.prototype[fnGetSong] = function () {
+                unsafeExec((callEventFn, clsPlayer, fnGetSong) => {
+                    var _getSongBackup = window.nm.w[clsPlayer].prototype[fnGetSong];
+                    window.nm.w[clsPlayer].prototype[fnGetSong] = function () {
                         var r = _getSongBackup.call(this);
                         window[callEventFn](JSON.stringify(r));
                         return r;
                     };
-                }, callEventFn, fnGetSong);
+                }, callEventFn, clsPlayer, fnGetSong);
                 ////// 安装修改后的 取得曲目信息 函数结束
                 ////// 安装修改后的 Ajax 函数开始
                 var ajaxPatchFn = GenerateValidName();
@@ -1325,16 +1349,16 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 }
                 ////// 安装修改后的 Ajax 函数结束
                 /// 挂钩下一首切换事件, 强制重新读取当前曲目地址。
-                var fnNextSong = this.Search(unsafeWindow.nm.w.pP.prototype, 'nm.w.pP.prototype', '(+1),"ui")');
-                unsafeExec((fnNextSong) => {
-                    var oldNextSong = window.nm.w.pP.prototype[fnNextSong];
+                var fnNextSong = this.Search(unsafeWindow.nm.w[clsPlayer].prototype, `nm.w.${clsPlayer}.prototype`, '(+1),"ui")');
+                unsafeExec((clsPlayer, fnNextSong) => {
+                    var oldNextSong = window.nm.w[clsPlayer].prototype[fnNextSong];
                     var reloadSong = eval('(' + oldNextSong.toString().replace('1', '0') + ')');
-                    window.nm.w.pP.prototype[fnNextSong] = function () {
-                        window.nm.w.pP.prototype[fnNextSong] = oldNextSong;
+                    window.nm.w[clsPlayer].prototype[fnNextSong] = function () {
+                        window.nm.w[clsPlayer].prototype[fnNextSong] = oldNextSong;
                         return reloadSong.call(this);
                     };
                     document.querySelector('.nxt').click();
-                }, fnNextSong);
+                }, clsPlayer, fnNextSong);
             });
         }
         AjaxPatchedOldApi(url, params) {

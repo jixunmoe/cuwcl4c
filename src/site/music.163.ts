@@ -160,7 +160,7 @@ class YellowEase {
         }
     }
 
-    public Search(base: Object, displayBase: string, keyword: string|RegExp): string
+    public Search(base: Object, displayBase: string, keyword: string|RegExp, suppressLog: boolean = false): string
     {
         for(let itemName in base) {
             if (base.hasOwnProperty(itemName)) {
@@ -168,13 +168,41 @@ class YellowEase {
                 if (fn && typeof fn == 'function') {
                     let fnStr = String(fn);
                     if (TestString(fnStr, keyword)) {
-                        info(`定位查找 %c${keyword}%c 成功: %c${displayBase}.${itemName}`, 'color: darkviolet', 'reset', 'color: green');
+                        if (!suppressLog)
+                            info(`定位查找 %c${keyword}%c 成功: %c${displayBase}.${itemName}`, 'color: darkviolet', 'reset', 'color: green');
                         return itemName;
                     }
                 }
             }
         }
-        error(`定位查找 ${keyword} 失败, 请联系作者修复!`);
+
+        if (!suppressLog)
+            error(`定位查找子函数 ${keyword} 于 ${displayBase} 失败, 请联系作者修复!`);
+        return null;
+    }
+
+    private SearchSubPrototype(base: Object, displayBase: string, keyword: string|RegExp, suppressLog: boolean = false): string[]
+    {
+        for(let itemName in base) {
+            if (base.hasOwnProperty(itemName)) {
+                let newBase: Function = (<any>base)[itemName];
+                // 检查现在的这个是不是子类
+                if (newBase && newBase.prototype) {
+                    // info(`查找 %c${displayBase}.${itemName}.prototype%c ...`, 'color:lightgray', 'reset');
+                    let r = this.Search(newBase.prototype, displayBase, keyword, true);
+                    if (r != null) {
+                        if (!suppressLog)
+                            info(`定位查找 %c${keyword}%c 成功: %c${displayBase}.${itemName}::${r}`,
+                                'color: darkviolet', 'reset', 'color: green');
+                        return [itemName, 'prototype', r];
+                    }
+                }
+            }
+        }
+        
+        if (!suppressLog)
+            error(`定位查找子类函数 ${keyword} 于 ${displayBase} 失败, 请联系作者修复!`);
+        
         return null;
     }
 
@@ -241,11 +269,13 @@ class YellowEase {
 
         WaitUntil('nej.j', () => {
             var fnAjax = this.Search(unsafeWindow.nej.j, "nej.j", '.replace("api","weapi');
-            var fnGetSong = this.Search(
-                unsafeWindow.nm.w.pP.prototype,
-                'nm.w.pP.prototype',
+            var fnGetSongRaw = this.SearchSubPrototype(
+                unsafeWindow.nm.w,
+                'nm.w',
                 /return this\.\w+\[this\.\w+\]/
             );
+            var clsPlayer = fnGetSongRaw[0];
+            var fnGetSong = fnGetSongRaw[2];
 
             if (Config.bYellowEaseInternational) {
                 this._btnChangeCdn = $('<a>');
@@ -279,14 +309,14 @@ class YellowEase {
                 defineAs: callEventFn
             });
 
-            unsafeExec((callEventFn: string, fnGetSong: string) => {
-                var _getSongBackup: Function = window.nm.w.pP.prototype[fnGetSong];
-                window.nm.w.pP.prototype[fnGetSong] = function () {
+            unsafeExec((callEventFn: string, clsPlayer: string, fnGetSong: string) => {
+                var _getSongBackup: Function = window.nm.w[clsPlayer].prototype[fnGetSong];
+                window.nm.w[clsPlayer].prototype[fnGetSong] = function () {
                     var r = _getSongBackup.call(this);
                     window[callEventFn](JSON.stringify(r));
                     return r;
                 }
-            }, callEventFn, fnGetSong);
+            }, callEventFn, clsPlayer, fnGetSong);
 
             ////// 安装修改后的 取得曲目信息 函数结束
 
@@ -341,16 +371,16 @@ class YellowEase {
             ////// 安装修改后的 Ajax 函数结束
 
             /// 挂钩下一首切换事件, 强制重新读取当前曲目地址。
-            var fnNextSong = this.Search(unsafeWindow.nm.w.pP.prototype, 'nm.w.pP.prototype', '(+1),"ui")');
-            unsafeExec((fnNextSong: string) => {
-                var oldNextSong: Function = window.nm.w.pP.prototype[fnNextSong];
+            var fnNextSong = this.Search(unsafeWindow.nm.w[clsPlayer].prototype, `nm.w.${clsPlayer}.prototype`, '(+1),"ui")');
+            unsafeExec((clsPlayer: string, fnNextSong: string) => {
+                var oldNextSong: Function = window.nm.w[clsPlayer].prototype[fnNextSong];
                 var reloadSong: Function = eval('(' + oldNextSong.toString().replace('1', '0')+')');
-                window.nm.w.pP.prototype[fnNextSong] = function () {
-                    window.nm.w.pP.prototype[fnNextSong] = oldNextSong;
+                window.nm.w[clsPlayer].prototype[fnNextSong] = function () {
+                    window.nm.w[clsPlayer].prototype[fnNextSong] = oldNextSong;
                     return reloadSong.call(this);
                 };
                 (document.querySelector('.nxt') as HTMLAnchorElement).click();
-            }, fnNextSong);
+            }, clsPlayer, fnNextSong);
 
         });
     }
