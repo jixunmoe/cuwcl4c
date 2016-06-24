@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.650
+// @version        4.0.651
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -1304,7 +1304,9 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                     var _getSongBackup = window.nm.w[clsPlayer].prototype[fnGetSong];
                     window.nm.w[clsPlayer].prototype[fnGetSong] = function () {
                         var r = _getSongBackup.call(this);
-                        window[callEventFn](JSON.stringify(r));
+                        if (r !== undefined) {
+                            window[callEventFn](JSON.stringify(r));
+                        }
                         return r;
                     };
                 }, callEventFn, clsPlayer, fnGetSong);

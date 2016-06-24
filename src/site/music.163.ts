@@ -313,7 +313,9 @@ class YellowEase {
                 var _getSongBackup: Function = window.nm.w[clsPlayer].prototype[fnGetSong];
                 window.nm.w[clsPlayer].prototype[fnGetSong] = function () {
                     var r = _getSongBackup.call(this);
-                    window[callEventFn](JSON.stringify(r));
+                    if (r !== undefined) {
+                        window[callEventFn](JSON.stringify(r));
+                    }
                     return r;
                 }
             }, callEventFn, clsPlayer, fnGetSong);
