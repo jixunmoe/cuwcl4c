@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.647
+// @version        4.0.650
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -1322,6 +1322,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                         var ajaxOriginal = window.nej.j[fnAjax];
                         window.nej.j[fnAjax] = CustomAjax;
                         function CustomAjax(url, params) {
+                            // console.info(`url: ${url}`);
                             if (url.indexOf('log/') != -1) {
                                 setTimeout(() => {
                                     params.onload({
@@ -1363,7 +1364,8 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         }
         AjaxPatchedOldApi(url, params) {
             if (url != '/api/song/enhance/player/url') {
-                return this._ajaxBackup(url, params);
+                this._ajaxBackup(url, params);
+                return;
             }
             url = '/api/v3/song/detail';
             let query = params.query;
@@ -1421,6 +1423,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         }
         AjaxPatchedInternational(url, params, try_br) {
             if (url != '/api/song/enhance/player/url') {
+                this._ajaxBackup(url, params);
                 return;
             }
             params.headers['X-Real-IP'] = '118.88.88.88';
@@ -1646,26 +1649,28 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
     function GenerateValidName() {
         return `${Script_6.Script.Name}__${Date.now()}${Math.random()}`;
     }
+    function GetEnhancedData(id, url) {
+        return {
+            id: id,
+            url: url,
+            br: 192000,
+            size: 120000,
+            md5: '00000000000000000000000000000000',
+            code: 200,
+            expi: 1200,
+            type: 'mp3',
+            gain: 0,
+            fee: 0,
+            uf: null,
+            payed: 0,
+            canExtend: false
+        };
+    }
     function SongsToUrlReply(songs) {
         var reply = {
             code: 200,
             data: songs.map((song) => {
-                var r = {
-                    id: song.id,
-                    url: GenerateUrlFromSong(song),
-                    br: 192000,
-                    size: 0,
-                    md5: '0000000000000000',
-                    code: 200,
-                    expi: 1200,
-                    type: 'mp3',
-                    gain: 0,
-                    fee: 0,
-                    uf: null,
-                    payed: 0,
-                    canExtend: false
-                };
-                return r;
+                return GetEnhancedData(song.id, GenerateUrlFromSong(song));
             })
         };
         return cloneInto(reply, unsafeWindow, {
@@ -1676,25 +1681,11 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
     function UrlToSongUrlReply(id, url) {
         var reply = {
             code: 200,
-            data: [{
-                    id: id,
-                    url: url,
-                    br: 192000,
-                    size: 0,
-                    md5: '0000000000000000',
-                    code: 200,
-                    expi: 1200,
-                    type: 'mp3',
-                    gain: 0,
-                    fee: 0,
-                    uf: null,
-                    payed: 0,
-                    canExtend: false
-                }]
+            data: [GetEnhancedData(id, url)]
         };
         return cloneInto(reply, unsafeWindow, {
             cloneFunctions: false,
-            wrapReflectors: false
+            wrapReflectors: true
         });
     }
     function GenerateUrlFromSong(song) {

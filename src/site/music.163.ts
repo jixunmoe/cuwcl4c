@@ -340,6 +340,7 @@ class YellowEase {
 
                     function CustomAjax(url: string, params: IXhrParam): void
                     {
+                        // console.info(`url: ${url}`);
                         if (url.indexOf('log/') != -1) {
                             setTimeout(() => {
                                 params.onload({
@@ -388,7 +389,8 @@ class YellowEase {
     private AjaxPatchedOldApi(url: string, params: IXhrParam): void
     {
         if (url != '/api/song/enhance/player/url') {
-            return this._ajaxBackup(url, params);
+            this._ajaxBackup(url, params);
+            return ;
         }
 
         url = '/api/v3/song/detail';
@@ -464,6 +466,7 @@ class YellowEase {
     private AjaxPatchedInternational(url: string, params: IXhrSongUrlParam, try_br?: number): void
     {
         if (url != '/api/song/enhance/player/url') {
+            this._ajaxBackup(url, params);
             return ;
         }
 
@@ -741,27 +744,32 @@ function GenerateValidName(): string
     return `${Script.Name}__${Date.now()}${Math.random()}`;
 }
 
+function GetEnhancedData(id: number, url: string): IEnhancedData
+{
+    return {
+        id: id,
+        url: url,
+
+        br: 192000,
+        size: 120000,
+        md5: '00000000000000000000000000000000',
+        code: 200,
+        expi: 1200,
+        type: 'mp3',
+        gain: 0,
+        fee: 0,
+        uf: null,
+        payed: 0,
+        canExtend: false
+    };
+}
+
 function SongsToUrlReply(songs: ISongInfo[]): IXhrSongUrlReply
 {
     var reply: IXhrSongUrlReply = {
         code: 200,
         data: songs.map((song: ISongInfo) => {
-            var r: IEnhancedData = {
-                id: song.id,
-                url: GenerateUrlFromSong(song),
-                br: 192000,
-                size: 0,
-                md5: '0000000000000000',
-                code: 200,
-                expi: 1200,
-                type: 'mp3',
-                gain: 0,
-                fee: 0,
-                uf: null,
-                payed: 0,
-                canExtend: false
-            };
-            return r;
+            return GetEnhancedData(song.id, GenerateUrlFromSong(song));
         })
     };
 
@@ -775,26 +783,12 @@ function UrlToSongUrlReply(id: number, url: string): IXhrSongUrlReply
 {
     var reply: IXhrSongUrlReply = {
         code: 200,
-        data: [{
-            id: id,
-            url: url,
-            br: 192000,
-            size: 0,
-            md5: '0000000000000000',
-            code: 200,
-            expi: 1200,
-            type: 'mp3',
-            gain: 0,
-            fee: 0,
-            uf: null,
-            payed: 0,
-            canExtend: false
-        }]
+        data: [GetEnhancedData(id, url)]
     };
 
     return cloneInto<typeof reply>(reply, unsafeWindow, {
         cloneFunctions: false,
-        wrapReflectors: false
+        wrapReflectors: true
     });
 }
 
