@@ -43,7 +43,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.651
+// @version        4.0.658
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -68,6 +68,7 @@
 // @include http://music.163.com/*
 // @include http://www.1ting.com/*
 // @include http://www.23356.com/*
+// @include http://www.app-echo.com/*
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
@@ -78,6 +79,10 @@
 // @connect trackercdn.kugou.com
 // @connect yinyuetai.com
 // @connect itwusun.com
+// @connect self
+
+// 告诉 TamperMonkey 这个脚本不需要转换
+// @nocompat Chrome
 
 // ==/UserScript==
 var define = (function () {
@@ -1939,7 +1944,89 @@ define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Scri
     };
     exports.Rules = [rule];
 });
-define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting", "site/music.56"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k, l) {
+define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader", "helper/Extension"], function (require, exports, Logger_7, Wait_7, Downloader_7, Extension_9) {
+    "use strict";
+    var rule = {
+        id: 'music.echo',
+        ssl: false,
+        name: 'Echo 回声音乐',
+        host: 'www.app-echo.com',
+        path: '/sound/',
+        includeSubHost: false,
+        subModule: false,
+        hide: '',
+        bd: null,
+        dlLink: null,
+        onStart() {
+            rule.bd = new Downloader_7.Downloader();
+        },
+        onBody() {
+            if (Extension_9.BeginWith(location.pathname, '/sound/')) {
+                rule.SinglePage();
+            }
+        },
+        SinglePage() {
+            // 单曲页面
+            // http://www.app-echo.com/sound/info-mobile?sound_id=${id}
+            var id = location.pathname.match(/\d+/);
+            if (!id) {
+                Logger_7.error('获取曲目 ID 失败!');
+                return;
+            }
+            // 插入下载连接x
+            var smallText = $('<small>');
+            var urlDl = $('<a>');
+            $('.single-title > h1').append(smallText);
+            smallText.append(urlDl);
+            rule.dlLink = urlDl;
+            urlDl.text('下载')
+                .attr('title', '正在解析...')
+                .css('margin-left', '1em');
+            var frame = document.createElement('iframe');
+            frame.src = 'about:blank';
+            document.body.appendChild(frame);
+            unsafeWindow.onerror = null;
+            var req = {
+                method: 'GET',
+                url: `/sound/info-mobile?sound_id=${id}`,
+                onload: (response) => {
+                    var target = $(response.responseText)
+                        .filter('script')
+                        .filter((i, el) => Extension_9.Contains(el.textContent, 'play_source('));
+                    if (target.length === 0) {
+                        Logger_7.error('搜索不到有效的曲目代码。');
+                        return;
+                    }
+                    // 导出我们的函数
+                    var wnd = frame.contentWindow;
+                    exportFunction((id, type, url, unk) => {
+                        Wait_7.WaitUntil('page_sound_obj', () => rule.UpdateUrl(url, unsafeWindow.page_sound_obj.name));
+                    }, wnd, {
+                        defineAs: 'play_source'
+                    });
+                    // 执行捕捉到的元素
+                    var s = wnd.document.createElement('script');
+                    s.textContent = target.text();
+                    wnd.document.body.appendChild(s);
+                },
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 5.1.1; Nexus 6 Build/LYZ28E) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.23 Mobile Safari/537.36'
+                }
+            };
+            GM_xmlhttpRequest(req);
+        },
+        UpdateUrl(url, name) {
+            let s = Extension_9.Contains(url, '?') ? '&' : '?';
+            let _url = `${url}${s}attname=${encodeURIComponent(name)}${Extension_9.GetExtensionFromUrl(url)}`;
+            rule.dlLink
+                .attr('href', rule.bd.GenerateUri(url, name + Extension_9.GetExtensionFromUrl(url)))
+                .attr('title', `下载: ${name}`);
+            // info(`捕捉到下载地址: ${url}`);
+        }
+    };
+    exports.Rules = [rule];
+});
+define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting", "site/music.56", "site/music.echo"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k, l, m) {
     "use strict";
     a.Rules.forEach(SiteRule_1.Add);
     b.Rules.forEach(SiteRule_1.Add);
@@ -1953,8 +2040,9 @@ define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.12
     j.Rules.forEach(SiteRule_1.Add);
     k.Rules.forEach(SiteRule_1.Add);
     l.Rules.forEach(SiteRule_1.Add);
+    m.Rules.forEach(SiteRule_1.Add);
 });
-define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_8, Constants_4, ScriptConfig_4, QueryString_1, Logger_7, SiteRule_2) {
+define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_8, Constants_4, ScriptConfig_4, QueryString_1, Logger_8, SiteRule_2) {
     "use strict";
     var $_GET = QueryString_1.Parse(Constants_4.currentUrl);
     if (ScriptConfig_4.Config.bUseCustomRules) {
@@ -1966,7 +2054,7 @@ define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants",
             });
         }
         catch (ex) {
-            Logger_7.error(`解析自定义规则发生错误: ${ex.message}`);
+            Logger_8.error(`解析自定义规则发生错误: ${ex.message}`);
         }
     }
     GM_registerMenuCommand(`配置 ${Script_8.Script.Name}`, () => {

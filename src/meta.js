@@ -57,5 +57,9 @@
 // @connect trackercdn.kugou.com
 // @connect yinyuetai.com
 // @connect itwusun.com
+// @connect self
+
+// 告诉 TamperMonkey 这个脚本不需要转换
+// @nocompat Chrome
 
 // ==/UserScript==
