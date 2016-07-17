@@ -8,10 +8,9 @@ import * as qs from "../helper/QueryString";
 import { BeginWith, Contains, EndWith, Shuffle } from "../helper/Extension";
 
 import { ISiteRule } from "../SiteRule";
-
-import { } from "../typings/cryptojs/cryptojs.d";
 import { } from "../typings/Userscript.d";
 import { } from "../typings/GM_Unsafe.d";
+import { } from "../typings/globals/cryptojs/index.d";
 
 const __MP3_BLANK = 'https://jixunmoe.github.io/cuwcl4c/blank.mp3';
 
@@ -836,7 +835,7 @@ function DoDfsHash(dfsid:number) {
         return (fid ^ keys[i % keys.length]) & 0xFF;
     });
 
-    return CryptoJS.MD5(CryptoJS.lib.ByteArray(<Uint8Array><any>fids))
+    return CryptoJS.MD5((CryptoJS.lib as any).ByteArray(fids))
                 .toString(CryptoJS.enc.Base64)
                 .replace(/\//g, "_")
                 .replace(/\+/g, "-");

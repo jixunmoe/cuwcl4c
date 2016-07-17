@@ -2,9 +2,9 @@ import { Script } from "./Script";
 import { Config, UriType, IScriptConfig } from "./ScriptConfig";
 import { BeginWith } from "./Extension";
 
-import { } from "../typings/Userscript.d";
-import { } from "../typings/jquery/jquery.d";
-import { } from "../typings/GM_Aria2RPC.d";
+/// <reference path="../typings/Userscript.d.ts" />
+/// <reference path="../typings/GM_Aria2RPC.d.ts" />
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 
 var config = Config as IScriptConfig;
 

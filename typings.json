@@ -1,0 +1,8 @@
+{
+  "resolution": "src/typings",
+  "globalDependencies": {
+    "cryptojs": "registry:dt/cryptojs#3.1.2+20160317120654",
+    "jquery": "registry:dt/jquery#1.10.0+20160704162008",
+    "vue": "registry:dt/vue#1.0.21+20160423143248"
+  }
+}

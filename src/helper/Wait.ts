@@ -1,6 +1,6 @@
 
 import { } from "../typings/UserScript.d";
-import { } from "../typings/jquery/jquery.d";
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 
 export function WaitUntil(
     check: string|string[]|CheckCallback,

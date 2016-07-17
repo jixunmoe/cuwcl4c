@@ -2,7 +2,7 @@ import { info } from "../helper/Logger";
 import { WaitUntil } from "../helper/Wait";
 
 import { } from "../typings/GM_Unsafe.d";
-import { } from "../typings/jquery/jquery.d";
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 
 
 export function Patch(callback:jPlayerMediaCallback, namespace: string = "jPlayer") {
@@ -16,8 +16,14 @@ export function Patch(callback:jPlayerMediaCallback, namespace: string = "jPlaye
                 callback (newMedia);
                 throw new ErrorUnsafeSuccess();
             }
-        }, unsafeWindow['$'][namespace].prototype, `.$.${namespace}.prototype`);
+        }, (unsafeWindow.$ as any)[namespace].prototype, `.$.${namespace}.prototype`);
     });
+}
+
+declare var unsafeWindow: jPlayerWindow;
+
+interface jPlayerWindow extends Window {
+    $: JQueryStatic;
 }
 
 interface jPlayerMediaCallback {

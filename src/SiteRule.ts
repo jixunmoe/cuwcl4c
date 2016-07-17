@@ -4,7 +4,7 @@ import { StyleSheet } from "./helper/StyleSheet";
 import { Downloader } from "./helper/Downloader";
 import { info, error } from "./helper/Logger";
 
-import { } from "../typings/jquery/jquery.d";
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 
 export var Sites: ISiteRule[] = [];
 

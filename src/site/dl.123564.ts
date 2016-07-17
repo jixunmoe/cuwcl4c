@@ -3,7 +3,7 @@ import { RedirectTo } from "../helper/Redirect";
 import { ISiteRule } from "../SiteRule";
 
 import { } from "../typings/Userscript.d";
-import { } from "../typings/jquery/jquery.d";
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 
 var rule: ISiteRule = {
 	id: 'dl.123564',

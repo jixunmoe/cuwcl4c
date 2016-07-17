@@ -1,5 +1,5 @@
 
-import { } from "../typings/jquery/jquery.d";
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 
 interface IStringDictionary {
     [key: string]: string

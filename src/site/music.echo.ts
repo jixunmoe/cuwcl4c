@@ -3,7 +3,6 @@ import { WaitUntil } from "../helper/Wait";
 import { Downloader } from "../helper/Downloader";
 import { Script } from "../helper/Script";
 import { BeginWith, Contains, EndWith, GetExtensionFromUrl } from "../helper/Extension";
-import * as jPlayer from "../hooker/jPlayer";
 
 import { ISiteRule, IDownloadRule } from "../SiteRule";
 

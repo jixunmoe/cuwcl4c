@@ -2,7 +2,7 @@ import { WaitUntil } from "./Wait";
 import { BeginWith } from "./Extension";
 import { info } from "./Logger";
 
-import { } from "../typings/jquery/jquery.d";
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 
 /**
  * 跳转后保留当前页面作为 referrer.

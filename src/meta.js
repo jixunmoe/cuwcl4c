@@ -5,6 +5,7 @@
 // @grant          GM_registerMenuCommand
 // @grant          GM_getValue
 // @grant          GM_setValue
+// @grant          GM_getResourceText
 // @grant          GM_info
 
 // @run-at         document-start
@@ -40,6 +41,9 @@
 
 /// Aria2 RPC
 // @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build-10.js
+
+// VueJs, not always used.
+// @resource       VueJs https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/

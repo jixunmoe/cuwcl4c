@@ -1,4 +1,4 @@
-import { } from "../typings/cryptojs/cryptojs.d";
+import { } from "../typings/globals/cryptojs";
 
 
 export function Base64Decode (str: string): string

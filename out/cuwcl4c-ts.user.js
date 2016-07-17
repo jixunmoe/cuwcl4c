@@ -5,6 +5,7 @@
 // @grant          GM_registerMenuCommand
 // @grant          GM_getValue
 // @grant          GM_setValue
+// @grant          GM_getResourceText
 // @grant          GM_info
 
 // @run-at         document-start
@@ -41,9 +42,12 @@
 /// Aria2 RPC
 // @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build-10.js
 
+// VueJs, not always used.
+// @resource       VueJs https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js
+
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.658
+// @version        4.0.673
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -52,8 +56,8 @@
 // @include http://jixunmoe.github.io/*
 // @include http://123564.com/*
 // @include http://m.123564.com/*
-// @include http://123564.com/*
-// @include http://m.123564.com/*
+// @include http://5xfile.com/*
+// @include http://www.5xfile.com/*
 // @include http://yun.baidu.com/*
 // @include http://pan.baidu.com/*
 // @include http://howfile.com/*
@@ -69,6 +73,7 @@
 // @include http://www.1ting.com/*
 // @include http://www.23356.com/*
 // @include http://www.app-echo.com/*
+// @include http://web.kugou.com/*
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
@@ -308,6 +313,7 @@ define("helper/Extension", ["require", "exports"], function (require, exports) {
     }
     exports.Shuffle = Shuffle;
 });
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 define("helper/QueryString", ["require", "exports", "helper/Extension"], function (require, exports, Extension_1) {
     "use strict";
     function GetFlashVars(el) {
@@ -403,6 +409,9 @@ define("helper/StyleSheet", ["require", "exports"], function (require, exports) 
 });
 define("helper/Downloader", ["require", "exports", "helper/Script", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Script_3, ScriptConfig_1, Extension_2) {
     "use strict";
+    /// <reference path="../typings/Userscript.d.ts" />
+    /// <reference path="../typings/GM_Aria2RPC.d.ts" />
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
     var config = ScriptConfig_1.Config;
     class Downloader {
         constructor() {
@@ -497,6 +506,7 @@ ${sErrorMsg}`);
 });
 define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension", "helper/StyleSheet", "helper/Logger"], function (require, exports, Constants_1, Extension_3, StyleSheet_1, Logger_2) {
     "use strict";
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
     exports.Sites = [];
     function Add(siteRule) {
         siteRule._styleApplied = false;
@@ -675,6 +685,7 @@ define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/Scri
 });
 define("helper/Wait", ["require", "exports"], function (require, exports) {
     "use strict";
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
     function WaitUntil(check, cb, nTimeout = 10000, nInterval = 150) {
         if ('string' == typeof check) {
             check = check.split('.');
@@ -718,6 +729,7 @@ define("helper/Wait", ["require", "exports"], function (require, exports) {
 });
 define("helper/Redirect", ["require", "exports", "helper/Wait", "helper/Extension", "helper/Logger"], function (require, exports, Wait_1, Extension_4, Logger_3) {
     "use strict";
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
     /**
      * 跳转后保留当前页面作为 referrer.
      */
@@ -761,6 +773,7 @@ define("helper/Redirect", ["require", "exports", "helper/Wait", "helper/Extensio
 });
 define("site/dl.123564", ["require", "exports", "helper/Extension", "helper/Redirect"], function (require, exports, Extension_5, Redirect_1) {
     "use strict";
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
     var rule = {
         id: 'dl.123564',
         name: '123564 网盘',
@@ -797,40 +810,19 @@ define("site/dl.123564", ["require", "exports", "helper/Extension", "helper/Redi
     };
     exports.Rules = [rule];
 });
-define("site/dl.5xfile", ["require", "exports", "helper/Extension", "helper/Redirect"], function (require, exports, Extension_6, Redirect_2) {
+define("site/dl.5xfile", ["require", "exports"], function (require, exports) {
     "use strict";
     var rule = {
-        id: 'dl.123564',
-        name: '123564 网盘',
-        host: ['123564.com', 'm.123564.com'],
+        id: 'dl.5xfile',
+        name: '五星网盘',
+        host: ['5xfile.com', 'www.5xfile.com'],
         includeSubHost: false,
         subModule: false,
-        hide: '#yzm',
-        show: '#download',
-        css: `
-.ad1, .ad4{
-    height: 999px !important;
-    width:  0px   !important;
-}
-    `,
         onStart: () => {
-            unsafeWindow.killpanads = 1;
+            // TODO: 启动事件
         },
         onBody: () => {
-            // 文件第一页
-            var url = $('.caocuo .jubao').next().find('a').attr('href');
-            if (url) {
-                Redirect_2.RedirectTo(url);
-            }
-            else if (Extension_6.Contains(location.pathname, '/downpanel.asp')) {
-                // 第三页 - 最终下载地址展示
-                url = $("div > a[href*='/down.asp']").attr('href');
-                Redirect_2.RedirectTo(url);
-            }
-            else {
-                // 第二页: 填写验证码
-                $('#download > a').click();
-            }
+            // TODO: 页面事件
         }
     };
     exports.Rules = [rule];
@@ -859,6 +851,7 @@ define("site/dl.baidu", ["require", "exports", "helper/Wait"], function (require
 });
 define("site/dl.howfile", ["require", "exports"], function (require, exports) {
     "use strict";
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
     var rule = {
         id: 'dl.howfile',
         name: '好盘 [howfile.com]',
@@ -922,6 +915,7 @@ body, body > .ggao {
 });
 define("site/dl.xuite", ["require", "exports"], function (require, exports) {
     "use strict";
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
     var rule = {
         id: 'dl.hami-cloud',
         name: 'Hami+ 個人雲',
@@ -1066,7 +1060,7 @@ a.jixun-dl {
     };
     exports.Rules = [rule];
 });
-define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constants", "helper/Wait", "helper/Downloader", "helper/Script", "helper/ScriptConfig", "helper/QueryString", "helper/Extension"], function (require, exports, Logger_5, Constants_3, Wait_4, Downloader_4, Script_6, ScriptConfig_3, qs, Extension_7) {
+define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constants", "helper/Wait", "helper/Downloader", "helper/Script", "helper/ScriptConfig", "helper/QueryString", "helper/Extension"], function (require, exports, Logger_5, Constants_3, Wait_4, Downloader_4, Script_6, ScriptConfig_3, qs, Extension_6) {
     "use strict";
     const __MP3_BLANK = 'https://jixunmoe.github.io/cuwcl4c/blank.mp3';
     var rule = {
@@ -1591,7 +1585,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
     }
     function TestString(src, needle) {
         if (typeof needle == 'string') {
-            return Extension_7.Contains(src, needle);
+            return Extension_6.Contains(src, needle);
         }
         else {
             return needle.test(src);
@@ -1651,7 +1645,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             '203.130.59.11',
             '203.130.59.12'
         ];
-        return Extension_7.Shuffle(cdns);
+        return Extension_6.Shuffle(cdns);
     }
     function GenerateValidName() {
         return `${Script_6.Script.Name}__${Date.now()}${Math.random()}`;
@@ -1889,6 +1883,7 @@ define("site/music.1ting", ["require", "exports", "helper/Wait", "helper/Downloa
 });
 define("hooker/jPlayer", ["require", "exports", "helper/Logger", "helper/Wait"], function (require, exports, Logger_6, Wait_6) {
     "use strict";
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
     function Patch(callback, namespace = "jPlayer") {
         Logger_6.info('等待 jPlayer 就绪 ..');
         Wait_6.WaitUntil(`$.${namespace}.prototype.setMedia`, () => {
@@ -1899,12 +1894,12 @@ define("hooker/jPlayer", ["require", "exports", "helper/Logger", "helper/Wait"],
                     callback(newMedia);
                     throw new ErrorUnsafeSuccess();
                 }
-            }, unsafeWindow['$'][namespace].prototype, `.$.${namespace}.prototype`);
+            }, unsafeWindow.$[namespace].prototype, `.$.${namespace}.prototype`);
         });
     }
     exports.Patch = Patch;
 });
-define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Script", "helper/Extension", "hooker/jPlayer"], function (require, exports, Downloader_6, Script_7, Extension_8, jPlayer) {
+define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Script", "helper/Extension", "hooker/jPlayer"], function (require, exports, Downloader_6, Script_7, Extension_7, jPlayer) {
     "use strict";
     var rule = {
         id: 'music.56',
@@ -1932,7 +1927,7 @@ define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Scri
                 if (song.delflag || song.delflag != 0) {
                     need_play = true;
                     song.delflag = 0;
-                    if (Extension_8.BeginWith(song.url, '/del')) {
+                    if (Extension_7.BeginWith(song.url, '/del')) {
                         song.url = song.url.replace('/del', '');
                     }
                 }
@@ -1944,7 +1939,7 @@ define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Scri
     };
     exports.Rules = [rule];
 });
-define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader", "helper/Extension"], function (require, exports, Logger_7, Wait_7, Downloader_7, Extension_9) {
+define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader", "helper/Extension"], function (require, exports, Logger_7, Wait_7, Downloader_7, Extension_8) {
     "use strict";
     var rule = {
         id: 'music.echo',
@@ -1961,7 +1956,7 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
             rule.bd = new Downloader_7.Downloader();
         },
         onBody() {
-            if (Extension_9.BeginWith(location.pathname, '/sound/')) {
+            if (Extension_8.BeginWith(location.pathname, '/sound/')) {
                 rule.SinglePage();
             }
         },
@@ -1992,7 +1987,7 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
                 onload: (response) => {
                     var target = $(response.responseText)
                         .filter('script')
-                        .filter((i, el) => Extension_9.Contains(el.textContent, 'play_source('));
+                        .filter((i, el) => Extension_8.Contains(el.textContent, 'play_source('));
                     if (target.length === 0) {
                         Logger_7.error('搜索不到有效的曲目代码。');
                         return;
@@ -2016,17 +2011,258 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
             GM_xmlhttpRequest(req);
         },
         UpdateUrl(url, name) {
-            let s = Extension_9.Contains(url, '?') ? '&' : '?';
-            let _url = `${url}${s}attname=${encodeURIComponent(name)}${Extension_9.GetExtensionFromUrl(url)}`;
+            let s = Extension_8.Contains(url, '?') ? '&' : '?';
+            let _url = `${url}${s}attname=${encodeURIComponent(name)}${Extension_8.GetExtensionFromUrl(url)}`;
             rule.dlLink
-                .attr('href', rule.bd.GenerateUri(url, name + Extension_9.GetExtensionFromUrl(url)))
+                .attr('href', rule.bd.GenerateUri(url, name + Extension_8.GetExtensionFromUrl(url)))
                 .attr('title', `下载: ${name}`);
             // info(`捕捉到下载地址: ${url}`);
         }
     };
     exports.Rules = [rule];
 });
-define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting", "site/music.56", "site/music.echo"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k, l, m) {
+define("site/music.kugou", ["require", "exports", "helper/Logger", "helper/Downloader", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Logger_8, Downloader_8, ScriptConfig_4, Extension_9) {
+    "use strict";
+    const KugouDownloadFront = 'https://jixunmoe.github.io/cuwcl4c/kugou-dl';
+    var app = null;
+    var rule = {
+        id: 'music.kugou',
+        ssl: false,
+        name: '酷狗音乐',
+        host: 'web.kugou.com',
+        includeSubHost: false,
+        subModule: false,
+        hide: '#adv, .jx-hide',
+        css: `
+.dialog-shadow {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: fixed;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	background: rgba(0,0,0,.3);
+	z-index: 100;
+}
+
+.dialog-container {
+	min-width: calc(768px + 2em);
+	min-height: 20em;
+	padding: 1em;
+	background: #fff;
+	box-shadow: 2px 2px 2px #666;
+	border: 1px solid rgba(6,6,6,.3);
+	position: relative;
+	padding-top: 2.5em;
+}
+
+.dialog-title-bar {
+	position: absolute;
+	left: 0;
+	top: 0;
+	padding: .4em;
+	width: calc(100% - .8em);
+	border-bottom: 1px solid white;
+	background: #00A7F2;
+	color: white;
+}
+
+.dialog-title-btns {
+	float: right;
+}
+
+.dialog-title-btns > .dialog-bar-btn {
+	width: 1em;
+	height: 1em;
+	border: 1px solid white;
+	text-align: center;
+	line-height: 1.2;
+	padding: 0 .5em;
+	margin-left: .5em;
+	cursor: pointer;
+}
+
+.dialog-content iframe {
+	height: 30em;
+	width: 100%;
+}
+`,
+        bd: null,
+        onStart() {
+            rule.bd = new Downloader_8.Downloader();
+        },
+        onBody() {
+            // 火狐狸有兼容问题, 待修
+            if (!Extension_9.Contains(navigator.userAgent, 'Firefox'))
+                rule.BuildDialog();
+        },
+        BuildDialog() {
+            let downloader = $(`<div id="jixun-dl">
+	<div class="dialog-shadow" v-bind:class="{ 'jx-hide': hideWindow }">
+		<div class="dialog-container">
+			<div class="dialog-title-bar">
+				下载窗口
+
+				<div class="dialog-title-btns">
+					<span class="dialog-bar-btn" v-on:click="toggleFrame">管</span>
+					<span class="dialog-bar-btn" v-on:click="hide">关</span>
+				</div>
+			</div>
+
+			<div class="dialog-content">
+				<div v-bind:class="{ 'jx-hide': hideMsg }">{{ msg }}</div>
+				<iframe v-el:frame-dl-dialog v-bind:class="{ 'jx-hide': mode != 1 }" src="${KugouDownloadFront}"></iframe>
+				<iframe v-el:frame-dl-manager v-bind:class="{ 'jx-hide': mode != 2 }"  src="${KugouDownloadFront}/dl.html"></iframe>
+			</div>
+		</div>
+	</div>
+</div>`);
+            downloader.appendTo(document.body);
+            // Require VueJS from resource.
+            let vueLoader = new Function('window', GM_getResourceText('VueJs') + '\n; return window.Vue;');
+            let Vue = vueLoader(unsafeWindow);
+            app = new Vue({
+                el: downloader[0],
+                data: {
+                    msg: '正在获取相关数据...',
+                    hideMsg: false,
+                    mode: 0,
+                    hideWindow: false
+                },
+                methods: {
+                    init() {
+                        app.hideWindow = true;
+                    },
+                    toggleFrame() {
+                        if (app.mode == 1) {
+                            app.mode = 2;
+                        }
+                        else {
+                            app.mode = 1;
+                        }
+                    },
+                    hide() {
+                        app.hideWindow = !app.hideWindow;
+                    }
+                }
+            });
+            app.init();
+            var actionDlDialog = ['set', 'clear'];
+            var actionDlManager = ['add'];
+            function post(action, data) {
+                var frame = actionDlDialog.indexOf(action) != -1 ? app.$els.frameDlDialog : app.$els.frameDlManager;
+                var msg = {
+                    action: action,
+                    data: data
+                };
+                frame.contentWindow.postMessage(JSON.stringify(msg), '*');
+            }
+            // 获取音质信息
+            function handleDownload(songs) {
+                post('clear');
+                app.hideMsg = false;
+                app.mode = 0; // hideThem
+                app.hideWindow = false;
+                var resource = JSON.parse(songs).map((song) => ({
+                    type: 'audio',
+                    id: 0,
+                    hash: song.Hash
+                }));
+                var payload = {
+                    "userid": 0,
+                    "token": "",
+                    "vip": 1,
+                    "behavior": "download",
+                    "relate": 1,
+                    "resource": resource,
+                    "appid": 1001,
+                    "clientver": "8031",
+                    "source": {
+                        "module": "1",
+                        "type": "0",
+                        "id": 0
+                    }
+                };
+                GM_xmlhttpRequest({
+                    method: "POST",
+                    url: "http://media.store.kugou.com/v1/get_res_privilege",
+                    data: JSON.stringify(payload),
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    onload: function (response) {
+                        post('set', JSON.parse(response.responseText));
+                        app.hideMsg = true;
+                        app.mode = 1; // 展现下载管理界面
+                    },
+                    onerror: function () {
+                        alert('接口获取失败, 请稍后重试!');
+                        app.hideWindow = true;
+                    }
+                });
+            }
+            var looper = new IntervalLoop([], proc_hash, 500);
+            looper.loop();
+            window.addEventListener("message", onMessage, false);
+            function onMessage(e) {
+                var data = JSON.parse(e.data);
+                if (data.action == 'cancel') {
+                    app.hideWindow = true;
+                }
+                else if (data.action == 'download') {
+                    app.mode = 2;
+                    looper.add.apply(looper, data.data);
+                }
+                else {
+                    Logger_8.error('Undefined action: ' + data.action);
+                }
+            }
+            function handle_dl(song) {
+                var file = song.fileName + '.' + song.extName;
+                var url = song.url;
+                post('add', song);
+                if (ScriptConfig_4.Config.dUriType == ScriptConfig_4.UriType.Aria) {
+                    rule.bd.AddDownload(url, file);
+                }
+            }
+            function proc_hash(next, hash) {
+                hash = hash.toLowerCase();
+                var key = CryptoJS.MD5(hash + 'kgcloud').toString();
+                GM_xmlhttpRequest({
+                    method: 'GET',
+                    url: 'http://trackercdn.kugou.com/i/?cmd=4&hash=' + hash + '&key=' + key + '&pid=1&forceDown=0&vip=1',
+                    onload: function (response) {
+                        var song = JSON.parse(response.responseText);
+                        handle_dl(song);
+                        next();
+                    },
+                    onerror: function () {
+                        Logger_8.error('Error while fetching data for %s', hash);
+                        next();
+                    }
+                });
+            }
+            /* 导出函数 */
+            exportFunction(handleDownload, unsafeWindow, {
+                defineAs: "dl_jixun"
+            });
+            unsafeExec(function () {
+                window.downLoad = function () {
+                    try {
+                        window.dl_jixun.apply(this, arguments);
+                    }
+                    catch (err) {
+                        console.error(err);
+                    }
+                };
+            });
+        }
+    };
+    exports.Rules = [rule];
+});
+define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting", "site/music.56", "site/music.echo", "site/music.kugou"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k, l, m, n) {
     "use strict";
     a.Rules.forEach(SiteRule_1.Add);
     b.Rules.forEach(SiteRule_1.Add);
@@ -2041,20 +2277,21 @@ define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.12
     k.Rules.forEach(SiteRule_1.Add);
     l.Rules.forEach(SiteRule_1.Add);
     m.Rules.forEach(SiteRule_1.Add);
+    n.Rules.forEach(SiteRule_1.Add);
 });
-define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_8, Constants_4, ScriptConfig_4, QueryString_1, Logger_8, SiteRule_2) {
+define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_8, Constants_4, ScriptConfig_5, QueryString_1, Logger_9, SiteRule_2) {
     "use strict";
     var $_GET = QueryString_1.Parse(Constants_4.currentUrl);
-    if (ScriptConfig_4.Config.bUseCustomRules) {
+    if (ScriptConfig_5.Config.bUseCustomRules) {
         var customRules = [];
         try {
-            customRules = eval(`[${ScriptConfig_4.Config.sCustomRule}]`);
+            customRules = eval(`[${ScriptConfig_5.Config.sCustomRule}]`);
             customRules.forEach((rule) => {
                 SiteRule_2.Sites.push(rule);
             });
         }
         catch (ex) {
-            Logger_8.error(`解析自定义规则发生错误: ${ex.message}`);
+            Logger_9.error(`解析自定义规则发生错误: ${ex.message}`);
         }
     }
     GM_registerMenuCommand(`配置 ${Script_8.Script.Name}`, () => {

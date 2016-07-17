@@ -2,7 +2,6 @@ import { Script } from "./Script";
 import { EnableLogs, info } from "./Logger";
 
 import { } from "../typings/UserScript.d"
-import { } from "../../typings/jquery/jquery.d";
 import { } from "../typings/GM_Aria2RPC.d";
 
 export enum UriType {

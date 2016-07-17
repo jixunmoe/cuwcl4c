@@ -1,15 +1,15 @@
 import { info } from "../helper/Logger";
 import { Script } from "../helper/Script";
 import { Base64Decode } from "../helper/Crypto";
-import { BatchDownload } from "../helper/BatchDownload";
+import { Downloader } from "../helper/Downloader";
 import { GetFlashVars } from "../helper/QueryString";
 
-import { } from "../typings/jquery/jquery.d";
+/// <reference path="../typings/globals/jquery/index.d.ts" />
 
-var bd: BatchDownload;
+var bd: Downloader;
 
 function init () {
-    if (!bd) bd = new BatchDownload();
+    if (!bd) bd = new Downloader();
 }
 
 export function Hook() {
