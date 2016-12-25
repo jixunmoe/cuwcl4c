@@ -8,7 +8,7 @@ var siteDir = __dirname + '/../src/site/';
 var fs = require ('fs');
 
 var ret = [''];
-var codes = fs.readdirSync(siteDir).map ((m, i) => {
+var codes = fs.readdirSync(siteDir).map ((m: string, i:number) => {
     if (m.slice(-3) != '.ts')
         return '';
     

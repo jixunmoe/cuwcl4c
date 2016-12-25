@@ -898,7 +898,7 @@ module MusicSpy {
 
         GM_xmlhttpRequest({
             method: "GET",
-            url: `http://itwusun.com/search/wy/${id}?p=1&f=json&sign=itwusun`,
+            url: `http://api.itwusun.com/music/search/wy/1?format=json&sign=a5cc0a8797539d3a1a4f7aeca5b695b9&keyword=${id}`,
             onload: (response) => {
                 var data: MusicSpyItem[];
                 try {

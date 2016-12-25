@@ -9,7 +9,7 @@ export function EndWith(str:string, what: string): boolean
     return str.slice(-what.length) == what;
 }
 
-export function Contains (str: string|any[], what: any): boolean
+export function Contains (str: string|string[], what: string): boolean
 {
     return str.indexOf(what) != -1;
 }

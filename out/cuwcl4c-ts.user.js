@@ -47,7 +47,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.673
+// @version        4.0.678
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -203,13 +203,13 @@ define("helper/Logger", ["require", "exports", "helper/Script"], function (requi
 });
 define("helper/ScriptConfig", ["require", "exports", "helper/Script", "helper/Logger"], function (require, exports, Script_2, Logger_1) {
     "use strict";
+    var UriType;
     (function (UriType) {
         UriType[UriType["NormalUrl"] = 0] = "NormalUrl";
         /** @deprecated use others instead. */
         UriType[UriType["Custom"] = 1] = "Custom";
         UriType[UriType["Aria"] = 2] = "Aria";
-    })(exports.UriType || (exports.UriType = {}));
-    var UriType = exports.UriType;
+    })(UriType = exports.UriType || (exports.UriType = {}));
     function ReadConfig() {
         try {
             return JSON.parse(GM_getValue(Script_2.Script.Name, ""));
@@ -1772,7 +1772,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             }
             GM_xmlhttpRequest({
                 method: "GET",
-                url: `http://itwusun.com/search/wy/${id}?p=1&f=json&sign=itwusun`,
+                url: `http://api.itwusun.com/music/search/wy/1?format=json&sign=a5cc0a8797539d3a1a4f7aeca5b695b9&keyword=${id}`,
                 onload: (response) => {
                     var data;
                     try {
