@@ -471,6 +471,7 @@ class YellowEase {
             return ;
         }
 
+        document.cookie = 'os=uwp';
         params.headers['X-Real-IP'] = '118.88.88.88';
 
         var id = JSON.parse(params.query.ids)[0];

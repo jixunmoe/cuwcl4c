@@ -47,7 +47,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.678
+// @version        4.0.679
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -1427,6 +1427,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 this._ajaxBackup(url, params);
                 return;
             }
+            document.cookie = 'os=uwp';
             params.headers['X-Real-IP'] = '118.88.88.88';
             var id = JSON.parse(params.query.ids)[0];
             params._onload = exportFunction((data, _onload) => {
