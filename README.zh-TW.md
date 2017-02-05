@@ -30,49 +30,6 @@
 > \* (黃易改版 暫時不可用)。
 
 ## 自帶規則 (簡體)
-- 脚本配置页面 - `[localhost, jixunmoe.github.io]`
-- 119g 网盘 - `[d.119g.com]`
-- 123564 网盘 - `[123564.com, m.123564.com]`
-- 五星网盘 - `[www.5xfile.com]`
-- 千军万马网盘系列 - `[7958.com, qjwm.com]`
-- 9盘 - `[www.9pan.net]`
-- 百度盘免下载管家 - `[yun.baidu.com, pan.baidu.com]`
-- 暴雪盘 - `[bx0635.com]`
-- 可乐盘 - `[colayun.com, colafile.com, coladrive.com]`
-- 城通网盘系列 - `[ 400gb.com, ctdisk.com, pipipan.com, bego.cc, ctfile.com, t00y.com ]`
-- 大连生活网 - `[dlkoo.com]`
-- 好盘 - `[howfile.com]`
-- 乐盘自动下载地址 - `[www.lepan.cc, www.sx566.com]`
-- 飞速网 - `[rayfile.com]`
-- 速度盘 - `[sudupan.com]`
-- 威盘 - `[vdisk.cn]`
-- 一木禾网盘 - `[yimuhe.com]`
-- 豆瓣电台 - `[douban.fm]`
-- Jing.fm - `[jing.fm]`
-- 萌电台 [moe.fm] - `[moe.fm]`
-- QQ 电台下载解析 - `[fm.qq.com]`
-- 网易音乐下载解析 - `[music.163.com]`
-- 一听音乐 - `[www.1ting.com]`
-- 565656 音乐 - `[www.565656.com]`
-- 5sing 下载解析 - `[5sing.com, 5sing.kugou.com]`
-- 9酷音乐 - `[www.9ku.com]`
-- 百度音乐 - `[music.baidu.com]`
-- 百度音乐盒 - `[play.baidu.com]`
-- 音乐云下载 - `[yinyueyun.baidu.com]`
-- DJCC 舞曲 - `[www.djcc.com]`
-- DJ 嗨嗨 - `[www.djkk.com]`
-- DJ 爷爷网 - `[www.djye.com]`
-- 豆瓣音乐下载解析 - `[music.douban.com]`
-- 多乐音乐 - `[www.duole.com]`
-- 邻居的耳朵 - `[ear.duomi.com]`
-- 酷狗音乐下载解析 - `[web.kugou.com, kugou.com, www.kugou.com]`
-- 噢音乐下载解析 - `[oyinyue.com]`
-- QQ 音乐、电台海外访问限制解除 - `[y.qq.com, i.y.qq.com, fm.qq.com]`
-- QQ 音乐下载解析 - `[y.qq.com, soso.music.qq.com]`
-- SongTaste 下载解析 - `[songtaste.com]`
-- 虾米音乐 - `[www.xiami.com]`
-- 音悦台下载解析 - `[yinyuetai.com]`
-- 通用 phpDisk.a 网盘规则 - `[ 79pan.com, 03xg.com, 7mv.cc, pan.52zz.org, 258pan.com, huimeiku.com ]`
-- 通用 phpDisk.z 网盘规则 - `[ wpan.cc, ypan.cc, azpan.com, gxdisk.com, 2kuai.com, 1wp.me, 77pan.cc, vvpan.com, fmdisk.com, bx0635.com, 10pan.cc, 1pan.cc, 123wzwp.com, wwp5.com, fydisk.com ]`
+- 列表暂时停止更新。
 
 測試於 Chrome & Firefox 32 (GreasyMonkey 2.2)
