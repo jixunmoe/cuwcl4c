@@ -7,7 +7,10 @@
     "coffee-script": "^1.10.0",
     "js-yaml": "^3.4.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "ts-node": "^1.7.2",
+    "typescript": "^2.1.4"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

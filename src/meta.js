@@ -5,6 +5,7 @@
 // @grant          GM_registerMenuCommand
 // @grant          GM_getValue
 // @grant          GM_setValue
+// @grant          GM_getResourceText
 // @grant          GM_info
 
 // @run-at         document-start
@@ -41,12 +42,15 @@
 /// Aria2 RPC
 // @require        https://greasyfork.org/scripts/5672/code/Aria2-RPC-build-10.js
 
+// VueJs, not always used.
+// @resource       VueJs https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js
+
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        3.0.<% #build.js %>
+// @version        4.0.<% #build.js %>
 
 // 尝试使用脚本生成匹配规则
-<% #genIncludeRules.js %>
+// <% #genIncludeRules.js %>
 // @include https://jixunmoe.github.io/cuwcl4c/config/
 
 // GM_xmlHttpRequest 远端服务器列表
@@ -57,5 +61,9 @@
 // @connect trackercdn.kugou.com
 // @connect yinyuetai.com
 // @connect itwusun.com
+// @connect self
+
+// 告诉 TamperMonkey 这个脚本不需要转换
+// @nocompat Chrome
 
 // ==/UserScript==

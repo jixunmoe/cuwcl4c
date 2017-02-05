@@ -12,4 +12,5 @@ else
 	fi
 fi
 
-$n build.js -main -readme-zh-TW -readme && git commit -a;
+#$n build.js -main -readme-zh-TW -readme && git commit -a;
+echo TODO: Linux build script
