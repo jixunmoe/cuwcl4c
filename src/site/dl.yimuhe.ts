@@ -9,14 +9,15 @@ import { } from "../typings/Userscript.d";
 
 var rule: ISiteRule = {
 	id: 'dl.yimuhe',
-	name: '一木和',
-	host: 'yimuhe.com',
+	name: '一木禾',
+	host: 'www.yimuhe.com',
 
 	hide: '#loading, .ggao, .kuan',
 	show: '#yzm',
 
 	includeSubHost: false,
     subModule: false,
+    runInFrame: true,
 
 	onStart: () => {
 		phpdiskAutoRedirect(null);

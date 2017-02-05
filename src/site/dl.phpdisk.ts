@@ -20,7 +20,7 @@ var phpdiskA: ISiteRule = {
 	hide: '#code_box, #down_box2, #codefrm, .ad, [class^="banner"]',
 	show: '#down_box',
 
-	includeSubHost: false,
+	includeSubHost: true,
     subModule: false,
 
 	onStart: () => {
@@ -74,7 +74,7 @@ var phpdiskZ: ISiteRule = {
 
 	show: '#down_box, #dl_addr',
 
-	includeSubHost: false,
+	includeSubHost: true,
     subModule: false,
 
 	onStart: () => {
@@ -88,4 +88,4 @@ var phpdiskZ: ISiteRule = {
     }
 };
 
-export var Rules: ISiteRule[] = [phpdiskA, phpdiskA];
+export var Rules: ISiteRule[] = [phpdiskA, phpdiskZ];

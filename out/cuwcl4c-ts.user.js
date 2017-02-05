@@ -47,7 +47,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.688
+// @version        4.0.701
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -65,29 +65,50 @@
 // @include http://namipan.cc/*
 // @include http://*.namipan.cc/*
 // @include http://79pan.com/*
+// @include http://*.79pan.com/*
 // @include http://03xg.com/*
+// @include http://*.03xg.com/*
 // @include http://7mv.cc/*
+// @include http://*.7mv.cc/*
 // @include http://pan.52zz.org/*
+// @include http://*.pan.52zz.org/*
 // @include http://258pan.com/*
+// @include http://*.258pan.com/*
 // @include http://huimeiku.com/*
+// @include http://*.huimeiku.com/*
 // @include http://wpan.cc/*
+// @include http://*.wpan.cc/*
 // @include http://ypan.cc/*
+// @include http://*.ypan.cc/*
 // @include http://azpan.com/*
+// @include http://*.azpan.com/*
 // @include http://gxdisk.com/*
+// @include http://*.gxdisk.com/*
 // @include http://2kuai.com/*
+// @include http://*.2kuai.com/*
 // @include http://1wp.me/*
+// @include http://*.1wp.me/*
 // @include http://77pan.cc/*
+// @include http://*.77pan.cc/*
 // @include http://vvpan.com/*
+// @include http://*.vvpan.com/*
 // @include http://fmdisk.com/*
+// @include http://*.fmdisk.com/*
 // @include http://bx0635.com/*
+// @include http://*.bx0635.com/*
 // @include http://10pan.cc/*
+// @include http://*.10pan.cc/*
 // @include http://1pan.cc/*
+// @include http://*.1pan.cc/*
 // @include http://123wzwp.com/*
+// @include http://*.123wzwp.com/*
 // @include http://wwp5.com/*
+// @include http://*.wwp5.com/*
 // @include http://fydisk.com/*
+// @include http://*.fydisk.com/*
 // @include http://webhd.xuite.net/*
 // @include http://sync.hamicloud.net/*
-// @include http://yimuhe.com/*
+// @include http://www.yimuhe.com/*
 // @include http://douban.fm/*
 // @include https://douban.fm/*
 // @include http://moe.fm/*
@@ -225,13 +246,13 @@ define("helper/Logger", ["require", "exports", "helper/Script"], function (requi
 });
 define("helper/ScriptConfig", ["require", "exports", "helper/Script", "helper/Logger"], function (require, exports, Script_2, Logger_1) {
     "use strict";
-    var UriType;
     (function (UriType) {
         UriType[UriType["NormalUrl"] = 0] = "NormalUrl";
         /** @deprecated use others instead. */
         UriType[UriType["Custom"] = 1] = "Custom";
         UriType[UriType["Aria"] = 2] = "Aria";
-    })(UriType = exports.UriType || (exports.UriType = {}));
+    })(exports.UriType || (exports.UriType = {}));
+    var UriType = exports.UriType;
     function ReadConfig() {
         try {
             return JSON.parse(GM_getValue(Script_2.Script.Name, ""));
@@ -948,7 +969,7 @@ define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect
         ],
         hide: '#code_box, #down_box2, #codefrm, .ad, [class^="banner"]',
         show: '#down_box',
-        includeSubHost: false,
+        includeSubHost: true,
         subModule: false,
         onStart: () => {
             unsafeOverwriteFunctionSafeProxy({
@@ -993,7 +1014,7 @@ define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect
            #vcode, #tui, .dcode, #down_box2, #dl_tips, .nal,
            .scbar_hot_td, #incode`,
         show: '#down_box, #dl_addr',
-        includeSubHost: false,
+        includeSubHost: true,
         subModule: false,
         onStart: () => {
             unsafeOverwriteFunctionSafeProxy({
@@ -1004,7 +1025,7 @@ define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect
         onBody: () => {
         }
     };
-    exports.Rules = [phpdiskA, phpdiskA];
+    exports.Rules = [phpdiskA, phpdiskZ];
 });
 define("site/dl.xuite", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -1034,8 +1055,8 @@ define("site/dl.yimuhe", ["require", "exports", "helper/Extension", "helper/Redi
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     var rule = {
         id: 'dl.yimuhe',
-        name: '一木和',
-        host: 'yimuhe.com',
+        name: '一木禾',
+        host: 'www.yimuhe.com',
         hide: '#loading, .ggao, .kuan',
         show: '#yzm',
         includeSubHost: false,

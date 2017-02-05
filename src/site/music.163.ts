@@ -675,7 +675,7 @@ class YellowEase {
 function TestString(src:string, needle: string|RegExp)
 {
     if (typeof needle == 'string') {
-        return Contains(src, needle);
+        return Contains(src, needle as string);
     } else {
         return (needle as RegExp).test(src);
     }
