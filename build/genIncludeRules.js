@@ -3,6 +3,10 @@
 var modDir = __dirname + '/../src/site/';
 var fs = require ('fs');
 
+function english (count, s, p) {
+	return count == 1 ? s : p;
+}
+
 var ret = [''];
 fs.readdirSync (modDir).forEach (function (m) {
 	var fn = m.match(/(.+)\./)[1];
@@ -13,32 +17,38 @@ fs.readdirSync (modDir).forEach (function (m) {
 		if (/\bsubModule\s*:\s*true\b/.test(file))
 			return ;
 
-		var hosts = file.match (/host\s*:\s*(\[[\s\S]+?\]|'[^']+)/)[1]
-			.replace(/'/g, '')
-			.replace(/\s/g, '')
-			.replace (/\/\*[\s\S]+\*\//g, '');
-		
-		var noSubHost = /\bincludeSubHost\s*:\s*false\b/.test(file);
-		var useSsl = /\bssl\s*:\s*true\b/.test(file);
-		
-		if (hosts[0] == '[') {
-			hosts = hosts.slice(1,-1).split(',');
-		} else {
-			hosts = [hosts];
-		}
-		
-		// TODO: path parse
-		hosts.forEach(function (host) {
-			if (!host)
-				return ;
+		// 寻找所有规则并加入
+		console.info(`\n[*] Parse include rule from ${m}...`);
+		file.replace(/:\s*\w+Rule\s*=\s*\{([\s\S]+?)onStart/g, function (z, rule) {
+			var hosts = rule.match (/host\s*:\s*(\[[\s\S]+?\]|'[^']+)/)[1]
+				.replace(/'/g, '')
+				.replace(/\s/g, '')
+				.replace (/\/\*[\s\S]+\*\//g, '');
 			
-			ret.push('http://' + host + '/*');
-			if (useSsl) ret.push('https://' + host + '/*');
+			var noSubHost = /\bincludeSubHost\s*:\s*false\b/.test(rule);
+			var useSsl = /\bssl\s*:\s*true\b/.test(rule);
 			
-			if (!noSubHost) {
-				ret.push('http://*.' + host + '/*');
-				if (useSsl) ret.push('https://*.' + host + '/*');
+			if (hosts[0] == '[') {
+				hosts = hosts.slice(1,-1).split(',');
+			} else {
+				hosts = [hosts];
 			}
+			
+			// TODO: path parse
+			hosts.forEach(function (host) {
+				if (!host)
+					return ;
+				
+				ret.push('http://' + host + '/*');
+				if (useSsl) ret.push('https://' + host + '/*');
+				
+				if (!noSubHost) {
+					ret.push('http://*.' + host + '/*');
+					if (useSsl) ret.push('https://*.' + host + '/*');
+				}
+			});
+
+			console.info(`    - ${hosts.length} ${english(hosts.length, 'host', 'hosts')} added.`);
 		});
 	}
 });

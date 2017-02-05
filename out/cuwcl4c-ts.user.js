@@ -47,7 +47,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.679
+// @version        4.0.688
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -64,8 +64,30 @@
 // @include http://*.howfile.com/*
 // @include http://namipan.cc/*
 // @include http://*.namipan.cc/*
+// @include http://79pan.com/*
+// @include http://03xg.com/*
+// @include http://7mv.cc/*
+// @include http://pan.52zz.org/*
+// @include http://258pan.com/*
+// @include http://huimeiku.com/*
+// @include http://wpan.cc/*
+// @include http://ypan.cc/*
+// @include http://azpan.com/*
+// @include http://gxdisk.com/*
+// @include http://2kuai.com/*
+// @include http://1wp.me/*
+// @include http://77pan.cc/*
+// @include http://vvpan.com/*
+// @include http://fmdisk.com/*
+// @include http://bx0635.com/*
+// @include http://10pan.cc/*
+// @include http://1pan.cc/*
+// @include http://123wzwp.com/*
+// @include http://wwp5.com/*
+// @include http://fydisk.com/*
 // @include http://webhd.xuite.net/*
 // @include http://sync.hamicloud.net/*
+// @include http://yimuhe.com/*
 // @include http://douban.fm/*
 // @include https://douban.fm/*
 // @include http://moe.fm/*
@@ -913,6 +935,77 @@ body, body > .ggao {
     };
     exports.Rules = [rule];
 });
+define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect", "helper/Script"], function (require, exports, Wait_3, Redirect_2, Script_5) {
+    "use strict";
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
+    var phpdiskA = {
+        id: 'phpdisk.a',
+        name: 'PHPDisk A 类网赚网盘',
+        host: [
+            '79pan.com', '03xg.com',
+            '7mv.cc', 'pan.52zz.org',
+            '258pan.com', 'huimeiku.com'
+        ],
+        hide: '#code_box, #down_box2, #codefrm, .ad, [class^="banner"]',
+        show: '#down_box',
+        includeSubHost: false,
+        subModule: false,
+        onStart: () => {
+            unsafeOverwriteFunctionSafeProxy({
+                open: url => null
+            });
+        },
+        onBody: () => {
+            var self = this;
+            Wait_3.WaitUntil('down_file_link', () => {
+                var ctx = unsafeWindow;
+                // 避免地址被覆盖
+                ctx.update_sec = null;
+                // 强制显示地址
+                ctx.down_file_link();
+                // 强制显示下载地址
+                if (ctx.show_down_url)
+                    ctx.show_down_url('down_a1');
+                var jumpUrl = $('#down_link').find('a').attr('href');
+                // 然后跳过去
+                if (jumpUrl) {
+                    Redirect_2.RedirectTo(jumpUrl);
+                }
+                else {
+                    alert(`[${Script_5.Script.Name}]: 应用 ${self.name} 失败:\n找不到跳转地址.`);
+                }
+            });
+        }
+    };
+    var phpdiskZ = {
+        id: 'phpdisk.z',
+        name: '通用 phpDisk.z 网盘规则',
+        // 规则: 直接跳转 /file-xxx -> /down-xxx
+        //       并隐藏 down_box2, 显示 down_box
+        host: [
+            'wpan.cc', 'ypan.cc',
+            'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me',
+            '77pan.cc', 'vvpan.com', 'fmdisk.com', 'bx0635.com',
+            '10pan.cc', '1pan.cc', '123wzwp.com', 'wwp5.com',
+            'fydisk.com'
+        ],
+        hide: `.Downpagebox, .talk_show, .banner_2, .w_305, .ad,
+           #vcode, #tui, .dcode, #down_box2, #dl_tips, .nal,
+           .scbar_hot_td, #incode`,
+        show: '#down_box, #dl_addr',
+        includeSubHost: false,
+        subModule: false,
+        onStart: () => {
+            unsafeOverwriteFunctionSafeProxy({
+                down_process: unknown => null
+            });
+            Redirect_2.phpdiskAutoRedirect(null);
+        },
+        onBody: () => {
+        }
+    };
+    exports.Rules = [phpdiskA, phpdiskA];
+});
 define("site/dl.xuite", ["require", "exports"], function (require, exports) {
     "use strict";
     /// <reference path="../typings/globals/jquery/index.d.ts" />
@@ -936,7 +1029,38 @@ define("site/dl.xuite", ["require", "exports"], function (require, exports) {
     };
     exports.Rules = [rule];
 });
-define("site/fm.douban", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader"], function (require, exports, Logger_4, Wait_3, Downloader_2) {
+define("site/dl.yimuhe", ["require", "exports", "helper/Extension", "helper/Redirect"], function (require, exports, Extension_6, Redirect_3) {
+    "use strict";
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
+    var rule = {
+        id: 'dl.yimuhe',
+        name: '一木和',
+        host: 'yimuhe.com',
+        hide: '#loading, .ggao, .kuan',
+        show: '#yzm',
+        includeSubHost: false,
+        subModule: false,
+        onStart: () => {
+            Redirect_3.phpdiskAutoRedirect(null);
+        },
+        onBody: () => {
+            if (Extension_6.BeginWith(location.pathname, '/n_dd.php')) {
+                Redirect_3.RedirectTo($('#downs').attr('href'));
+                return;
+            }
+            var dlContainer = document.getElementById('download');
+            if (!dlContainer)
+                return;
+            // 当下载框的 style 属性被更改后, 模拟下载按钮单击.
+            var mo = new MutationObserver(function () {
+                $('a', dlContainer)[1].click();
+            });
+            mo.observe(dlContainer, { attributes: true });
+        }
+    };
+    exports.Rules = [rule];
+});
+define("site/fm.douban", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader"], function (require, exports, Logger_4, Wait_4, Downloader_2) {
     "use strict";
     var rule = {
         id: 'fm.douban',
@@ -982,7 +1106,7 @@ div#jx_douban_dl_wrap {
                 .append(linkDownload)
                 .insertAfter('.player-wrap');
             Logger_4.info('等待豆瓣电台加载 ..');
-            Wait_3.WaitUntil('extStatusHandler', function () {
+            Wait_4.WaitUntil('extStatusHandler', function () {
                 Logger_4.info('绑定豆瓣电台函数 ..');
                 unsafeOverwriteFunctionSafeProxy({
                     extStatusHandler: function (jsonSongObj) {
@@ -1004,7 +1128,7 @@ div#jx_douban_dl_wrap {
     };
     exports.Rules = [rule];
 });
-define("site/fm.moe", ["require", "exports", "helper/Downloader", "helper/Script"], function (require, exports, Downloader_3, Script_5) {
+define("site/fm.moe", ["require", "exports", "helper/Downloader", "helper/Script"], function (require, exports, Downloader_3, Script_6) {
     "use strict";
     var rule = {
         id: 'fm.moe',
@@ -1033,7 +1157,7 @@ a.jixun-dl {
             dlLink
                 .addClass('player-button left jixun-dl')
                 .insertAfter('div.player-button.button-volume');
-            Script_5.Script.ListenEvent((clip) => {
+            Script_6.Script.ListenEvent((clip) => {
                 dlLink
                     .attr('href', rule.bd.GenerateUri(clip.url, `${clip.sub_title}.mp3`))
                     .attr('title', `下载: ${clip.sub_title}`);
@@ -1055,12 +1179,12 @@ a.jixun-dl {
                 });
                 // 要求载入外挂模组
                 seajs.use('plugin/jixun');
-            }, Script_5.Script.Name);
+            }, Script_6.Script.Name);
         }
     };
     exports.Rules = [rule];
 });
-define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constants", "helper/Wait", "helper/Downloader", "helper/Script", "helper/ScriptConfig", "helper/QueryString", "helper/Extension"], function (require, exports, Logger_5, Constants_3, Wait_4, Downloader_4, Script_6, ScriptConfig_3, qs, Extension_6) {
+define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constants", "helper/Wait", "helper/Downloader", "helper/Script", "helper/ScriptConfig", "helper/QueryString", "helper/Extension"], function (require, exports, Logger_5, Constants_3, Wait_5, Downloader_4, Script_7, ScriptConfig_3, qs, Extension_7) {
     "use strict";
     const __MP3_BLANK = 'https://jixunmoe.github.io/cuwcl4c/blank.mp3';
     var rule = {
@@ -1150,7 +1274,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             });
         }
         BodyEvent() {
-            Wait_4.WaitUntil('nm.x', () => {
+            Wait_5.WaitUntil('nm.x', () => {
                 // 两个版权提示, 一个权限提示.
                 var fnBypassCr1 = this.Search(unsafeWindow.nej.e, 'nej.e', '.dataset;if');
                 var fnBypassCr2 = this.Search(unsafeWindow.nm.x, 'nm.x', '.copyrightId==');
@@ -1251,7 +1375,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             // TODO: 下载所有曲目
         }
         HookNormalPlayer() {
-            Wait_4.WaitUntil(() => {
+            Wait_5.WaitUntil(() => {
                 return document.querySelector('.listhdc > .addall') != null;
             }, () => {
                 var dlLine = $('<a>');
@@ -1266,7 +1390,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             function nextSong() {
                 document.querySelector('.nxt').click();
             }
-            Wait_4.WaitUntil('nej.j', () => {
+            Wait_5.WaitUntil('nej.j', () => {
                 var fnAjax = this.Search(unsafeWindow.nej.j, "nej.j", '.replace("api","weapi');
                 var fnGetSongRaw = this.SearchSubPrototype(unsafeWindow.nm.w, 'nm.w', /return this\.\w+\[this\.\w+\]/);
                 var clsPlayer = fnGetSongRaw[0];
@@ -1480,7 +1604,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             this._cdn = ip;
             localStorage.ws_cdn_media = ip;
             GM_setValue("_ws_cdn_media", ip);
-            document.dispatchEvent(new CustomEvent(Script_6.Script.Name + '-cdn', {
+            document.dispatchEvent(new CustomEvent(Script_7.Script.Name + '-cdn', {
                 detail: ip
             }));
         }
@@ -1530,7 +1654,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                         $dlHolder.append(' | ');
                     }
                 });
-                $dlHolder.append(`提供: ${Script_6.Script.Name} ${Constants_3.version}`);
+                $dlHolder.append(`提供: ${Script_7.Script.Name} ${Constants_3.version}`);
                 if (ScriptConfig_3.Config.bYellowEaseInternational) {
                     $flashBox.html(html.replace(/restrict=true/g, 'restrict='));
                     // 自动关闭弹出的提示框
@@ -1586,7 +1710,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
     }
     function TestString(src, needle) {
         if (typeof needle == 'string') {
-            return Extension_6.Contains(src, needle);
+            return Extension_7.Contains(src, needle);
         }
         else {
             return needle.test(src);
@@ -1646,10 +1770,10 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             '203.130.59.11',
             '203.130.59.12'
         ];
-        return Extension_6.Shuffle(cdns);
+        return Extension_7.Shuffle(cdns);
     }
     function GenerateValidName() {
-        return `${Script_6.Script.Name}__${Date.now()}${Math.random()}`;
+        return `${Script_7.Script.Name}__${Date.now()}${Math.random()}`;
     }
     function GetEnhancedData(id, url) {
         return {
@@ -1736,7 +1860,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         var _cache = {};
         function Init() {
             _ready = true;
-            Script_6.Script.RegisterStorageEvent('_MUSIC_SPY', () => {
+            Script_7.Script.RegisterStorageEvent('_MUSIC_SPY', () => {
                 _reloadCache = true;
             });
             ReloadCache();
@@ -1842,7 +1966,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         }
     })(MusicSpy || (MusicSpy = {}));
 });
-define("site/music.1ting", ["require", "exports", "helper/Wait", "helper/Downloader"], function (require, exports, Wait_5, Downloader_5) {
+define("site/music.1ting", ["require", "exports", "helper/Wait", "helper/Downloader"], function (require, exports, Wait_6, Downloader_5) {
     "use strict";
     var rule = {
         id: 'music.1ting',
@@ -1863,7 +1987,7 @@ define("site/music.1ting", ["require", "exports", "helper/Wait", "helper/Downloa
                 .removeAttr('onclick')
                 .attr('target', '_blank');
             rule.bd.CaptureAria(rule._dl);
-            Wait_5.WaitUntil('yiting.player.hook', () => {
+            Wait_6.WaitUntil('yiting.player.hook', () => {
                 unsafeWindow.yiting.player.hook('play', exportFunction(() => {
                     rule.UpdateSong();
                 }, unsafeWindow));
@@ -1882,12 +2006,12 @@ define("site/music.1ting", ["require", "exports", "helper/Wait", "helper/Downloa
     };
     exports.Rules = [rule];
 });
-define("hooker/jPlayer", ["require", "exports", "helper/Logger", "helper/Wait"], function (require, exports, Logger_6, Wait_6) {
+define("hooker/jPlayer", ["require", "exports", "helper/Logger", "helper/Wait"], function (require, exports, Logger_6, Wait_7) {
     "use strict";
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     function Patch(callback, namespace = "jPlayer") {
         Logger_6.info('等待 jPlayer 就绪 ..');
-        Wait_6.WaitUntil(`$.${namespace}.prototype.setMedia`, () => {
+        Wait_7.WaitUntil(`$.${namespace}.prototype.setMedia`, () => {
             Logger_6.info('开始绑定函数 ..');
             unsafeOverwriteFunctionSafeProxy({
                 setMedia: (newMedia) => {
@@ -1900,7 +2024,7 @@ define("hooker/jPlayer", ["require", "exports", "helper/Logger", "helper/Wait"],
     }
     exports.Patch = Patch;
 });
-define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Script", "helper/Extension", "hooker/jPlayer"], function (require, exports, Downloader_6, Script_7, Extension_7, jPlayer) {
+define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Script", "helper/Extension", "hooker/jPlayer"], function (require, exports, Downloader_6, Script_8, Extension_8, jPlayer) {
     "use strict";
     var rule = {
         id: 'music.56',
@@ -1921,14 +2045,14 @@ define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Scri
                 $('.play-info-otheropt > a:last')
                     .attr('href', rule.bd.GenerateUri(addr, media.songname + addr.slice(-4)))
                     .attr('title', `下载: ${media.songname} (歌手: ${media.singername})`)
-                    .find('span').text(`下载 (${Script_7.Script.Name})`);
+                    .find('span').text(`下载 (${Script_8.Script.Name})`);
             });
             var need_play = false;
             unsafeWindow.splayer.song_data[0].forEach((song) => {
                 if (song.delflag || song.delflag != 0) {
                     need_play = true;
                     song.delflag = 0;
-                    if (Extension_7.BeginWith(song.url, '/del')) {
+                    if (Extension_8.BeginWith(song.url, '/del')) {
                         song.url = song.url.replace('/del', '');
                     }
                 }
@@ -1940,7 +2064,7 @@ define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Scri
     };
     exports.Rules = [rule];
 });
-define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader", "helper/Extension"], function (require, exports, Logger_7, Wait_7, Downloader_7, Extension_8) {
+define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader", "helper/Extension"], function (require, exports, Logger_7, Wait_8, Downloader_7, Extension_9) {
     "use strict";
     var rule = {
         id: 'music.echo',
@@ -1957,7 +2081,7 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
             rule.bd = new Downloader_7.Downloader();
         },
         onBody() {
-            if (Extension_8.BeginWith(location.pathname, '/sound/')) {
+            if (Extension_9.BeginWith(location.pathname, '/sound/')) {
                 rule.SinglePage();
             }
         },
@@ -1988,7 +2112,7 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
                 onload: (response) => {
                     var target = $(response.responseText)
                         .filter('script')
-                        .filter((i, el) => Extension_8.Contains(el.textContent, 'play_source('));
+                        .filter((i, el) => Extension_9.Contains(el.textContent, 'play_source('));
                     if (target.length === 0) {
                         Logger_7.error('搜索不到有效的曲目代码。');
                         return;
@@ -1996,7 +2120,7 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
                     // 导出我们的函数
                     var wnd = frame.contentWindow;
                     exportFunction((id, type, url, unk) => {
-                        Wait_7.WaitUntil('page_sound_obj', () => rule.UpdateUrl(url, unsafeWindow.page_sound_obj.name));
+                        Wait_8.WaitUntil('page_sound_obj', () => rule.UpdateUrl(url, unsafeWindow.page_sound_obj.name));
                     }, wnd, {
                         defineAs: 'play_source'
                     });
@@ -2012,17 +2136,17 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
             GM_xmlhttpRequest(req);
         },
         UpdateUrl(url, name) {
-            let s = Extension_8.Contains(url, '?') ? '&' : '?';
-            let _url = `${url}${s}attname=${encodeURIComponent(name)}${Extension_8.GetExtensionFromUrl(url)}`;
+            let s = Extension_9.Contains(url, '?') ? '&' : '?';
+            let _url = `${url}${s}attname=${encodeURIComponent(name)}${Extension_9.GetExtensionFromUrl(url)}`;
             rule.dlLink
-                .attr('href', rule.bd.GenerateUri(url, name + Extension_8.GetExtensionFromUrl(url)))
+                .attr('href', rule.bd.GenerateUri(url, name + Extension_9.GetExtensionFromUrl(url)))
                 .attr('title', `下载: ${name}`);
             // info(`捕捉到下载地址: ${url}`);
         }
     };
     exports.Rules = [rule];
 });
-define("site/music.kugou", ["require", "exports", "helper/Logger", "helper/Downloader", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Logger_8, Downloader_8, ScriptConfig_4, Extension_9) {
+define("site/music.kugou", ["require", "exports", "helper/Logger", "helper/Downloader", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Logger_8, Downloader_8, ScriptConfig_4, Extension_10) {
     "use strict";
     const KugouDownloadFront = 'https://jixunmoe.github.io/cuwcl4c/kugou-dl';
     var app = null;
@@ -2096,7 +2220,7 @@ define("site/music.kugou", ["require", "exports", "helper/Logger", "helper/Downl
         },
         onBody() {
             // 火狐狸有兼容问题, 待修
-            if (!Extension_9.Contains(navigator.userAgent, 'Firefox'))
+            if (!Extension_10.Contains(navigator.userAgent, 'Firefox'))
                 rule.BuildDialog();
         },
         BuildDialog() {
@@ -2263,7 +2387,7 @@ define("site/music.kugou", ["require", "exports", "helper/Logger", "helper/Downl
     };
     exports.Rules = [rule];
 });
-define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.xuite", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting", "site/music.56", "site/music.echo", "site/music.kugou"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k, l, m, n) {
+define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.phpdisk", "site/dl.xuite", "site/dl.yimuhe", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting", "site/music.56", "site/music.echo", "site/music.kugou"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
     "use strict";
     a.Rules.forEach(SiteRule_1.Add);
     b.Rules.forEach(SiteRule_1.Add);
@@ -2279,8 +2403,10 @@ define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.12
     l.Rules.forEach(SiteRule_1.Add);
     m.Rules.forEach(SiteRule_1.Add);
     n.Rules.forEach(SiteRule_1.Add);
+    o.Rules.forEach(SiteRule_1.Add);
+    p.Rules.forEach(SiteRule_1.Add);
 });
-define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_8, Constants_4, ScriptConfig_5, QueryString_1, Logger_9, SiteRule_2) {
+define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_9, Constants_4, ScriptConfig_5, QueryString_1, Logger_9, SiteRule_2) {
     "use strict";
     var $_GET = QueryString_1.Parse(Constants_4.currentUrl);
     if (ScriptConfig_5.Config.bUseCustomRules) {
@@ -2295,8 +2421,8 @@ define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants",
             Logger_9.error(`解析自定义规则发生错误: ${ex.message}`);
         }
     }
-    GM_registerMenuCommand(`配置 ${Script_8.Script.Name}`, () => {
-        GM_openInTab(Script_8.Script.Config, false);
+    GM_registerMenuCommand(`配置 ${Script_9.Script.Name}`, () => {
+        GM_openInTab(Script_9.Script.Config, false);
     });
     SiteRule_2.FireEvent('start');
     $(() => {
