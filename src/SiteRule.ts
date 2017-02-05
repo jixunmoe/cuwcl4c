@@ -63,7 +63,7 @@ export function Check(site:ISiteRule, event:string): boolean
         
         var matched: boolean = false;
         for(var i = hosts.length; i--; ) {
-            if (EndWith(hosts[i], topHostMask)) {
+            if (EndWith(`.${hosts[i]}`, topHostMask)) {
                 matched = true;
                 break;
             }

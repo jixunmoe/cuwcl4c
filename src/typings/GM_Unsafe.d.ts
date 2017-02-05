@@ -3,6 +3,12 @@ declare class ErrorUnsafeSuccess extends Error {}
 declare function unsafeOverwriteFunctionSafeProxy (...args: any[]): void;
 declare function unsafeExec(callback: Function, ...args: any[]): void;
 
+declare function unsafeDefineFunction (
+    fooName: string,
+    foo: Function,
+    scope?: any
+): HTMLElement;
+
 declare function exportFunction(
     func: Function,
     targetScope: Object,

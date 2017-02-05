@@ -12,27 +12,25 @@ var phpdiskA: ISiteRule = {
 	id: 'phpdisk.a',
 	name: 'PHPDisk A 类网赚网盘',
 	host: [
-		'79pan.com', '03xg.com',
-        '7mv.cc', 'pan.52zz.org',
-        '258pan.com', 'huimeiku.com'
-    ],
+		/* 网站全死了 */
+	],
 
 	hide: '#code_box, #down_box2, #codefrm, .ad, [class^="banner"]',
 	show: '#down_box',
 
 	includeSubHost: true,
-    subModule: false,
+	subModule: false,
 
 	onStart: () => {
-		unsafeOverwriteFunctionSafeProxy ({
-			open: url => null
-		});
+		let f = () => {};
+
+		unsafeDefineFunction ('open', f);
 	},
 
-    onBody: () => {
-        var self = this;
-        WaitUntil('down_file_link', () => {
-            var ctx: any = unsafeWindow;
+	onBody: () => {
+		var self = this;
+		WaitUntil('down_file_link', () => {
+			var ctx: any = unsafeWindow;
 			// 避免地址被覆盖
 			ctx.update_sec = null;
 			// 强制显示地址
@@ -46,12 +44,12 @@ var phpdiskA: ISiteRule = {
 
 			// 然后跳过去
 			if (jumpUrl) {
-                RedirectTo (jumpUrl);
+				RedirectTo (jumpUrl);
 			} else {
 				alert (`[${Script.Name}]: 应用 ${self.name} 失败:\n找不到跳转地址.`);
 			}
-        });
-    }
+		});
+	}
 };
 
 var phpdiskZ: ISiteRule = {
@@ -61,31 +59,39 @@ var phpdiskZ: ISiteRule = {
 	//       并隐藏 down_box2, 显示 down_box
 
 	host: [
-		'wpan.cc', 'ypan.cc',
-		'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me', 
-		'77pan.cc', 'vvpan.com', 'fmdisk.com', 'bx0635.com',
-		'10pan.cc', '1pan.cc', '123wzwp.com', 'wwp5.com',
-		'fydisk.com'
+		'10pan.cc', '66yp.cc', '123wzwp.com'
 	],
 
 	hide: `.Downpagebox, .talk_show, .banner_2, .w_305, .ad,
-           #vcode, #tui, .dcode, #down_box2, #dl_tips, .nal,
-           .scbar_hot_td, #incode`,
+		   #vcode, #tui, .dcode, #down_box2, #dl_tips, .nal,
+		   .scbar_hot_td, #incode`,
 
 	show: '#down_box, #dl_addr',
 
 	includeSubHost: true,
-    subModule: false,
+	subModule: false,
 
 	onStart: () => {
-		unsafeOverwriteFunctionSafeProxy ({
-			down_process: unknown => null
-		});
+		let f = () => {};
+
+		unsafeDefineFunction ('alert', f);
+		unsafeDefineFunction ('down_process', f);
 		phpdiskAutoRedirect(null);
 	},
 
-    onBody: () => {
-    }
+	onBody: () => {
+		/* fix for 123wzwp.com */
+		let f = () => {};
+
+		unsafeDefineFunction ('down_process2', f);
+		$(document.body).on('click', 'a', e => {
+			var $dl = $(e.currentTarget);
+			let url = $dl.data('url');
+			if (url.length > $dl.attr('href').length) {
+				$dl.attr('href', url);
+			}
+		});
+	}
 };
 
 export var Rules: ISiteRule[] = [phpdiskA, phpdiskZ];

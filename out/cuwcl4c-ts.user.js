@@ -47,7 +47,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.701
+// @version        4.0.704
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -64,48 +64,12 @@
 // @include http://*.howfile.com/*
 // @include http://namipan.cc/*
 // @include http://*.namipan.cc/*
-// @include http://79pan.com/*
-// @include http://*.79pan.com/*
-// @include http://03xg.com/*
-// @include http://*.03xg.com/*
-// @include http://7mv.cc/*
-// @include http://*.7mv.cc/*
-// @include http://pan.52zz.org/*
-// @include http://*.pan.52zz.org/*
-// @include http://258pan.com/*
-// @include http://*.258pan.com/*
-// @include http://huimeiku.com/*
-// @include http://*.huimeiku.com/*
-// @include http://wpan.cc/*
-// @include http://*.wpan.cc/*
-// @include http://ypan.cc/*
-// @include http://*.ypan.cc/*
-// @include http://azpan.com/*
-// @include http://*.azpan.com/*
-// @include http://gxdisk.com/*
-// @include http://*.gxdisk.com/*
-// @include http://2kuai.com/*
-// @include http://*.2kuai.com/*
-// @include http://1wp.me/*
-// @include http://*.1wp.me/*
-// @include http://77pan.cc/*
-// @include http://*.77pan.cc/*
-// @include http://vvpan.com/*
-// @include http://*.vvpan.com/*
-// @include http://fmdisk.com/*
-// @include http://*.fmdisk.com/*
-// @include http://bx0635.com/*
-// @include http://*.bx0635.com/*
 // @include http://10pan.cc/*
 // @include http://*.10pan.cc/*
-// @include http://1pan.cc/*
-// @include http://*.1pan.cc/*
+// @include http://66yp.cc/*
+// @include http://*.66yp.cc/*
 // @include http://123wzwp.com/*
 // @include http://*.123wzwp.com/*
-// @include http://wwp5.com/*
-// @include http://*.wwp5.com/*
-// @include http://fydisk.com/*
-// @include http://*.fydisk.com/*
 // @include http://webhd.xuite.net/*
 // @include http://sync.hamicloud.net/*
 // @include http://www.yimuhe.com/*
@@ -592,7 +556,7 @@ define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension"
                 return false;
             var matched = false;
             for (var i = hosts.length; i--;) {
-                if (Extension_3.EndWith(hosts[i], Constants_1.topHostMask)) {
+                if (Extension_3.EndWith(`.${hosts[i]}`, Constants_1.topHostMask)) {
                     matched = true;
                     break;
                 }
@@ -962,19 +926,14 @@ define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect
     var phpdiskA = {
         id: 'phpdisk.a',
         name: 'PHPDisk A 类网赚网盘',
-        host: [
-            '79pan.com', '03xg.com',
-            '7mv.cc', 'pan.52zz.org',
-            '258pan.com', 'huimeiku.com'
-        ],
+        host: [],
         hide: '#code_box, #down_box2, #codefrm, .ad, [class^="banner"]',
         show: '#down_box',
         includeSubHost: true,
         subModule: false,
         onStart: () => {
-            unsafeOverwriteFunctionSafeProxy({
-                open: url => null
-            });
+            let f = () => { };
+            unsafeDefineFunction('open', f);
         },
         onBody: () => {
             var self = this;
@@ -1004,25 +963,31 @@ define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect
         // 规则: 直接跳转 /file-xxx -> /down-xxx
         //       并隐藏 down_box2, 显示 down_box
         host: [
-            'wpan.cc', 'ypan.cc',
-            'azpan.com', 'gxdisk.com', '2kuai.com', '1wp.me',
-            '77pan.cc', 'vvpan.com', 'fmdisk.com', 'bx0635.com',
-            '10pan.cc', '1pan.cc', '123wzwp.com', 'wwp5.com',
-            'fydisk.com'
+            '10pan.cc', '66yp.cc', '123wzwp.com'
         ],
         hide: `.Downpagebox, .talk_show, .banner_2, .w_305, .ad,
-           #vcode, #tui, .dcode, #down_box2, #dl_tips, .nal,
-           .scbar_hot_td, #incode`,
+		   #vcode, #tui, .dcode, #down_box2, #dl_tips, .nal,
+		   .scbar_hot_td, #incode`,
         show: '#down_box, #dl_addr',
         includeSubHost: true,
         subModule: false,
         onStart: () => {
-            unsafeOverwriteFunctionSafeProxy({
-                down_process: unknown => null
-            });
+            let f = () => { };
+            unsafeDefineFunction('alert', f);
+            unsafeDefineFunction('down_process', f);
             Redirect_2.phpdiskAutoRedirect(null);
         },
         onBody: () => {
+            /* fix for 123wzwp.com */
+            let f = () => { };
+            unsafeDefineFunction('down_process2', f);
+            $(document.body).on('click', 'a', e => {
+                var $dl = $(e.currentTarget);
+                let url = $dl.data('url');
+                if (url.length > $dl.attr('href').length) {
+                    $dl.attr('href', url);
+                }
+            });
         }
     };
     exports.Rules = [phpdiskA, phpdiskZ];
@@ -1061,6 +1026,7 @@ define("site/dl.yimuhe", ["require", "exports", "helper/Extension", "helper/Redi
         show: '#yzm',
         includeSubHost: false,
         subModule: false,
+        runInFrame: true,
         onStart: () => {
             Redirect_3.phpdiskAutoRedirect(null);
         },
