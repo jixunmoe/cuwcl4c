@@ -47,7 +47,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.716
+// @version        4.0.720
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -83,6 +83,7 @@
 // @include https://douban.fm/*
 // @include http://moe.fm/*
 // @include http://music.163.com/*
+// @include https://music.163.com/*
 // @include http://www.1ting.com/*
 // @include http://www.23356.com/*
 // @include http://www.app-echo.com/*
@@ -1278,7 +1279,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
     const __MP3_BLANK = 'https://jixunmoe.github.io/cuwcl4c/blank.mp3';
     var rule = {
         id: 'music.163',
-        ssl: false,
+        ssl: true,
         name: '黄易云音乐',
         host: 'music.163.com',
         includeSubHost: false,
@@ -1352,7 +1353,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 rule.style.Hide('#index-banner');
             }
             if (ScriptConfig_3.Config.bYellowEaseInternational)
-                this._cdns = GenerateCdnList();
+                GenerateCdnList(this);
             this._downloader = new Downloader_4.Downloader();
             unsafeExec(() => {
                 var fakePlatForm = navigator.platform + "--Fake-mac";
@@ -1642,7 +1643,9 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 return;
             }
             document.cookie = 'os=uwp';
-            params.headers['X-Real-IP'] = '118.88.88.88';
+            let ip = this._ips.shift();
+            this._ips.push(ip);
+            params.headers['X-Real-IP'] = ip;
             var id = JSON.parse(params.query.ids)[0];
             params._onload = exportFunction((data, _onload) => {
                 if (data.data[0].url) {
@@ -1682,7 +1685,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
         }
         NextCdn() {
             if (!this._cdns)
-                this._cdns = GenerateCdnList();
+                GenerateCdnList(this);
             var ip = this._cdns.shift();
             this._cdns.push(ip);
             this.NotifyCdn(ip);
@@ -1806,7 +1809,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             return needle.test(src);
         }
     }
-    function GenerateCdnList() {
+    function GenerateCdnList(ctx) {
         var cdns = [
             // 电信
             "125.90.206.32",
@@ -1860,7 +1863,13 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             '203.130.59.11',
             '203.130.59.12'
         ];
-        return Extension_9.Shuffle(cdns);
+        ctx._cdns = Extension_9.Shuffle(cdns);
+        var ips = [
+            '106.120.167.67', '111.206.61.131', '111.206.61.131', '111.13.66.226',
+            '106.120.167.67', '125.88.190.56', '222.73.144.195', '220.181.57.232',
+            '180.149.131.247', '180.149.133.167', '112.34.111.121', '61.135.185.24'
+        ];
+        ctx._ips = Extension_9.Shuffle(ips);
     }
     function GenerateValidName() {
         return `${Script_7.Script.Name}__${Date.now()}${Math.random()}`;

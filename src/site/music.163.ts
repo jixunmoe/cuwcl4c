@@ -16,7 +16,7 @@ const __MP3_BLANK = 'https://jixunmoe.github.io/cuwcl4c/blank.mp3';
 
 var rule: IYellowEaseRule = {
     id: 'music.163',
-    ssl: false,
+    ssl: true,
 
     name: '黄易云音乐',
     host: 'music.163.com',
@@ -99,6 +99,7 @@ class YellowEase {
     _downloader: Downloader;
     _cdn: string;
     _cdns: string[];
+	_ips: string[];
 
     constructor() {
         if (localStorage.__HIDE_BANNER) {
@@ -106,8 +107,8 @@ class YellowEase {
         }
 
         if (Config.bYellowEaseInternational)
-            this._cdns = GenerateCdnList();
-
+            GenerateCdnList(this);
+		
         this._downloader = new Downloader();
 
         unsafeExec(() => {
@@ -472,7 +473,9 @@ class YellowEase {
         }
 
         document.cookie = 'os=uwp';
-        params.headers['X-Real-IP'] = '118.88.88.88';
+		let ip = this._ips.shift();
+		this._ips.push(ip);
+        params.headers['X-Real-IP'] = ip;
 
         var id = JSON.parse(params.query.ids)[0];
         params._onload = <IXhrOnloadCustom>exportFunction((data: IXhrSongUrlReply, _onload: IXhrOnload) => {
@@ -520,7 +523,7 @@ class YellowEase {
     private NextCdn()
     {
         if (!this._cdns)
-            this._cdns = GenerateCdnList();
+            GenerateCdnList(this);
         
         var ip = this._cdns.shift();
         this._cdns.push(ip);
@@ -681,7 +684,7 @@ function TestString(src:string, needle: string|RegExp)
     }
 }
 
-function GenerateCdnList(): string[]
+function GenerateCdnList(ctx: YellowEase): void
 {
     var cdns: string[] = [
         // 电信
@@ -738,7 +741,15 @@ function GenerateCdnList(): string[]
         '203.130.59.12'
     ];
 
-    return Shuffle<string>(cdns);
+    ctx._cdns = Shuffle<string>(cdns);
+	
+	
+	var ips: string[] = [
+		'106.120.167.67',  '111.206.61.131',  '111.206.61.131', '111.13.66.226',
+		'106.120.167.67',  '125.88.190.56',   '222.73.144.195', '220.181.57.232',
+		'180.149.131.247', '180.149.133.167', '112.34.111.121', '61.135.185.24'
+	];
+    ctx._ips = Shuffle<string>(ips);
 }
 
 function GenerateValidName(): string
