@@ -5,3 +5,5 @@ test.nil
 *~
 obj
 src/Rules.ts
+out/app-build.js
+out/app-build.js.map

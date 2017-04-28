@@ -47,7 +47,7 @@
 
 // @author         Jixun.Moe<Yellow Yoshi>
 // @namespace      http://jixun.org/
-// @version        4.0.704
+// @version        4.0.716
 
 // 尝试使用脚本生成匹配规则
 // ////               [Include Rules]
@@ -62,6 +62,8 @@
 // @include http://pan.baidu.com/*
 // @include http://howfile.com/*
 // @include http://*.howfile.com/*
+// @include http://jkpan.cc/*
+// @include http://*.jkpan.cc/*
 // @include http://namipan.cc/*
 // @include http://*.namipan.cc/*
 // @include http://10pan.cc/*
@@ -70,6 +72,10 @@
 // @include http://*.66yp.cc/*
 // @include http://123wzwp.com/*
 // @include http://*.123wzwp.com/*
+// @include http://hiyp.cc/*
+// @include http://*.hiyp.cc/*
+// @include http://jkpan.cc/*
+// @include http://*.jkpan.cc/*
 // @include http://webhd.xuite.net/*
 // @include http://sync.hamicloud.net/*
 // @include http://www.yimuhe.com/*
@@ -122,6 +128,7 @@ var define = (function () {
 })();
 define("helper/Script", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var Script;
     (function (Script) {
         Script.Name = "CUWCL4C";
@@ -159,6 +166,7 @@ define("helper/Script", ["require", "exports"], function (require, exports) {
 });
 define("helper/Constants", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     // 常数
     exports.isFrame = _isFrame();
     exports.version = GM_info.script.version;
@@ -179,6 +187,7 @@ define("helper/Constants", ["require", "exports"], function (require, exports) {
 });
 define("helper/Logger", ["require", "exports", "helper/Script"], function (require, exports, Script_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     function DoLog(prefix, method, args) {
         if (args.length < 1)
             return;
@@ -210,13 +219,14 @@ define("helper/Logger", ["require", "exports", "helper/Script"], function (requi
 });
 define("helper/ScriptConfig", ["require", "exports", "helper/Script", "helper/Logger"], function (require, exports, Script_2, Logger_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var UriType;
     (function (UriType) {
         UriType[UriType["NormalUrl"] = 0] = "NormalUrl";
         /** @deprecated use others instead. */
         UriType[UriType["Custom"] = 1] = "Custom";
         UriType[UriType["Aria"] = 2] = "Aria";
-    })(exports.UriType || (exports.UriType = {}));
-    var UriType = exports.UriType;
+    })(UriType = exports.UriType || (exports.UriType = {}));
     function ReadConfig() {
         try {
             return JSON.parse(GM_getValue(Script_2.Script.Name, ""));
@@ -266,6 +276,7 @@ define("helper/ScriptConfig", ["require", "exports", "helper/Script", "helper/Lo
 });
 define("helper/Extension", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     function BeginWith(str, what) {
         return str.indexOf(what) === 0;
     }
@@ -323,6 +334,7 @@ define("helper/Extension", ["require", "exports"], function (require, exports) {
 /// <reference path="../typings/globals/jquery/index.d.ts" />
 define("helper/QueryString", ["require", "exports", "helper/Extension"], function (require, exports, Extension_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     function GetFlashVars(el) {
         if (!el)
             return {};
@@ -372,6 +384,7 @@ define("helper/QueryString", ["require", "exports", "helper/Extension"], functio
 });
 define("helper/StyleSheet", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     class StyleSheet {
         constructor() {
             this.style = document.createElement('style');
@@ -416,6 +429,7 @@ define("helper/StyleSheet", ["require", "exports"], function (require, exports) 
 });
 define("helper/Downloader", ["require", "exports", "helper/Script", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Script_3, ScriptConfig_1, Extension_2) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/Userscript.d.ts" />
     /// <reference path="../typings/GM_Aria2RPC.d.ts" />
     /// <reference path="../typings/globals/jquery/index.d.ts" />
@@ -513,6 +527,7 @@ ${sErrorMsg}`);
 });
 define("SiteRule", ["require", "exports", "helper/Constants", "helper/Extension", "helper/StyleSheet", "helper/Logger"], function (require, exports, Constants_1, Extension_3, StyleSheet_1, Logger_2) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     exports.Sites = [];
     function Add(siteRule) {
@@ -659,6 +674,7 @@ ${Constants_1.downloadIconSelector}::before {
 });
 define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/ScriptConfig", "helper/Script", "helper/Downloader"], function (require, exports, Constants_2, ScriptConfig_2, Script_4, Downloader_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var rule = {
         bd: null,
         id: 'internal.config',
@@ -692,6 +708,7 @@ define("site/AA.Config", ["require", "exports", "helper/Constants", "helper/Scri
 });
 define("helper/Wait", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     function WaitUntil(check, cb, nTimeout = 10000, nInterval = 150) {
         if ('string' == typeof check) {
@@ -736,6 +753,7 @@ define("helper/Wait", ["require", "exports"], function (require, exports) {
 });
 define("helper/Redirect", ["require", "exports", "helper/Wait", "helper/Extension", "helper/Logger"], function (require, exports, Wait_1, Extension_4, Logger_3) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     /**
      * 跳转后保留当前页面作为 referrer.
@@ -780,6 +798,7 @@ define("helper/Redirect", ["require", "exports", "helper/Wait", "helper/Extensio
 });
 define("site/dl.123564", ["require", "exports", "helper/Extension", "helper/Redirect"], function (require, exports, Extension_5, Redirect_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     var rule = {
         id: 'dl.123564',
@@ -819,6 +838,7 @@ define("site/dl.123564", ["require", "exports", "helper/Extension", "helper/Redi
 });
 define("site/dl.5xfile", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var rule = {
         id: 'dl.5xfile',
         name: '五星网盘',
@@ -836,6 +856,7 @@ define("site/dl.5xfile", ["require", "exports"], function (require, exports) {
 });
 define("site/dl.baidu", ["require", "exports", "helper/Wait"], function (require, exports, Wait_2) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var rule = {
         id: 'dl.baidu',
         name: '百度盘免下载管家',
@@ -858,6 +879,7 @@ define("site/dl.baidu", ["require", "exports", "helper/Wait"], function (require
 });
 define("site/dl.howfile", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     var rule = {
         id: 'dl.howfile',
@@ -879,8 +901,49 @@ define("site/dl.howfile", ["require", "exports"], function (require, exports) {
     };
     exports.Rules = [rule];
 });
+define("site/dl.jkpan", ["require", "exports", "helper/Extension", "helper/Redirect"], function (require, exports, Extension_6, Redirect_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    /// <reference path="../typings/globals/jquery/index.d.ts" />
+    // 魔改 phpdisk
+    var jkpanRule = {
+        id: 'dl.phpdisk.jkpan',
+        name: 'JKPAN 规则 [phpDisk]',
+        host: ['jkpan.cc'],
+        includeSubHost: true,
+        subModule: false,
+        onStart: () => {
+            var ctx = unsafeWindow;
+            ctx.killads = 1;
+            var s = document.createElement('script');
+            s.id = 'adblockTester';
+            document.head.appendChild(s);
+        },
+        onBody: () => {
+            var ctx = unsafeWindow;
+            var s = document.createElement('div');
+            s.id = 'b1';
+            s.style.cssText = 'height:500px;position:fixed;left:-500px';
+            document.body.appendChild(s);
+            if (Extension_6.BeginWith(location.pathname, '/down2-')) {
+                let handler = ctx.handlerPopup;
+                ctx.handlerPopup = unsafeDefineFunction('handlerPopup', function (captchaObj) {
+                    handler.apply(this, arguments);
+                    setTimeout(function () {
+                        captchaObj.show();
+                    }, 750);
+                });
+            }
+            else if (Extension_6.BeginWith(location.pathname, '/file-')) {
+                Redirect_2.RedirectTo(location.pathname.replace('file', 'down2'));
+            }
+        }
+    };
+    exports.Rules = [jkpanRule];
+});
 define("site/dl.namipan.cc", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var rule = {
         id: 'dl.namipan',
         name: '纳米盘.cc [原 87盘 应该]',
@@ -920,8 +983,9 @@ body, body > .ggao {
     };
     exports.Rules = [rule];
 });
-define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect", "helper/Script"], function (require, exports, Wait_3, Redirect_2, Script_5) {
+define("site/dl.phpdisk", ["require", "exports", "helper/Extension", "helper/Wait", "helper/Redirect", "helper/Script"], function (require, exports, Extension_7, Wait_3, Redirect_3, Script_5) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     var phpdiskA = {
         id: 'phpdisk.a',
@@ -949,7 +1013,7 @@ define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect
                 var jumpUrl = $('#down_link').find('a').attr('href');
                 // 然后跳过去
                 if (jumpUrl) {
-                    Redirect_2.RedirectTo(jumpUrl);
+                    Redirect_3.RedirectTo(jumpUrl);
                 }
                 else {
                     alert(`[${Script_5.Script.Name}]: 应用 ${self.name} 失败:\n找不到跳转地址.`);
@@ -963,7 +1027,7 @@ define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect
         // 规则: 直接跳转 /file-xxx -> /down-xxx
         //       并隐藏 down_box2, 显示 down_box
         host: [
-            '10pan.cc', '66yp.cc', '123wzwp.com'
+            '10pan.cc', '66yp.cc', '123wzwp.com', 'hiyp.cc'
         ],
         hide: `.Downpagebox, .talk_show, .banner_2, .w_305, .ad,
 		   #vcode, #tui, .dcode, #down_box2, #dl_tips, .nal,
@@ -975,7 +1039,7 @@ define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect
             let f = () => { };
             unsafeDefineFunction('alert', f);
             unsafeDefineFunction('down_process', f);
-            Redirect_2.phpdiskAutoRedirect(null);
+            Redirect_3.phpdiskAutoRedirect(null);
         },
         onBody: () => {
             /* fix for 123wzwp.com */
@@ -990,10 +1054,44 @@ define("site/dl.phpdisk", ["require", "exports", "helper/Wait", "helper/Redirect
             });
         }
     };
-    exports.Rules = [phpdiskA, phpdiskZ];
+    var jkpanRule = {
+        id: 'jkpan.phpdisk',
+        name: 'JKPAN 规则 [phpDisk]',
+        host: ['jkpan.cc'],
+        includeSubHost: true,
+        subModule: false,
+        onStart: () => {
+            var ctx = unsafeWindow;
+            ctx.killads = 1;
+            var s = document.createElement('script');
+            s.id = 'adblockTester';
+            document.head.appendChild(s);
+        },
+        onBody: () => {
+            var ctx = unsafeWindow;
+            var s = document.createElement('div');
+            s.id = 'b1';
+            s.style.cssText = 'height:500px;position:fixed;left:-500px';
+            document.body.appendChild(s);
+            if (Extension_7.BeginWith(location.pathname, '/down2-')) {
+                let handler = ctx.handlerPopup;
+                ctx.handlerPopup = unsafeDefineFunction('handlerPopup', function (captchaObj) {
+                    handler.apply(this, arguments);
+                    setTimeout(function () {
+                        captchaObj.show();
+                    }, 500);
+                });
+            }
+            else if (Extension_7.BeginWith(location.pathname, '/file-')) {
+                Redirect_3.RedirectTo(location.pathname.replace('file', 'down2'));
+            }
+        }
+    };
+    exports.Rules = [phpdiskA, phpdiskZ, jkpanRule];
 });
 define("site/dl.xuite", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     var rule = {
         id: 'dl.hami-cloud',
@@ -1015,8 +1113,9 @@ define("site/dl.xuite", ["require", "exports"], function (require, exports) {
     };
     exports.Rules = [rule];
 });
-define("site/dl.yimuhe", ["require", "exports", "helper/Extension", "helper/Redirect"], function (require, exports, Extension_6, Redirect_3) {
+define("site/dl.yimuhe", ["require", "exports", "helper/Extension", "helper/Redirect"], function (require, exports, Extension_8, Redirect_4) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     var rule = {
         id: 'dl.yimuhe',
@@ -1028,11 +1127,11 @@ define("site/dl.yimuhe", ["require", "exports", "helper/Extension", "helper/Redi
         subModule: false,
         runInFrame: true,
         onStart: () => {
-            Redirect_3.phpdiskAutoRedirect(null);
+            Redirect_4.phpdiskAutoRedirect(null);
         },
         onBody: () => {
-            if (Extension_6.BeginWith(location.pathname, '/n_dd.php')) {
-                Redirect_3.RedirectTo($('#downs').attr('href'));
+            if (Extension_8.BeginWith(location.pathname, '/n_dd.php')) {
+                Redirect_4.RedirectTo($('#downs').attr('href'));
                 return;
             }
             var dlContainer = document.getElementById('download');
@@ -1049,6 +1148,7 @@ define("site/dl.yimuhe", ["require", "exports", "helper/Extension", "helper/Redi
 });
 define("site/fm.douban", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader"], function (require, exports, Logger_4, Wait_4, Downloader_2) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var rule = {
         id: 'fm.douban',
         ssl: true,
@@ -1117,6 +1217,7 @@ div#jx_douban_dl_wrap {
 });
 define("site/fm.moe", ["require", "exports", "helper/Downloader", "helper/Script"], function (require, exports, Downloader_3, Script_6) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var rule = {
         id: 'fm.moe',
         ssl: false,
@@ -1171,8 +1272,9 @@ a.jixun-dl {
     };
     exports.Rules = [rule];
 });
-define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constants", "helper/Wait", "helper/Downloader", "helper/Script", "helper/ScriptConfig", "helper/QueryString", "helper/Extension"], function (require, exports, Logger_5, Constants_3, Wait_5, Downloader_4, Script_7, ScriptConfig_3, qs, Extension_7) {
+define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constants", "helper/Wait", "helper/Downloader", "helper/Script", "helper/ScriptConfig", "helper/QueryString", "helper/Extension"], function (require, exports, Logger_5, Constants_3, Wait_5, Downloader_4, Script_7, ScriptConfig_3, qs, Extension_9) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     const __MP3_BLANK = 'https://jixunmoe.github.io/cuwcl4c/blank.mp3';
     var rule = {
         id: 'music.163',
@@ -1350,6 +1452,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
                 this._downloader.CaptureAria(this._btnDownload);
             }
             else {
+                // TODO: 隐藏歌单下载按钮
             }
             if (location.pathname == '/demo/fm') {
                 this.HookRadioPlayer();
@@ -1697,7 +1800,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
     }
     function TestString(src, needle) {
         if (typeof needle == 'string') {
-            return Extension_7.Contains(src, needle);
+            return Extension_9.Contains(src, needle);
         }
         else {
             return needle.test(src);
@@ -1757,7 +1860,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
             '203.130.59.11',
             '203.130.59.12'
         ];
-        return Extension_7.Shuffle(cdns);
+        return Extension_9.Shuffle(cdns);
     }
     function GenerateValidName() {
         return `${Script_7.Script.Name}__${Date.now()}${Math.random()}`;
@@ -1955,6 +2058,7 @@ define("site/music.163", ["require", "exports", "helper/Logger", "helper/Constan
 });
 define("site/music.1ting", ["require", "exports", "helper/Wait", "helper/Downloader"], function (require, exports, Wait_6, Downloader_5) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var rule = {
         id: 'music.1ting',
         ssl: false,
@@ -1995,6 +2099,7 @@ define("site/music.1ting", ["require", "exports", "helper/Wait", "helper/Downloa
 });
 define("hooker/jPlayer", ["require", "exports", "helper/Logger", "helper/Wait"], function (require, exports, Logger_6, Wait_7) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     /// <reference path="../typings/globals/jquery/index.d.ts" />
     function Patch(callback, namespace = "jPlayer") {
         Logger_6.info('等待 jPlayer 就绪 ..');
@@ -2011,8 +2116,9 @@ define("hooker/jPlayer", ["require", "exports", "helper/Logger", "helper/Wait"],
     }
     exports.Patch = Patch;
 });
-define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Script", "helper/Extension", "hooker/jPlayer"], function (require, exports, Downloader_6, Script_8, Extension_8, jPlayer) {
+define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Script", "helper/Extension", "hooker/jPlayer"], function (require, exports, Downloader_6, Script_8, Extension_10, jPlayer) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var rule = {
         id: 'music.56',
         ssl: false,
@@ -2039,7 +2145,7 @@ define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Scri
                 if (song.delflag || song.delflag != 0) {
                     need_play = true;
                     song.delflag = 0;
-                    if (Extension_8.BeginWith(song.url, '/del')) {
+                    if (Extension_10.BeginWith(song.url, '/del')) {
                         song.url = song.url.replace('/del', '');
                     }
                 }
@@ -2051,8 +2157,9 @@ define("site/music.56", ["require", "exports", "helper/Downloader", "helper/Scri
     };
     exports.Rules = [rule];
 });
-define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader", "helper/Extension"], function (require, exports, Logger_7, Wait_8, Downloader_7, Extension_9) {
+define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait", "helper/Downloader", "helper/Extension"], function (require, exports, Logger_7, Wait_8, Downloader_7, Extension_11) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var rule = {
         id: 'music.echo',
         ssl: false,
@@ -2068,7 +2175,7 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
             rule.bd = new Downloader_7.Downloader();
         },
         onBody() {
-            if (Extension_9.BeginWith(location.pathname, '/sound/')) {
+            if (Extension_11.BeginWith(location.pathname, '/sound/')) {
                 rule.SinglePage();
             }
         },
@@ -2099,7 +2206,7 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
                 onload: (response) => {
                     var target = $(response.responseText)
                         .filter('script')
-                        .filter((i, el) => Extension_9.Contains(el.textContent, 'play_source('));
+                        .filter((i, el) => Extension_11.Contains(el.textContent, 'play_source('));
                     if (target.length === 0) {
                         Logger_7.error('搜索不到有效的曲目代码。');
                         return;
@@ -2123,18 +2230,19 @@ define("site/music.echo", ["require", "exports", "helper/Logger", "helper/Wait",
             GM_xmlhttpRequest(req);
         },
         UpdateUrl(url, name) {
-            let s = Extension_9.Contains(url, '?') ? '&' : '?';
-            let _url = `${url}${s}attname=${encodeURIComponent(name)}${Extension_9.GetExtensionFromUrl(url)}`;
+            let s = Extension_11.Contains(url, '?') ? '&' : '?';
+            let _url = `${url}${s}attname=${encodeURIComponent(name)}${Extension_11.GetExtensionFromUrl(url)}`;
             rule.dlLink
-                .attr('href', rule.bd.GenerateUri(url, name + Extension_9.GetExtensionFromUrl(url)))
+                .attr('href', rule.bd.GenerateUri(url, name + Extension_11.GetExtensionFromUrl(url)))
                 .attr('title', `下载: ${name}`);
             // info(`捕捉到下载地址: ${url}`);
         }
     };
     exports.Rules = [rule];
 });
-define("site/music.kugou", ["require", "exports", "helper/Logger", "helper/Downloader", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Logger_8, Downloader_8, ScriptConfig_4, Extension_10) {
+define("site/music.kugou", ["require", "exports", "helper/Logger", "helper/Downloader", "helper/ScriptConfig", "helper/Extension"], function (require, exports, Logger_8, Downloader_8, ScriptConfig_4, Extension_12) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     const KugouDownloadFront = 'https://jixunmoe.github.io/cuwcl4c/kugou-dl';
     var app = null;
     var rule = {
@@ -2207,7 +2315,7 @@ define("site/music.kugou", ["require", "exports", "helper/Logger", "helper/Downl
         },
         onBody() {
             // 火狐狸有兼容问题, 待修
-            if (!Extension_10.Contains(navigator.userAgent, 'Firefox'))
+            if (!Extension_12.Contains(navigator.userAgent, 'Firefox'))
                 rule.BuildDialog();
         },
         BuildDialog() {
@@ -2374,8 +2482,9 @@ define("site/music.kugou", ["require", "exports", "helper/Logger", "helper/Downl
     };
     exports.Rules = [rule];
 });
-define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.namipan.cc", "site/dl.phpdisk", "site/dl.xuite", "site/dl.yimuhe", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting", "site/music.56", "site/music.echo", "site/music.kugou"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
+define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.123564", "site/dl.5xfile", "site/dl.baidu", "site/dl.howfile", "site/dl.jkpan", "site/dl.namipan.cc", "site/dl.phpdisk", "site/dl.xuite", "site/dl.yimuhe", "site/fm.douban", "site/fm.moe", "site/music.163", "site/music.1ting", "site/music.56", "site/music.echo", "site/music.kugou"], function (require, exports, SiteRule_1, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     a.Rules.forEach(SiteRule_1.Add);
     b.Rules.forEach(SiteRule_1.Add);
     c.Rules.forEach(SiteRule_1.Add);
@@ -2392,9 +2501,11 @@ define("Rules", ["require", "exports", "SiteRule", "site/AA.Config", "site/dl.12
     n.Rules.forEach(SiteRule_1.Add);
     o.Rules.forEach(SiteRule_1.Add);
     p.Rules.forEach(SiteRule_1.Add);
+    q.Rules.forEach(SiteRule_1.Add);
 });
 define("EntryPoint", ["require", "exports", "helper/Script", "helper/Constants", "helper/ScriptConfig", "helper/QueryString", "helper/Logger", "SiteRule"], function (require, exports, Script_9, Constants_4, ScriptConfig_5, QueryString_1, Logger_9, SiteRule_2) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     var $_GET = QueryString_1.Parse(Constants_4.currentUrl);
     if (ScriptConfig_5.Config.bUseCustomRules) {
         var customRules = [];
