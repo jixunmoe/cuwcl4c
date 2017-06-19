@@ -18,7 +18,7 @@ var rule: ISiteRule = {
         WaitUntil ('require', function () {
 			unsafeExec (function () {
                 var require = (<any>window).require;
-				var service = require('disk-system:widget/plugin/download/util/downloadCommonUtil.js');
+				var service = require('file-widget-1:download/util/downloadCommonUtil.js');
 				service.isPlatformWindows = function () { return false; };
 			});
 		});
